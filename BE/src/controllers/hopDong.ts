@@ -108,7 +108,7 @@ export const createContract = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Không tìm thấy phòng trọ!" });
     }
     const newContract = new HopDongModel({
-      id_phong:ma_phong ,
+      ma_phong: ma_phong ,
       id_users: user._id,
       signaturePath,
       tien_coc:phong.gia_tien/2,
