@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 router.post('/create', storeThietBi);
-router.post('/update', updateThietBi);
+router.post('/update/:id', updateThietBi);
 router.get('/', getData);
 router.post('/delete/all', deleteAll);
 router.post('/delete/:id', deleteById);

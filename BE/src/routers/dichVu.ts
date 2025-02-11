@@ -4,7 +4,7 @@ const routeDichVu =Router()
 
 routeDichVu.post('/Creat',CreateDichVu)
 routeDichVu.delete('/Delete/:id',DeleteDichVu)
-routeDichVu.post('/Update',UpdateDichVu)
+routeDichVu.post('/Update/:id',UpdateDichVu)
 routeDichVu.get('/GetAll',GetAllDichVu)
 
 export default routeDichVu;

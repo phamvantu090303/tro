@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 router.post('/create', storeDanhMuc);
-router.post('/update', updateDanhMuc);
+router.post('/update/:id', updateDanhMuc);
 router.get('/', getData);
 router.post('/delete/all', deleteAll);
 router.post('/delete/:id', deleteById);

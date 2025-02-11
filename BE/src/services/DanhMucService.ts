@@ -1,4 +1,5 @@
 import DanhMucModel from '../models/DanhMucModel';
+import { ObjectId } from 'mongodb';
 
 export class DanhMucService {
     // Tạo mới một danh mục
@@ -23,8 +24,9 @@ export class DanhMucService {
     }
 
     // Cập nhật thông tin danh mục
-    async updateDanhMuc(body: any): Promise<void> {
-        const { id, ten_danh_muc, trang_thai, mo_ta } = body;
+    async updateDanhMuc(_id: any, data: any): Promise<void> {
+        const id = new ObjectId(_id)
+        const { ten_danh_muc, trang_thai, mo_ta } = data;
 
         // Kiểm tra danh mục cần cập nhật có tồn tại không
         const danhMuc = await DanhMucModel.findById(id);
