@@ -3,36 +3,38 @@ import HoaDonTungThangModel from "../models/HoaDonTungThangModel";
 import DichVuModel from "../models/DichVuModel"; // Thêm model dịch vụ
 import UserModel from "../models/UserModel";     // Để gửi thông báo cho người dùng (giả sử đã có)
 import PhongTroModel from "../models/PhongTroModel";
-
+import nodemailer from 'nodemailer';
+import { config } from 'dotenv';
+config();
 class ChiSoDongHoService {
-    
-    async createChiSoDongHo(_user_id: string, data: any) {
+
+    async createChiSoDongHo(_id: string, data: any) {
         try {
             const chisodongho = new ChiSoDongHoModel({
                 id_phong: data.ma_phong,
-                id_users: data.user_id,
+                id_users:_id,
                 ngay_thang_nam: data.ngay_thang_nam,
                 chi_so_dien: data.chi_so_dien,
                 image_dong_ho_dien: data.image_dong_ho_dien
             });
             await chisodongho.save();
             await this.calculateAndSaveInvoice(data.ma_phong, data.ngay_thang_nam);
-            console.log(' Thêm chỉ số đồng hồ thành công.');
         } catch (error) {
             console.error(' Lỗi khi thêm chỉ số đồng hồ:', error);
         }
     }
 
     // Tính toán và lưu hóa đơn hàng tháng
-    async calculateAndSaveInvoice(id_phong: string, ngay_thang_nam: string) {
+    async calculateAndSaveInvoice(ma_phong: string, ngay_thang_nam: string) {
         try {
-            const phongtro = await PhongTroModel.findOne({id_phong}); // Giả sử tiền phòng là 1 triệu
+            const ngay = new Date(ngay_thang_nam);
+            const phongtro = await PhongTroModel.findOne({ma_phong});
             if (!phongtro) {
                 console.log(' Không tìm thấy phòng trọ.');
                 return;
             }
             // Lấy chỉ số điện tháng hiện tại
-            const chiSoHienTai = await ChiSoDongHoModel.findOne({ id_phong, ngay_thang_nam });
+            const chiSoHienTai = await ChiSoDongHoModel.findOne({ id_phong: ma_phong, ngay_thang_nam:ngay  });
             if (!chiSoHienTai) {
                 console.log(' Không tìm thấy chỉ số tháng hiện tại.');
                 return;
@@ -43,7 +45,7 @@ class ChiSoDongHoService {
             const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
 
             const chiSoThangTruoc = await ChiSoDongHoModel.findOne({
-                id_phong,
+                id_phong: ma_phong,
                 ngay_thang_nam: {
                     $gte: new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1),
                     $lt: new Date(lastMonth.getFullYear(), lastMonth.getMonth() + 1, 1),
@@ -66,7 +68,7 @@ class ChiSoDongHoService {
           
 
             // Tính tổng tiền
-            const tongTien = tienDien + tienNuoc + tienWifi + tiendien;
+            const tongTien =  tienNuoc + tienWifi + tiendien + phongtro.gia_tien;
 
             // Tạo hóa đơn
             const hoaDon = new HoaDonTungThangModel({
@@ -84,29 +86,37 @@ class ChiSoDongHoService {
             await hoaDon.save();
             console.log(' Hóa đơn đã được tạo và lưu thành công.');
 
-            // Gửi hóa đơn về cho người dùng
-            await this.sendInvoiceToUser(chiSoHienTai.id_users, hoaDon);
+            const user = await UserModel.findOne({ _id: chiSoHienTai.id_users });
+         
+            if (user) {
+                await this.sendEmail(user, hoaDon);
+            } else {
+                console.error(' Không tìm thấy người dùng.');
+            }
 
         } catch (error) {
             console.error(' Lỗi khi tính toán và lưu hóa đơn:', error);
         }
     }
 
-    // Hàm gửi hóa đơn cho người dùng (giả lập gửi thông báo)
-    async sendInvoiceToUser(userId: string, hoaDon: any) {
-        try {
-            const user = await UserModel.findById(userId);
-            if (user && user.email) {
-                console.log(` Đã gửi hóa đơn tháng ${hoaDon.ngay_tao_hoa_don.getMonth() + 1}/${hoaDon.ngay_tao_hoa_don.getFullYear()} đến email: ${user.email}`);
-                // Giả lập gửi email hoặc thông báo push
-                // sendEmail(user.email, hoaDon);
-            } else {
-                console.log(' Không tìm thấy thông tin người dùng để gửi hóa đơn.');
-            }
-        } catch (error) {
-            console.error(' Lỗi khi gửi hóa đơn cho người dùng:', error);
-        }
-    }
+    sendEmail = async (user: any, hoadon: any) => {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.MAIL_USERNAME,
+        pass: process.env.MAIL_PASSWORD,
+      },
+    });
+  
+   const mailOptions = {
+        from: process.env.MAIL_USERNAME,
+        to: user.email,  // Đảm bảo đây là địa chỉ email hợp lệ
+        subject: "Hóa đơn tiền phòng",
+        text: `Chào ${user.username},\n\nDưới đây là hóa đơn tiền phòng của bạn:\n- Tổng tiền: ${hoadon.tong_tien} VNĐ\n- Tiền phòng: ${hoadon.tien_phong} VNĐ\n- Tiền điện: ${hoadon.tien_dien} VNĐ\n\n\nVui lòng thanh toán trước ngày hết hạn.\n\nTrân trọng!`,
+    };
+  
+    await transporter.sendMail(mailOptions);
+  };
 }
 
 export default ChiSoDongHoService;
