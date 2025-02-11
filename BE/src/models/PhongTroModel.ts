@@ -12,7 +12,7 @@ const PhongTroScheme = new Schema(
             type: String,
             required: false,
         },
-        id_danh_muc: {
+        ma_danh_muc: {
             type: String,
             required: true,
         },

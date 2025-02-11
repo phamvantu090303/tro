@@ -12,6 +12,7 @@ import routerPhong from "./routers/phongTro";
 import routeDichVu from "./routers/dichVu";
 import mapRoutes from "./routers/map";
 import routeHoaDon from "./routers/hoaDon";
+import routeChiSoDongHo from "./routers/chiSoDongHo";
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -42,6 +43,7 @@ app.use("/phongTro", routerPhong); //chưa thêm middleware cho dử liệu
 app.use("/dich-vu", routeDichVu);
 app.use("/map", mapRoutes);
 app.use("/hoadon", routeHoaDon);
+app.use("/chi-so-dong-ho", routeChiSoDongHo);
 //hợp đồng
 app.use("/api/contracts", contractRoutes);
 const connectDB = async () => {

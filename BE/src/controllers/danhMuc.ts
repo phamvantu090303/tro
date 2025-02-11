@@ -18,7 +18,6 @@ const storeDanhMuc = async (req: any, res: any) => {
 	}
 };
 const updateDanhMuc = async (req: any, res: any) => {
-	const body = req.body;
 	try {
 		const _id = req.params;
 		const data = req.body;
