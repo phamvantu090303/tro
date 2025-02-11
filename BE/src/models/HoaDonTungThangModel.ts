@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const HoaDonTungThangSchema = new Schema(
     {
-        id_phong: { type: String, required: true },
+        ma_phong: { type: String, required: true },
         id_users: { type: String, required: true },
         chi_so_dien_thang_nay: { type: Number, required: true },
         chi_so_dien_thang_truoc: { type: Number, required: true },

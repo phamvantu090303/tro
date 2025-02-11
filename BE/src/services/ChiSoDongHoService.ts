@@ -11,7 +11,7 @@ class ChiSoDongHoService {
     async createChiSoDongHo(_id: string, data: any) {
         try {
             const chisodongho = new ChiSoDongHoModel({
-                id_phong: data.ma_phong,
+                ma_phong: data.ma_phong,
                 id_users:_id,
                 ngay_thang_nam: data.ngay_thang_nam,
                 chi_so_dien: data.chi_so_dien,
@@ -34,7 +34,7 @@ class ChiSoDongHoService {
                 return;
             }
             // Lấy chỉ số điện tháng hiện tại
-            const chiSoHienTai = await ChiSoDongHoModel.findOne({ id_phong: ma_phong, ngay_thang_nam:ngay  });
+            const chiSoHienTai = await ChiSoDongHoModel.findOne({ ma_phong: ma_phong, ngay_thang_nam:ngay  });
             if (!chiSoHienTai) {
                 console.log(' Không tìm thấy chỉ số tháng hiện tại.');
                 return;
@@ -45,7 +45,7 @@ class ChiSoDongHoService {
             const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
 
             const chiSoThangTruoc = await ChiSoDongHoModel.findOne({
-                id_phong: ma_phong,
+                ma_phong: ma_phong,
                 ngay_thang_nam: {
                     $gte: new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1),
                     $lt: new Date(lastMonth.getFullYear(), lastMonth.getMonth() + 1, 1),
@@ -72,7 +72,7 @@ class ChiSoDongHoService {
 
             // Tạo hóa đơn
             const hoaDon = new HoaDonTungThangModel({
-                id_phong: chiSoHienTai.id_phong,
+                ma_phong: chiSoHienTai.ma_phong,
                 id_users: chiSoHienTai.id_users,
                 chi_so_dien_thang_nay: chiSoHienTai.chi_so_dien,
                 chi_so_dien_thang_truoc: chiSoThangTruocValue,

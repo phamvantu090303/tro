@@ -8,7 +8,7 @@ const HopDongScheme = new Schema(
             type: String,
             default:"Hợp đồng thuê phòng"
         },
-        id_phong: {
+        ma_phong: {
             type: String,
             required: true,
         },
@@ -37,10 +37,6 @@ const HopDongScheme = new Schema(
         file_hop_dong: {
             type: String,
             required: true,
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now(),
         },
     },
     { timestamps: true }

@@ -6,7 +6,7 @@ export class YeuThichSevice {
         const data = body;
     
         const newYeuThich = new yeuthichModel({
-            id_phong : data.id_phong,
+            ma_phong : data.ma_phong,
             id_user : data.id_user,
             hinh_anh: data.so_luong_thiet_bị,
             gia_thue: data.gia_thue,
@@ -16,15 +16,12 @@ export class YeuThichSevice {
         await newYeuThich.save();
     } 
 
-    async deleteById(body: any): Promise<void> {
-        const {id} = body;
-        console.log(id)
-    
-        const newYeuThich = await yeuthichModel.findById(id)
+    async deleteById(_id: any): Promise<void> {
+        const newYeuThich = await yeuthichModel.findById(_id)
         if(!newYeuThich){
             throw new Error ("loi")
         }
-        await yeuthichModel.findByIdAndDelete(id)
+        await yeuthichModel.findByIdAndDelete(_id)
     } 
     
 }

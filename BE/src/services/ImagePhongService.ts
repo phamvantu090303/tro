@@ -3,17 +3,17 @@ import HinhAnhPhongModel from "../models/HinhAnhPhongModel";
 export class ImageService {
     // Tạo mới hình ảnh
     async createImage(body: any): Promise<void> {
-        const { id_phong_tro, image_url } = body;
+        const { ma_phong, image_url } = body;
 
         // Kiểm tra hình ảnh đã tồn tại chưa
-        const existingImage = await HinhAnhPhongModel.findOne({ id_phong_tro });
+        const existingImage = await HinhAnhPhongModel.findOne({ ma_phong });
         if (existingImage) {
             throw new Error('Hình ảnh đã tồn tại cho phòng trọ này');
         }
 
         // Tạo mới hình ảnh
         const newImage = new HinhAnhPhongModel({
-            id_phong_tro,
+            ma_phong,
             image_url,
         });
 
@@ -23,7 +23,7 @@ export class ImageService {
 
     // Cập nhật thông tin hình ảnh
     async updateImage(body: any): Promise<void> {
-        const { _id, id_phong_tro, image_url } = body;
+        const { _id, ma_phong, image_url } = body;
 
         // Kiểm tra hình ảnh cần cập nhật có tồn tại không
         const image = await HinhAnhPhongModel.findById(_id);
@@ -32,7 +32,7 @@ export class ImageService {
         }
 
         // Cập nhật thông tin hình ảnh
-        image.id_phong_tro = id_phong_tro ?? image.id_phong_tro;
+        image.ma_phong = ma_phong ?? image.ma_phong;
         image.image_url = image_url ?? image.image_url;
 
         // Lưu các thay đổi vào cơ sở dữ liệu

@@ -4,7 +4,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const ChiSoDongHoScheme = new Schema(
     {
-        id_phong: {
+        ma_phong: {
             type: String,
             required: true,
         },
