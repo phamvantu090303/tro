@@ -20,8 +20,10 @@ const storeDanhMuc = async (req: any, res: any) => {
 const updateDanhMuc = async (req: any, res: any) => {
 	const body = req.body;
 	try {
+		const _id = req.params;
+		const data = req.body;
 		const danhMucService = new DanhMucService();
-		await danhMucService.updateDanhMuc(body);
+		await danhMucService.updateDanhMuc(_id, data);
 
 		res.status(200).json({
 			message: 'Danh mục đã được cập nhật thành công'
