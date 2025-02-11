@@ -8,7 +8,7 @@ const Contract = () => {
   const [signature, setSignature] = useState(null);
   const sigCanvas = useRef();
   const [user, setUser] = useState(null);
-  const { maphong } = useParams(); // Lấy maphong từ URL
+  const { maphong } = useParams();  // Lấy maphong từ URL
   useEffect(() => {
     fetchUserFromAPI();
   }, []);
@@ -24,7 +24,6 @@ const Contract = () => {
           params: { maphong },
         }
       );
-      console.log(res);
       setUser(res);
       localStorage.setItem("user", JSON.stringify(res.data.user));
     } catch (error) {
