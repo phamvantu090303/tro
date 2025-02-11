@@ -1,5 +1,5 @@
 import ThietBiModal from '../models/ThietBiModel';
-
+import { ObjectId } from "mongodb";
 export class ThietBiService {
     // Tạo mới một thiết bị
     async createThietBi(body: any): Promise<void> {
@@ -17,8 +17,9 @@ export class ThietBiService {
     }
 
     // Cập nhật thông tin thiết bị
-    async updateThietBi(body: any): Promise<void> {
-        const { id, ten_thiet_bi, so_luong_thiet_bi, trang_thai } = body;
+    async updateThietBi(_id: any, data: any): Promise<void> {
+        const id = new ObjectId(_id)
+        const { ten_thiet_bi, so_luong_thiet_bi, trang_thai } = data;
 
         // Kiểm tra thiết bị cần cập nhật có tồn tại không
         const thietBi = await ThietBiModal.findById(id);

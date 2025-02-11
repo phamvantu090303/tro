@@ -20,9 +20,10 @@ export const CreateDichVu = async (req: Request, res: Response) => {
 
 export const UpdateDichVu = async (req: Request, res: Response) => {
     try {
-        const dataUdate = req.body;
+        const _id = req.params;
+        const data = req.body;
         const dichVuServiceInstance = new DichVuService();
-        await dichVuServiceInstance.UpdateDichVu(dataUdate);  
+        await dichVuServiceInstance.UpdateDichVu(_id, data);  
 
         res.status(200).json({
         message: "Update successfully!!!",

@@ -20,8 +20,10 @@ const storeThietBi = async (req: any, res: any) => {
 
 const updateThietBi = async (req: any, res: any) => {
     try {
+        const _id = req.params;
+        const data = req.body;
         const thietBiService = new ThietBiService();
-        await thietBiService.updateThietBi(req.body);
+        await thietBiService.updateThietBi(_id, data);
 
         res.status(200).json({
             message: 'Thiết bị đã được cập nhật thành công',
