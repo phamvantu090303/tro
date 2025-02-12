@@ -3,10 +3,11 @@ import { ObjectId } from "mongodb";
 export class ThietBiService {
     // Tạo mới một thiết bị
     async createThietBi(body: any): Promise<void> {
-        const { ten_thiet_bi, so_luong_thiet_bi, trang_thai } = body;
+        const {ma_phong, ten_thiet_bi, so_luong_thiet_bi, trang_thai } = body;
 
         // Tạo mới thiết bị
         const newThietBi = new ThietBiModal({
+            ma_phong,
             ten_thiet_bi,
             so_luong_thiet_bi,
             trang_thai
@@ -19,7 +20,7 @@ export class ThietBiService {
     // Cập nhật thông tin thiết bị
     async updateThietBi(_id: any, data: any): Promise<void> {
         const id = new ObjectId(_id)
-        const { ten_thiet_bi, so_luong_thiet_bi, trang_thai } = data;
+        const {ma_phong,ten_thiet_bi, so_luong_thiet_bi, trang_thai } = data;
 
         // Kiểm tra thiết bị cần cập nhật có tồn tại không
         const thietBi = await ThietBiModal.findById(id);
@@ -28,6 +29,7 @@ export class ThietBiService {
         }
 
         // // Cập nhật thông tin thiết bị
+        thietBi.ma_phong = ma_phong ?? thietBi.ma_phong;
         thietBi.ten_thiet_bi = ten_thiet_bi ?? thietBi.ten_thiet_bi;
         thietBi.so_luong_thiet_bi = so_luong_thiet_bi ?? thietBi.so_luong_thiet_bi;
         thietBi.trang_thai = trang_thai ?? thietBi.trang_thai;

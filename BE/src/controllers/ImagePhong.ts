@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import { ImageService } from "../services/ImagePhongService";
 
 const createImage = async (req: Request, res: Response) => {
-    const { id_phong_tro, image_url } = req.body;
+    const { ma_phong, image_url } = req.body;
     try {
         const imageService = new ImageService();
-        await imageService.createImage({ id_phong_tro, image_url });
+        await imageService.createImage({ ma_phong, image_url });
 
         res.status(200).json({
             message: 'Hình ảnh đã được tạo thành công',
@@ -18,10 +18,10 @@ const createImage = async (req: Request, res: Response) => {
 };
 
 const updateImage = async (req: Request, res: Response) => {
-    const data = req.body;
+   const body = req.body;
     try {
         const imageService = new ImageService();
-        await imageService.updateImage(data);
+        await imageService.updateImage(body);
 
         res.status(200).json({
             message: 'Hình ảnh đã được cập nhật thành công',

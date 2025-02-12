@@ -3,15 +3,18 @@
 import mongoose, { Schema } from "mongoose";
 
 const DanhMucScheme = new Schema(
-  {
-    ma_danh_muc: {
-      type: String,
-      require: true,
-    },
-    ten_danh_muc: {
-      type: String,
-      require: true,
-    },
+
+	{
+		ma_danh_muc : {
+			type : String,
+			require: true
+		},
+		
+		ten_danh_muc : {
+			type : String,
+			require: true
+		},
+
 
     trang_thai: {
       type: Number,

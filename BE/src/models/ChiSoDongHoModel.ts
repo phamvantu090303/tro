@@ -4,7 +4,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const ChiSoDongHoScheme = new Schema(
     {
-        id_phong: {
+        ma_phong: {
             type: String,
             required: true,
         },
@@ -19,16 +19,13 @@ const ChiSoDongHoScheme = new Schema(
         chi_so_dien: {
             type: Number,
             required: true,
+            min:0,
         },
         image_dong_ho_dien: {
             type: String,
             required: true,
         },
 
-        createdAt: {
-            type: Date,
-            default: Date.now(),
-        },
     },
     { timestamps: true }
 );

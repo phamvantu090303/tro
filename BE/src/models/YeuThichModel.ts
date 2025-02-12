@@ -4,15 +4,13 @@ import mongoose, { Schema } from 'mongoose';
 
 const YeuThichSchema = new Schema(
     {
-        id_phong: {
+        ma_phong: {
             type:String, // Giả sử id_phong là tham chiếu đến một tài liệu khác
-            ref: 'Phong', // Tên model được tham chiếu (nếu có)
             required: true, // Sửa require -> required
         },
 
         id_user: {
             type: String,
-            ref: 'User', // Tên model được tham chiếu (nếu có)
             required: true,
         },
 

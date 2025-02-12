@@ -12,7 +12,7 @@ const PhongTroScheme = new Schema(
             type: String,
             required: false,
         },
-        id_danh_muc: {
+        ma_danh_muc: {
             type: String,
             required: true,
         },
@@ -43,11 +43,6 @@ const PhongTroScheme = new Schema(
         so_luong_nguoi: {
             type: Number,
             default: 1,
-        },
-
-        createdAt: {
-            type: Date,
-            default: Date.now(),
         },
     },
     { timestamps: true }

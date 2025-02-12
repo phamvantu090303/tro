@@ -4,7 +4,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const ThietBiScheme = new Schema(
 	{
-		id_phong_tro : {
+		ma_phong : {
 			type : String,
 			require: false
 		},
