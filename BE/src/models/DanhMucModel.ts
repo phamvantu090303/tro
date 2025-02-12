@@ -4,6 +4,10 @@ import mongoose, { Schema } from "mongoose";
 
 const DanhMucScheme = new Schema(
   {
+    ma_danh_muc: {
+      type: String,
+      require: true,
+    },
     ten_danh_muc: {
       type: String,
       require: true,
