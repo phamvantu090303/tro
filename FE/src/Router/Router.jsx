@@ -4,6 +4,8 @@ import Login from "../pages/Login/login";
 import Contract from "../component/hopdong";
 import Register from "../pages/Login/Register";
 import Homepage from "../pages/Home/Home";
+import Search from "../pages/Search/Search";
+import RoomDetails from "../pages/RoomDetails/RoomDetails";
 
 const Router = new createBrowserRouter([
   {
@@ -27,6 +29,22 @@ const Router = new createBrowserRouter([
     element: (
       <Layout>
         <Register />
+      </Layout>
+    ),
+  },
+  {
+    path: "/Search",
+    element: (
+      <Layout>
+        <Search />
+      </Layout>
+    ),
+  },
+  {
+    path: "/Details/:id",
+    element: (
+      <Layout>
+        <RoomDetails />
       </Layout>
     ),
   },
