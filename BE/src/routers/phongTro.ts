@@ -15,5 +15,5 @@ routerPhong.post("/update", updatePhongTro);
 routerPhong.get("/get", getData);
 routerPhong.post("/delete/all", deleteAll);
 routerPhong.post("/delete/:ma_phong", deleteById);
-routerPhong.post("detail/:ma_phong", detailRoom);
+routerPhong.post("/detail/:ma_phong", detailRoom);
 export default routerPhong;

@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import logo from "../assets/logo/logo.svg";
 import { CiHeart } from "react-icons/ci";
 import { FaRegUser } from "react-icons/fa";
+import { useNavigate } from "react-router";
 
 const Item = [
   {
@@ -20,11 +21,13 @@ const Item = [
   {
     id: 4,
     name: "Tìm kiếm",
+    Navigate: "/Search",
   },
 ];
 
 function Header() {
   const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   return (
     <nav className="w-full bg-[#1c203d] text-white py-5">
       <div className="max-w-[1920px] mx-auto px-[150px] flex items-center justify-between">
@@ -37,6 +40,7 @@ function Header() {
               <li
                 key={item.id}
                 className="cursor-pointer hover:text-gray-300 hover:bg-white/10 text-white px-3 py-3 font-medium text-base "
+                onClick={() => navigate(item.Navigate)}
               >
                 {item.name}
               </li>
