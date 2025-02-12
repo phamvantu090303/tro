@@ -52,7 +52,10 @@ const updatePhongTro = async (req: Request, res: Response) => {
 
 const getData = async (req: Request, res: Response) => {
   try {
-    const phongTroList = await phongTroService.getAllPhongTro();
+    const { ma_danh_muc} = req.params;
+        console.log(ma_danh_muc);
+
+        const phongTroList = await phongTroService.getAllPhongTro(ma_danh_muc);
     res.status(200).json({
       message: "Lấy danh sách phòng trọ thành công!",
       data: phongTroList,
