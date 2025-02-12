@@ -11,8 +11,8 @@ const router = Router();
 
 router.post('/create', storeDanhMuc);
 router.post('/update/:id', updateDanhMuc);
-router.get('/', getData);
-router.post('/delete/all', deleteAll);
-router.post('/delete/:id', deleteById);
+router.get('/getAll', getData);
+router.delete('/delete/all', deleteAll);
+router.delete('/delete/:id', deleteById);
 
 export default router;

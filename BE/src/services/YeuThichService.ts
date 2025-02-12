@@ -1,4 +1,3 @@
-
 import yeuthichModel from "../models/YeuThichModel";
 
 export class YeuThichSevice {
@@ -22,8 +21,13 @@ export class YeuThichSevice {
             throw new Error ("loi")
         }
         await yeuthichModel.findByIdAndDelete(_id)
-    } 
-    
+    }
+
+    async getDataYeuTich(): Promise<any[]> {
+        const yeuTich = await yeuthichModel.find();
+
+        return yeuTich;
+    }
 }
-const YeuThich =new YeuThichSevice()
+const YeuThich = new YeuThichSevice()
 export default YeuThich
