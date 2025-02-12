@@ -1,47 +1,31 @@
-import { IoArrowBack, IoArrowForward } from "react-icons/io5";
 import { Link } from "react-router";
 import CardRoom from "./CardRoom";
-
-function ProductShowcase({ data, title, desc, limit, link }) {
-  console.log(data);
+function ProductShowcase({ data, desc, limit, link }) {
   return (
-    <div className="mt-[140px] ">
+    <div className="">
       <div className="flex justify-between items-end">
         <div>
           <div className="flex gap-[10px] items-center">
-            <p className="text-red-500 font-semibold text-xl ">{desc}</p>
-            <span className="w-[20px] h-[40px] bg-red-500 rounded-md"></span>
+            <p className="text-[#23274A] font-bold text-2xl ">{desc}</p>
           </div>
-          <div>
-            <h3 className="text-4xl font-semibold mt-6">{title}</h3>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <IoArrowBack className="text-[50px]  bg-gray-300 text-black px-4 py-2 rounded-full hover:bg-gray-700" />
-
-          <IoArrowForward className="text-[50px] bg-gray-300 text-black px-4 py-2 rounded-full hover:bg-gray-700" />
+          <div className="w-[117px] h-[4px] bg-[#FEBB02] mt-8"></div>
         </div>
       </div>
-      <div className="mt-10">
+      <div className="mt-8">
         <div className="flex gap-9 gap-y-14 ">
           {data.slice(0, limit).map((item, index) => (
-            <div key={index} className="">
+            <div key={index}>
               <CardRoom
-                id={item._id}
+                id={item.ma_phong}
                 price={item.gia_tien}
                 title={item.ten_phong_tro}
                 img={item.Img}
+                number={item.so_luong_nguoi}
               />
             </div>
           ))}
         </div>
-        <div className="text-center mt-[60px]">
-          <Link to={link}>
-            <button className="py-4 px-12 bg-red-500 text-white font-medium hover:bg-red-600">
-              View All Product
-            </button>
-          </Link>
-        </div>
+        <div className="text-center mt-[60px]"></div>
       </div>
     </div>
   );
