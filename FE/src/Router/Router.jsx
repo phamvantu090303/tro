@@ -4,6 +4,7 @@ import Login from "../pages/Login/login";
 import Contract from "../component/hopdong";
 import Register from "../pages/Login/Register";
 import Homepage from "../pages/Home/Home";
+import MapComponent from "../component/Map";
 
 const Router = new createBrowserRouter([
   {
@@ -33,6 +34,14 @@ const Router = new createBrowserRouter([
   {
     path: "/hopdong/:maphong",
     element: <Contract />,
+  },
+  {
+    path: "/map",
+    element: (
+      <Layout>
+        <MapComponent />
+        </Layout>
+    ),
   },
 ]);
 export default Router;
