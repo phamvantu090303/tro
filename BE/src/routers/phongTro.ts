@@ -11,9 +11,9 @@ import {
 const routerPhong = Router();
 
 routerPhong.post("/create", storePhongTro);
-routerPhong.post("/update", updatePhongTro);
+routerPhong.post("/update/:ma_phong", updatePhongTro);
 routerPhong.get("/get/:ma_danh_muc", getData);
-routerPhong.post("/delete/all", deleteAll);
-routerPhong.post("/delete/:ma_phong", deleteById);
+routerPhong.delete("/delete/all", deleteAll);
+routerPhong.delete("/delete/:ma_phong", deleteById);
 routerPhong.post("/detail/:ma_phong", detailRoom);
 export default routerPhong;

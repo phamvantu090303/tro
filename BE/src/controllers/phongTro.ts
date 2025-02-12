@@ -20,7 +20,8 @@ const storePhongTro = async (req: Request, res: Response) => {
 
 const updatePhongTro = async (req: Request, res: Response) => {
   try {
-    const { ma_phong, ...updateData } = req.body;
+    const { ma_phong } = req.params;
+    const updateData= req.body;
 
     if (!ma_phong) {
       return res

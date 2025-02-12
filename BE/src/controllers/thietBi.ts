@@ -54,7 +54,18 @@ const getData = async (req: any, res: any) => {
 
 
 const deleteAll = async (req: any, res: any) => {
-    
+    try{
+        const thietBiService = new ThietBiService();
+        await thietBiService.deleteAllThietBi()
+            res.status(200).json({
+                status: "200",
+                message: "Đã xóa tất cả thiết bị thành công!"
+            });
+        } catch(error: any) {
+            res.status(404).json({
+                message: error.message,
+            });
+        }
 }
 
 const deleteById = async (req: any, res: any) => {
