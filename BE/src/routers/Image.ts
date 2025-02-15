@@ -4,10 +4,10 @@ import { createImage, deleteAllImages, deleteImageById, getAllImages, updateImag
 
  
 const routeImage =Router();
-routeImage.post('/creatImage',createImage)
-routeImage.post('/Update',updateImage)
-routeImage.get('/', getAllImages);
-routeImage.get('/DeleteAll', deleteAllImages);
-routeImage.post('/Delete/:id',deleteImageById)
+routeImage.post('/create',createImage)
+routeImage.post('/update/:ma_phong',updateImage)
+routeImage.get('/getAll', getAllImages);
+routeImage.delete('/deleteAll', deleteAllImages);
+routeImage.delete('/delete/:id',deleteImageById)
 
  export default routeImage
