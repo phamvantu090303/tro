@@ -1,5 +1,5 @@
-const express = require('express');
-const mapRoutes = express.Router();
+import { Router} from 'express';
+const mapRoutes = Router();
 import { CreateMap, DeleteMap, GetAllMap, UpdateMap } from "../controllers/map";
 
 mapRoutes.post('/creatMap',CreateMap);       // Tạo mới bản đồ
