@@ -87,7 +87,5 @@ export const ResetPasswordValidator = async(req:any,res:any,next:any) =>{
         next(); 
     } catch (error:any) {
         return res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình xác thực.', error: error.message }); 
-    }
-
-    
+    }  
 } 

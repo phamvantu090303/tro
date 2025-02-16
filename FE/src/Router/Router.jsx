@@ -7,6 +7,7 @@ import Homepage from "../pages/Home/Home";
 import MapComponent from "../component/Map";
 import Search from "../pages/Search/Search";
 import RoomDetails from "../pages/RoomDetails/RoomDetails";
+import Chat from "../component/Mess/mess";
 
 const Router = new createBrowserRouter([
   {
@@ -59,6 +60,14 @@ const Router = new createBrowserRouter([
       <Layout>
         <MapComponent />
         </Layout>
+    ),
+  },
+  {
+    path: "/mess",
+    element: (
+      <Layout>
+        <Chat />
+      </Layout>
     ),
   },
 ]);

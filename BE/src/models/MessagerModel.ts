@@ -18,7 +18,7 @@ const MessagersScheme = new Schema(
         },
         is_read: {
             type: Boolean,
-            required: true,
+            required: false,
         },
     },
     { timestamps: true }
