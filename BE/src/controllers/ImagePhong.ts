@@ -18,10 +18,11 @@ const createImage = async (req: Request, res: Response) => {
 };
 
 const updateImage = async (req: Request, res: Response) => {
-   const body = req.body;
+    const { ma_phong } = req.params;
+    const body = req.body;
     try {
         const imageService = new ImageService();
-        await imageService.updateImage(body);
+        await imageService.updateImage(ma_phong, body);
 
         res.status(200).json({
             message: 'Hình ảnh đã được cập nhật thành công',
@@ -69,7 +70,7 @@ const deleteImageById = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
         const imageService = new ImageService();
-        await imageService.deleteImageById(id);
+        await imageService.deleteImageById({id});
 
         res.status(200).json({
             status: "200",

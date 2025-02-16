@@ -22,21 +22,8 @@ export class ImageService {
     }
 
     // Cập nhật thông tin hình ảnh
-    async updateImage(body: any): Promise<void> {
-        const { _id, ma_phong, image_url } = body;
-
-        // Kiểm tra hình ảnh cần cập nhật có tồn tại không
-        const image = await HinhAnhPhongModel.findById(_id);
-        if (!image) {
-            throw new Error('Hình ảnh không tồn tại');
-        }
-
-        // Cập nhật thông tin hình ảnh
-        image.ma_phong = ma_phong ?? image.ma_phong;
-        image.image_url = image_url ?? image.image_url;
-
-        // Lưu các thay đổi vào cơ sở dữ liệu
-        await image.save();
+    async updateImage(ma_phong: string, body: any) {
+        return await HinhAnhPhongModel.findOneAndUpdate({ ma_phong }, body, { new: true });
     }
 
     // Lấy danh sách tất cả hình ảnh

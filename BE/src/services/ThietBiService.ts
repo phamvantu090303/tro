@@ -49,10 +49,8 @@ export class ThietBiService {
     }
 
 
-    async deleteAllThietBi(body:any): Promise<void> {
-        // Sử dụng `find()` để lấy tất cả dữ liệu thiết bị
-        await ThietBiModal.find();
-
+    async deleteAllThietBi() {
+       return await ThietBiModal.deleteMany();
     }
 
     async deleteByIdaThietBi(body:any): Promise<void> {

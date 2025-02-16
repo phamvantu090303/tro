@@ -15,12 +15,18 @@ import routeHoaDon from "./routers/hoaDon";
 import routeChiSoDongHo from "./routers/chiSoDongHo";
 import RouteQuyen from "./routers/quyen";
 import QuyenChucNangRouter from "./routers/quyenChucNang";
+import initSocket from "./utils/socket";
+import { createServer } from "http";
+import routerMess from "./routers/messager";
+import routerAdmin from "./routers/adminRouter";
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
 const dbURL = `mongodb+srv://phamtu090303:gSPppVILdD2EJl4g@quanlyphongtro.k5jir.mongodb.net/?retryWrites=true&w=majority`;
 // const dbURL = `mongodb://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@mongo:27017/${process.env.DB_NAME}?authSource=admin`;
 const app = express();
+
+const server = createServer(app);
 
 app.use(express.json());
 app.use(
@@ -49,6 +55,9 @@ app.use("/chi-so-dong-ho", routeChiSoDongHo);
 app.use("/phan_quyen",RouteQuyen );
 app.use("/quyenchucnang",QuyenChucNangRouter );
 
+app.use("/tin-nhan", routerMess);
+app.use("/admin", routerAdmin);
+
 //hợp đồng
 app.use("/api/contracts", contractRoutes);
 const connectDB = async () => {
@@ -60,9 +69,12 @@ const connectDB = async () => {
   }
 };
 
+// socket
+initSocket(server);
+
 connectDB()
   .then(() => {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is stating at http://localhost:${PORT}`);
     });
   })

@@ -56,10 +56,8 @@ export class DanhMucService {
     }
 
 
-    async deleteAllDanhMuc(body:any): Promise<void> {
-        // Sử dụng `find()` để lấy tất cả dữ liệu danh mục
-        const danhMuc = await DanhMucModel.find();
-
+    async deleteAllDanhMuc() {
+        return await DanhMucModel.deleteMany();
     }
 
     async deleteByIdaDanhMuc(body:any): Promise<void> {

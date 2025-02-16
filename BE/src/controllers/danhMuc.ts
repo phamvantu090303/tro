@@ -51,14 +51,12 @@ const getData = async (req:any, res: any) => {
 }
 
 const deleteAll = async (req:any, res: any) => {
-	const body = req.body;
 	try{
 		const danhMucService = new DanhMucService();
-		const data = await danhMucService.deleteAllDanhMuc(body);
-
+		await danhMucService.deleteAllDanhMuc();
 		res.status(200).json({
 			status: "200",
-			message: "Đã xóa thành công!"
+			message: "Đã xóa tất cả danh mục thành công!"
 		});
 	} catch(error: any) {
 		res.status(404).json({
