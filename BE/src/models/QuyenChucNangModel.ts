@@ -9,7 +9,7 @@ const QuyenChucNangScheme = new Schema(
             required: true,
         },
         id_chuc_nang: {
-            type: Number,
+            type: String,
             required: true,
         },
 
