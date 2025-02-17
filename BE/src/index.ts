@@ -52,8 +52,8 @@ app.use("/dich-vu", routeDichVu);
 app.use("/map", mapRoutes);
 app.use("/hoadon", routeHoaDon);
 app.use("/chi-so-dong-ho", routeChiSoDongHo);
-app.use("/phan_quyen",RouteQuyen );
-app.use("/quyenchucnang",QuyenChucNangRouter );
+app.use("/phan_quyen", RouteQuyen);
+app.use("/quyenchucnang", QuyenChucNangRouter);
 
 app.use("/tin-nhan", routerMess);
 app.use("/admin", routerAdmin);
@@ -69,8 +69,8 @@ const connectDB = async () => {
   }
 };
 
-// socket
-initSocket(server);
+// // socket
+// initSocket(server);
 
 connectDB()
   .then(() => {

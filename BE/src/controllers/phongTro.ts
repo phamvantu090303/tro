@@ -106,7 +106,6 @@ const deleteById = async (req: Request, res: Response) => {
 const detailRoom = async (req: Request, res: Response) => {
   try {
     const { ma_phong } = req.params;
-    console.log(ma_phong);
     const data = await phongTroService.getDetailPhongTro(ma_phong);
     res.status(200).json({
       message: "Lấy chi tiết danh sách phòng trọ thành công!",

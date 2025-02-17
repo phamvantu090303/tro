@@ -1,17 +1,17 @@
-import  dotenv from 'dotenv';
-import  puppeteer from 'puppeteer';
-import  nodemailer from 'nodemailer';
-import  fs from 'fs';
-import path from 'path';
-import { PDFDocument } from 'pdf-lib';
-import { Request, Response } from 'express';
-import HopDongModel from '../models/HopDongModel';
-import PhongtroModel from '../models/PhongTroModel';
+import dotenv from "dotenv";
+import puppeteer from "puppeteer";
+import nodemailer from "nodemailer";
+import fs from "fs";
+import path from "path";
+import { PDFDocument } from "pdf-lib";
+import { Request, Response } from "express";
+import HopDongModel from "../models/HopDongModel";
+import PhongtroModel from "../models/PhongTroModel";
 
 const generatePDF = async (htmlContent: string, email: string) => {
   // Đường dẫn thư mục pdfs
-  const pdfDirectory = path.join(__dirname, '..', 'pdfs');
-  
+  const pdfDirectory = path.join(__dirname, "..", "pdfs");
+
   // Kiểm tra xem thư mục pdfs có tồn tại không, nếu không thì tạo mới
   if (!fs.existsSync(pdfDirectory)) {
     fs.mkdirSync(pdfDirectory, { recursive: true });
@@ -26,7 +26,7 @@ const generatePDF = async (htmlContent: string, email: string) => {
   await page.setContent(htmlContent);
 
   // Tạo PDF và lưu vào file
-  await page.pdf({ path: pdfPath, format: 'a4' });
+  await page.pdf({ path: pdfPath, format: "a4" });
 
   await browser.close();
 
@@ -61,19 +61,24 @@ const sendEmail = async (user: User, pdfPath: string) => {
 // API tạo hợp đồng
 export const createContract = async (req: Request, res: Response) => {
   try {
-    const { user }:any= req;
-    const {maphong, signature, htmlContent} = req.body;
-    const ma_phong =maphong
-    const phong = await PhongtroModel.findOne({ma_phong})
-    console.log(phong)
-    const {username, email } = user;
+    const { user }: any = req;
+    const { maphong, signature, htmlContent } = req.body;
+    const ma_phong = maphong;
+    const phong = await PhongtroModel.findOne({ ma_phong });
+    console.log(phong);
+    const { username, email } = user;
 
     // Tạo file image từ base64
-    const signaturePath = path.join(__dirname, '..', 'signatures', `${username}_signature.png`);
-    const base64Data = signature.replace(/^data:image\/png;base64,/, '');
-    fs.writeFileSync(signaturePath, base64Data, 'base64');
+    const signaturePath = path.join(
+      __dirname,
+      "..",
+      "signatures",
+      `${username}_signature.png`
+    );
+    const base64Data = signature.replace(/^data:image\/png;base64,/, "");
+    fs.writeFileSync(signaturePath, base64Data, "base64");
 
-    // Tạo file PDF từ HTML 
+    // Tạo file PDF từ HTML
 
     const pdfPath = await generatePDF(htmlContent, email);
 
@@ -92,8 +97,8 @@ export const createContract = async (req: Request, res: Response) => {
 
     // Điều chỉnh tọa độ x và y để đặt chữ ký dưới phần "ĐẠI DIỆN BÊN THUÊ ( B )"
     lastPage.drawImage(signatureImage, {
-      x: width / 2 - signatureDims.width / 2+20,
-      y: 600, 
+      x: width / 2 - signatureDims.width / 2 + 20,
+      y: 600,
       width: signatureDims.width,
       height: signatureDims.height,
     });
@@ -108,18 +113,18 @@ export const createContract = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Không tìm thấy phòng trọ!" });
     }
     const newContract = new HopDongModel({
-      ma_phong: ma_phong ,
+      ma_phong: ma_phong,
       id_users: user._id,
       signaturePath,
-      tien_coc:phong.gia_tien/2,
+      tien_coc: phong.gia_tien / 2,
       start_date: "2024-02-01", // Thêm ngày bắt đầu
-      end_date: "2025-02-01",   // Thêm ngày kết thúc
-      file_hop_dong:pdfPath,
-      createdAt: new Date()
+      end_date: "2025-02-01", // Thêm ngày kết thúc
+      file_hop_dong: pdfPath,
+      createdAt: new Date(),
     });
 
     await newContract.save();
-    
+
     res.json({ message: "Hợp đồng đã được gửi qua email!" });
   } catch (error) {
     console.error("Lỗi:", error);
@@ -133,8 +138,8 @@ export const createContract = async (req: Request, res: Response) => {
 // }
 
 export const customer = async (req: Request, res: Response) => {
-   const { user }:any= req;
-   const {maphong}   = req.query;  
-   const phong = await PhongtroModel.findOne({ ma_phong: maphong }) 
-   res.json({ user,phong });
-}
+  const { user }: any = req;
+  const { maphong } = req.query;
+  const phong = await PhongtroModel.findOne({ ma_phong: maphong });
+  res.json({ user, phong });
+};

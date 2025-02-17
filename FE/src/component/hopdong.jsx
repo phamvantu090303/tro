@@ -2,30 +2,34 @@ import React, { useEffect, useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import axios from "axios";
 import { useParams } from "react-router";
+import { useSelector } from "react-redux";
+import { axiosInstance } from "../../Axios";
 
 const Contract = () => {
+  const { token } = useSelector((state) => state.auth);
+  const res1 = token;
+
   const [signed, setSigned] = useState(false);
   const [signature, setSignature] = useState(null);
   const sigCanvas = useRef();
   const [user, setUser] = useState(null);
-  const { maphong } = useParams();  // Lấy maphong từ URL
+  const { maphong } = useParams(); // Lấy maphong từ URL
+  console.log(maphong);
   useEffect(() => {
     fetchUserFromAPI();
   }, []);
 
   const fetchUserFromAPI = async () => {
     try {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2E0Y2U1ZmQyNzg4MTE4YmY2ZDlhZmYiLCJ2ZXJpZnkiOiIwIiwiaWF0IjoxNzM4OTQ4NDU5fQ.hPMCd6XXZudaQ7FGOOkTltRmMkNM0AmIOeom06RNL6A";
-      const res = await axios.get(
-        "http://localhost:5000/api/contracts/customer",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { maphong },
-        }
-      );
+      console.log("res1", res1);
+      const token = res1;
+      const res = await axiosInstance.get("/api/contracts/customer/", {
+        params: {
+          maphong: maphong, // Truyền tham số ma_phong vào query string
+        },
+      });
+      console.log(res.data);
       setUser(res);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
     } catch (error) {
       console.error("Lỗi lấy user:", error);
     }
@@ -50,24 +54,11 @@ const Contract = () => {
   // Gửi hợp đồng lên server
   const submitContract = async () => {
     try {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2E0Y2U1ZmQyNzg4MTE4YmY2ZDlhZmYiLCJ2ZXJpZnkiOiIwIiwiaWF0IjoxNzM4ODU0NTI3fQ.Usu2kbhRL-dXBrIuNkGNnghvEb_WK2iki_W3kOu9gPI";
-      const response = await axios.post(
-        "http://localhost:5000/api/contracts/create",
-        {
-          // name: user.name,
-          // email: user.email,
-          maphong,
-          signature, // Chữ ký
-          htmlContent, // Nội dung HTML
-        },
-        {
-          headers: {
-            "Content-Type": "application/json", // Đảm bảo gửi dưới dạng JSON
-            Authorization: `Bearer ${token}`, // Gửi token trong header
-          },
-        }
-      );
+      const response = await axiosInstance.post("/api/contracts/create", {
+        maphong,
+        signature, // Chữ ký
+        htmlContent, // Nội dung HTML
+      });
       // Hiển thị thông báo khi gửi hợp đồng thành công
       alert(response.data.message);
     } catch (error) {

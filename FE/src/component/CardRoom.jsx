@@ -26,7 +26,7 @@ function CardRoom({ id, price, img, title, number }) {
       <div className="mt-5">
         <p className="text-lg font-bold text-[#23284C]">{title}</p>
         <p className="mt-2 text-lg text-[#FEBB02] font-bold">
-          {price} VND / Month
+          {price} VND / Deposit
         </p>
         <p className="flex items-center gap-[10px] text-xl">
           <FaUserFriends className="font-medium text-2xl  " /> {number}

@@ -29,6 +29,7 @@ function Homepage() {
           <ProductShowcase desc={"Top Rated"} data={dataTop} limit={5} />
           <Category />
           <div className="mt-[40px]">
+            {/* {limit muốn show ra bao nhiêu thì để limit là bấy nhiêu} */}
             <ProductShowcase desc={"Room List"} data={listdata} limit={5} />
           </div>
         </div>
