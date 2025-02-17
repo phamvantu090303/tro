@@ -26,14 +26,6 @@ export class PhongtroService {
                     path: '$danh_muc',
                 }
             },
-            {
-                $lookup: {
-                    from: 'hinh_anh_phongs',
-                    localField: 'ma_phong',
-                    foreignField: 'ma_phong',
-                    as: 'anh'
-                }
-            }
         ]);
     }
 
@@ -43,5 +35,37 @@ export class PhongtroService {
 
     async deletePhongTroById(ma_phong: string) {
         return await PhongTroModel.findOneAndDelete({ ma_phong });
+    }
+
+    async getDetailPhongTro(ma_phong: string) {
+        
+
+        return await PhongTroModel.aggregate([
+
+            {
+                $match: { ma_phong: ma_phong }
+            },
+            {
+                $lookup: {
+                    from: 'danh_mucs',
+                    localField: 'ma_danh_muc',
+                    foreignField: 'ma_danh_muc',
+                    as: 'danh_muc'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$danh_muc',
+                }
+            },
+            {
+                $lookup: {
+                    from: 'hinh_anh_phongs',
+                    localField: 'ma_phong',
+                    foreignField: 'ma_phong',
+                    as: 'anh'
+                }
+            }
+        ]);
     }
 }
