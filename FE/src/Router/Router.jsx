@@ -7,7 +7,10 @@ import Homepage from "../pages/Home/Home";
 import MapComponent from "../component/Map";
 import Search from "../pages/Search/Search";
 import RoomDetails from "../pages/RoomDetails/RoomDetails";
+
+import QuyenManagement from "../component/admin/Quyen";
 import Chat from "../component/Mess/mess";
+
 
 const Router = new createBrowserRouter([
   {
@@ -63,12 +66,22 @@ const Router = new createBrowserRouter([
     ),
   },
   {
+
+    path: "/admin/quyen",
+    element: (
+      <Layout>
+        <QuyenManagement />
+        </Layout>
+    )
+  },
+  {
     path: "/mess",
     element: (
       <Layout>
         <Chat />
       </Layout>
     ),
-  },
+  }
+ 
 ]);
 export default Router;
