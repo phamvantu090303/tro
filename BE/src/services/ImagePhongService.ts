@@ -5,12 +5,6 @@ export class ImageService {
     async createImage(body: any): Promise<void> {
         const { ma_phong, image_url } = body;
 
-        // Kiểm tra hình ảnh đã tồn tại chưa
-        const existingImage = await HinhAnhPhongModel.findOne({ ma_phong });
-        if (existingImage) {
-            throw new Error('Hình ảnh đã tồn tại cho phòng trọ này');
-        }
-
         // Tạo mới hình ảnh
         const newImage = new HinhAnhPhongModel({
             ma_phong,

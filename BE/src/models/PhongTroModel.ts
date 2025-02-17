@@ -4,7 +4,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const PhongTroScheme = new Schema(
     {
-        ma_phong: {  //trường này đại diện cho id của phòng 
+        ma_phong: {
             type: String,
             required: true,
         },
@@ -24,6 +24,10 @@ const PhongTroScheme = new Schema(
             type: String,
             required: true,
         },
+        anh_phong: {
+			type: String,
+			require: false
+		},
         mo_ta: {
             type: String,
             required: false,
