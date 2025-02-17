@@ -25,6 +25,14 @@ export class PhongtroService {
                 $unwind: {
                     path: '$danh_muc',
                 }
+            },
+            {
+                $lookup: {
+                    from: 'hinh_anh_phongs',
+                    localField: 'ma_phong',
+                    foreignField: 'ma_phong',
+                    as: 'anh'
+                }
             }
         ]);
     }
