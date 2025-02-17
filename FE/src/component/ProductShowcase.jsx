@@ -12,14 +12,14 @@ function ProductShowcase({ data, desc, limit, link }) {
         </div>
       </div>
       <div className="mt-8">
-        <div className="flex gap-9 gap-y-14 ">
+        <div className="grid grid-cols-5 gap-y-14 ">
           {data.slice(0, limit).map((item, index) => (
             <div key={index}>
               <CardRoom
                 id={item.ma_phong}
                 price={item.gia_tien}
                 title={item.ten_phong_tro}
-                img={item.Img}
+                img={item.anh_phong}
                 number={item.so_luong_nguoi}
               />
             </div>

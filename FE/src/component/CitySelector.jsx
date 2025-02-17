@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { axiosInstance } from "../../Axios";
 
-function CitySelector() {
+function CitySelector({ onSelectCity }) {
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
 
@@ -14,12 +14,19 @@ function CitySelector() {
         console.error("Lỗi khi lấy dữ liệu thành phố:", error);
       }
     };
-
     fetchCities();
   }, []);
 
   const handleChange = (e) => {
-    setSelectedCity(e.target.value);
+    const cityName = e.target.value;
+    setSelectedCity(cityName);
+    // Tìm `ma_danh_muc` tương ứng
+    const selectedCityData = cities.find(
+      (city) => city.ten_danh_muc === cityName
+    );
+    if (selectedCityData) {
+      onSelectCity(selectedCityData.ma_danh_muc); // Gửi `ma_danh_muc` lên `Category`
+    }
   };
 
   return (
@@ -33,7 +40,7 @@ function CitySelector() {
           Chọn thành phố
         </option>
         {cities.map((city) => (
-          <option key={city.id} value={city.ten_danh_muc}>
+          <option key={city.ma_danh_muc} value={city.ten_danh_muc}>
             {city.ten_danh_muc}
           </option>
         ))}
