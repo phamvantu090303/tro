@@ -41,6 +41,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
+app.use("/admin", routerAdmin);
 
 app.use("/auth", userRouter);
 app.use("/danh-muc", danhMucRouter);
@@ -56,7 +57,7 @@ app.use("/phan_quyen",RouteQuyen );
 app.use("/quyenchucnang",QuyenChucNangRouter );
 
 app.use("/tin-nhan", routerMess);
-app.use("/admin", routerAdmin);
+
 
 //hợp đồng
 app.use("/api/contracts", contractRoutes);
@@ -68,9 +69,6 @@ const connectDB = async () => {
     console.log(`Can not connect to db ${error}`);
   }
 };
-
-// socket
-initSocket(server);
 
 connectDB()
   .then(() => {

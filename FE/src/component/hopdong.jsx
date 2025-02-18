@@ -16,7 +16,7 @@ const Contract = () => {
   const fetchUserFromAPI = async () => {
     try {
       const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2E0Y2U1ZmQyNzg4MTE4YmY2ZDlhZmYiLCJ2ZXJpZnkiOiIwIiwiaWF0IjoxNzM4OTQ4NDU5fQ.hPMCd6XXZudaQ7FGOOkTltRmMkNM0AmIOeom06RNL6A";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2IyZjZiZjZiODRkYzdmOTEwMzBjZDUiLCJ2ZXJpZnkiOiIwIiwiaWF0IjoxNzM5NzgxODYzfQ.F3S-CNNSLO0eB4aa-E154wT2B1engC11F-Nereg5Vlk";
       const res = await axios.get(
         "http://localhost:5000/api/contracts/customer",
         {
@@ -51,7 +51,7 @@ const Contract = () => {
   const submitContract = async () => {
     try {
       const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2E0Y2U1ZmQyNzg4MTE4YmY2ZDlhZmYiLCJ2ZXJpZnkiOiIwIiwiaWF0IjoxNzM4ODU0NTI3fQ.Usu2kbhRL-dXBrIuNkGNnghvEb_WK2iki_W3kOu9gPI";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2IyZjZiZjZiODRkYzdmOTEwMzBjZDUiLCJ2ZXJpZnkiOiIwIiwiaWF0IjoxNzM5NzgxODYzfQ.F3S-CNNSLO0eB4aa-E154wT2B1engC11F-Nereg5Vlk";
       const response = await axios.post(
         "http://localhost:5000/api/contracts/create",
         {

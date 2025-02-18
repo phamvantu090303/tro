@@ -5,7 +5,7 @@ const AdminSchema = new Schema(
   {
     id_quyen: {
       type: String,
-      default: "admin",
+      required: true,
     },
     email: {
       type: String,
