@@ -13,23 +13,23 @@ function CardRoom({ id, price, img, title, number }) {
   };
   return (
     <div
-      className="w-[270px] shadow-xl bg-white p-[10px] cursor-pointer"
+      className="w-full md:max-w-[300px] shadow-xl bg-white p-4 rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105"
       onClick={() => handleCard(id)}
     >
-      <div className="flex items-center justify-center ">
+      <div className="w-full  min-h-[200px] md:h-[220px] flex items-center justify-center">
         <img
           src={img || test}
-          alt=""
-          className="object-cover w-[290px] h-[220px]"
+          alt="room"
+          className="w-full h-full object-cover rounded-md"
         />
       </div>
-      <div className="mt-5">
+      <div className="mt-4">
         <p className="text-lg font-bold text-[#23284C]">{title}</p>
         <p className="mt-2 text-lg text-[#FEBB02] font-bold">
           {price} VND / Deposit
         </p>
-        <p className="flex items-center gap-[10px] text-xl">
-          <FaUserFriends className="font-medium text-2xl  " /> {number}
+        <p className="flex items-center gap-2 text-xl">
+          <FaUserFriends className="text-2xl text-gray-600" /> {number}
         </p>
       </div>
     </div>

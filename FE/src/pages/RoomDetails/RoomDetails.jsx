@@ -1,6 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import anh1 from "../../assets/anh1.png";
-import anh2 from "../../assets/anh2.png";
 import anh3 from "../../assets/anh3.png";
 import { FaArrowsAlt, FaMapMarkerAlt, FaUserFriends } from "react-icons/fa";
 import { useParams } from "react-router";
@@ -8,16 +6,17 @@ import { axiosInstance } from "../../../Axios";
 import { CiHeart } from "react-icons/ci";
 import { MdDeviceHub, MdLocalPolice } from "react-icons/md";
 import ProductShowcase from "../../component/ProductShowcase";
-import { useSelector } from "react-redux";
+import MapDetail from "../../component/RoomDetailsComponent/MapDetail";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
 function RoomDetails() {
-  const { token } = useSelector((state) => state.auth);
   const { id } = useParams();
   const [data, setData] = useState([]);
   const [trangthai, setTrangthai] = useState("");
   const [statusColor, setStatusColor] = useState("");
   const [roomSame, setRoomSame] = useState([]);
   const [anh, setAnh] = useState([]);
+  const [toado, setToado] = useState(null);
   const statusMapping = {
     1: { text: "Còn trống", color: "green" },
     0: { text: "Đã có người thuê", color: "red" },
@@ -26,26 +25,35 @@ function RoomDetails() {
     4: { text: "Đã được đặt", color: "blue" },
     5: { text: "Không cho thuê", color: "gray" },
   };
+
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axiosInstance.post(`/phongTro/detail/${id}`);
-      setData(res.data.data);
-      setAnh(res.data.data.anh);
-      const status = res.data.data.trang_thai;
-      const statusInfo = statusMapping[status] || {
-        text: "Trạng thái không xác định",
-        color: "black",
-      };
-      const data = await axiosInstance.get("/phongTro/get");
-      const filteredProducts = data.data.data.filter(
-        (product) => product.ma_danh_muc === res.data.data.ma_danh_muc
-      );
-      setRoomSame(filteredProducts);
-      setTrangthai(statusInfo.text);
-      setStatusColor(statusInfo.color);
+      try {
+        const res = await axiosInstance.post(`/phongTro/detail/${id}`);
+        setData(res.data.data);
+        setAnh(res.data.data.anh);
+        const result = res.data.data.mapDetail;
+        console.log("result", result.latitude);
+        setToado([result.latitude, result.longitude]);
+        const status = res.data.data.trang_thai;
+        const statusInfo = statusMapping[status] || {
+          text: "Trạng thái không xác định",
+          color: "black",
+        };
+        const data = await axiosInstance.get("/phongTro/get");
+        const filteredProducts = data.data.data.filter(
+          (product) => product.ma_danh_muc === res.data.data.ma_danh_muc
+        );
+        setRoomSame(filteredProducts);
+        setTrangthai(statusInfo.text);
+        setStatusColor(statusInfo.color);
+      } catch (error) {
+        console.log("error", error);
+      }
     };
     fetchData();
   }, [id]);
+
   const [nut, setNut] = useState("Tổng quan");
   // Tạo các ref cho từng phần nội dung
   const overviewRef = useRef(null);
@@ -79,27 +87,27 @@ function RoomDetails() {
   const handlePile = async (e) => {
     await axiosInstance.post("/hoadon/Create", { ma_phong: e });
   };
+
   return (
     <div className="w-full">
       {data ? (
-        <div className="max-w-[1920px] mx-auto px-[150px] mt-[94px]">
-          <div className="flex gap-[26px]">
+        <div className="max-w-[1920px] mx-auto px-5 sm:px-10 md:px-20 lg:px-[150px] mt-[94px] mb-[140px]">
+          <div className="flex flex-col lg:flex-row gap-[26px]">
             <img
               src={anh[0]?.image_url}
               alt=""
-              className="w-[1072px] h-[446px] object-cover"
+              className="w-[500px] md:w-full lg:w-[500px] xl:w-[1072px] h-auto lg:h-[446px] object-cover"
             />
-
-            <div>
+            <div className="flex lg:flex-col gap-5">
               <img
                 src={anh[1]?.image_url}
                 alt=""
-                className="w-[523px] h-[215px] object-cover"
+                className="w-[160px] md:w-[420px] lg:w-[523px] h-auto lg:h-[215px] object-cover"
               />
               <img
                 src={anh3}
                 alt=""
-                className="w-[523px] h-[215px] object-cover"
+                className="w-[210px] md:w-[420px] lg:w-[523px] h-auto lg:h-[215px] "
               />
             </div>
           </div>
@@ -121,29 +129,30 @@ function RoomDetails() {
             ))}
           </ul>
 
-          <div className="flex justify-between mt-[33px]">
+          <div className="flex flex-col lg:flex-row justify-between mt-[33px]">
             <div>
-              <h1 className="font-bold text-4xl">{data.ten_phong_tro}</h1>
-              <div className="flex gap-10">
-                <div className="flex items-center gap-5 mt-[33px] text-[#23274A] font-medium text-2xl">
-                  <FaUserFriends className="font-medium text-2xl" />
+              <h1 className="font-bold text-3xl sm:text-4xl">
+                {data.ten_phong_tro}
+              </h1>
+              <div className="flex gap-5 lg:gap-10">
+                <div className="flex items-center gap-5 mt-[33px] text-[#23274A] font-medium text-xl sm:text-2xl">
+                  <FaUserFriends className="text-xl sm:text-2xl" />
                   <p>{data.so_luong_nguoi}</p>
                 </div>
-                <div className="flex items-center gap-2 mt-[33px] text-[#23274A] font-medium text-2xl">
-                  <FaArrowsAlt className="font-medium text-2xl" />
+                <div className="flex items-center gap-2 mt-[33px] text-[#23274A] font-medium text-xl sm:text-2xl">
+                  <FaArrowsAlt className="text-xl sm:text-2xl" />
                   <p>{data.dien_tich}</p>
                 </div>
-
                 <p
                   style={{ color: statusColor }}
-                  className="font-medium text-2xl mt-[33px]"
+                  className="font-medium text-xl sm:text-2xl mt-[33px]"
                 >
                   {trangthai}
                 </p>
               </div>
             </div>
-            <div className="text-end">
-              <p className="text-2xl font-bold text-yellow-500">
+            <div className="lg:text-end mt-5 lg:mt-0">
+              <p className="text-xl sm:text-2xl font-bold text-yellow-500">
                 {data.gia_tien} VND
               </p>
               <div className="flex items-center gap-4 mt-4">
@@ -172,14 +181,14 @@ function RoomDetails() {
           </div>
 
           {/* Nội dung chi tiết */}
-          <div className="mt-[33px] flex justify-between">
-            <div>
+          <div className="mt-[33px] flex flex-col lg:flex-row justify-between gap-5">
+            <div className="w-full lg:w-[60%]">
               <h2 ref={overviewRef} className="text-3xl font-semibold">
                 Tổng quan
               </h2>
-              <p className="mt-[33px] text-lg max-w-[900px]">{data.mo_ta}</p>
+              <p className="mt-[33px] text-lg">{data.mo_ta}</p>
             </div>
-            <div className="flex flex-col bg-white max-w-[458px] max-h-[451px] py-6 px-7">
+            <div className="flex flex-col bg-white w-full lg:w-[35%] max-h-[451px] py-6 px-7">
               <h3 className="font-semibold text-2xl">Điểm nổi bật</h3>
               <ul className="mt-10 flex flex-col gap-10">
                 <li className="flex gap-4">
@@ -218,9 +227,12 @@ function RoomDetails() {
             </h2>
             <ProductShowcase data={roomSame} limit={5} />
           </div>
-          <h2 ref={addressRef} className="text-3xl font-semibold mt-[33px]">
-            Địa chỉ
-          </h2>
+          <div className="mt-[33px]">
+            <h2 ref={addressRef} className="text-3xl font-semibold mb-4">
+              Địa chỉ
+            </h2>
+            {toado ? <MapDetail toado={toado} /> : <p>Đang tải vị trí...</p>}
+          </div>
         </div>
       ) : (
         <div>Error</div>

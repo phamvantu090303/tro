@@ -3,7 +3,7 @@ import wallhome from "../../assets/roomwallperhome.jpg";
 import ProductShowcase from "../../component/ProductShowcase";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../../../Axios";
-import Category from "../../component/Categories";
+import Category from "../../component/Categories/Categories";
 function Homepage() {
   const { user } = useSelector((state) => state.auth);
   const [dataTop, setDataTop] = useState([]);
@@ -23,13 +23,21 @@ function Homepage() {
   }, []);
   return (
     <div className="w-full ">
-      <img src={wallhome} alt="" className="w-full max-h-[500px]" />
-      <div className="max-w-[1920px] mx-auto px-[150px] mt-[78px] mb-32">
-        <div>
+      <img
+        src={wallhome}
+        alt=""
+        className="w-full h-auto max-h-[400px] md:max-h-[500px] object-cover"
+      />
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
+        <div className="space-y-10">
+          {/* Top Rated */}
           <ProductShowcase desc={"Top Rated"} data={dataTop} limit={5} />
+
+          {/* Danh mục */}
           <Category />
-          <div className="mt-[40px]">
-            {/* {limit muốn show ra bao nhiêu thì để limit là bấy nhiêu} */}
+
+          {/* Danh sách phòng */}
+          <div className="mt-10">
             <ProductShowcase desc={"Room List"} data={listdata} limit={5} />
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { axiosInstance } from "../../Axios";
+import { axiosInstance } from "../../../Axios";
 import CitySelector from "./CitySelector";
-import CardRoom from "./CardRoom";
+import CardRoom from "../CardRoom";
 
 function Category() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -37,7 +37,7 @@ function Category() {
 
       {/* Danh sách sản phẩm */}
       <div className="mt-8">
-        <div className="grid grid-cols-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-6">
           {products.length > 0 ? (
             products.slice(0, 5).map((product) => (
               <div key={product.id}>
