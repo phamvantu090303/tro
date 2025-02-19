@@ -35,8 +35,8 @@ function Login() {
     <div className="relative flex">
       <div className="w-[45%] bg-gray-900 h-screen"></div>
       <div className="flex w-[55%]  items-center justify-center h-screen">
-        <div className="absolute  top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80%] flex shadow-2xl rounded-2xl overflow-hidden h-[80%]">
-          <div className="w-[50%] relative flex flex-col items-center justify-center text-white   ">
+        <div className="absolute  top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full lg:w-[80%] lg:flex shadow-2xl lg:rounded-2xl overflow-hidden h-full lg:h-[80%]">
+          <div className="w-[50%] relative lg:flex lg:flex-col lg:items-center lg:justify-center text-white  hidden ">
             <img
               src={wallperlogin}
               alt=""
@@ -59,8 +59,8 @@ function Login() {
             </div>
           </div>
 
-          <div className="w-[50%] bg-slate-200 py-10 px-32 flex flex-col justify-center">
-            <h2 className="text-3xl font-semibold text-gray-800 text-center mb-8">
+          <div className="lg:w-[50%] w-full h-full bg-slate-200 py-5 px-16 lg:py-10 lg:px-32 flex flex-col justify-center">
+            <h2 className="text-xl lg:text-3xl  font-semibold text-gray-800 text-center mb-8">
               Login Here!
             </h2>
             <form className="space-y-10">
