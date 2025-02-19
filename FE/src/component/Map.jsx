@@ -14,6 +14,8 @@ const MapComponent = () => {
     province: '',
     ward: ''
   });
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -108,6 +110,48 @@ const MapComponent = () => {
       console.error('Error adding location:', error);
     }
   };
+  const handleUpdateLocation = async () => {
+    try {
+      console.log("Updating location:", editingId, formData); // Debug dữ liệu trước khi gửi request
+      const response = await axios.post(`http://localhost:5000/map/updateMap/${editingId}`, formData);
+  
+      console.log("Update response:", response.data); // Debug phản hồi từ server
+  
+      setLocations((prev) =>
+        prev.map((location) => (location._id === editingId ? response.data.data : location))
+      );
+      setFormData({ address: '', district: '', latitude: '', longitude: '', province: '', ward: '' });
+      setShowModal(false);
+      setIsEditing(false);
+      setEditingId(null);
+    } catch (error) {
+      console.error('Error updating location:', error.response ? error.response.data : error);
+    }
+  };
+  
+
+  const handleDeleteLocation = async (id) => {
+    try {
+      await axios.post(`http://localhost:5000/map/deleteMap/${id}`);
+      setLocations((prev) => prev.filter((location) => location._id !== id));
+    } catch (error) {
+      console.error('Error deleting location:', error);
+    }
+  };
+
+  const handleEditLocation = (location) => {
+    setFormData({
+      address: location.address,
+      district: location.district,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      province: location.province,
+      ward: location.ward,
+    });
+    setIsEditing(true);
+    setEditingId(location._id);
+    setShowModal(true);
+  };
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
@@ -122,6 +166,7 @@ const MapComponent = () => {
               <th>Phường</th>
               <th>Quận</th>
               <th>Tỉnh</th>
+              <th>Hành Động</th>
             </tr>
           </thead>
           <tbody>
@@ -131,6 +176,12 @@ const MapComponent = () => {
                 <td>{location.ward}</td>
                 <td>{location.district}</td>
                 <td>{location.province}</td>
+                <td>
+                  <button onClick={() => handleEditLocation(location)} style={{ marginRight: '10px' }}>
+                    Sửa
+                  </button>
+                  <button onClick={() => handleDeleteLocation(location._id)}>Xóa</button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -163,7 +214,7 @@ const MapComponent = () => {
               zIndex: 10000,
             }}
           >
-            <h3>Thêm Vị Trí Nhà Trọ Mới</h3>
+            <h3>{isEditing ? 'Cập Nhật Vị Trí Nhà Trọ' : 'Thêm Vị Trí Nhà Trọ Mới'}</h3>
             {['address', 'district', 'latitude', 'longitude', 'province', 'ward'].map((field) => (
               <div key={field} style={{ marginBottom: '10px' }}>
                 <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
@@ -183,7 +234,7 @@ const MapComponent = () => {
               </div>
             ))}
             <button
-              onClick={handleAddLocation}
+              onClick={isEditing ? handleUpdateLocation : handleAddLocation}
               style={{
                 backgroundColor: '#28a745',
                 color: 'white',
@@ -193,10 +244,15 @@ const MapComponent = () => {
                 borderRadius: '5px',
               }}
             >
-              Lưu Vị Trí
+              {isEditing ? 'Cập Nhật Vị Trí' : 'Lưu Vị Trí'}
             </button>
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => {
+                setShowModal(false);
+                setIsEditing(false);
+                setEditingId(null);
+                setFormData({ address: '', district: '', latitude: '', longitude: '', province: '', ward: '' });
+              }}
               style={{
                 backgroundColor: '#dc3545',
                 color: 'white',

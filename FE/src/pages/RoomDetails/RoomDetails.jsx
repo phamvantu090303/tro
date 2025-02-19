@@ -7,14 +7,17 @@ import { useParams } from "react-router";
 import { axiosInstance } from "../../../Axios";
 import { CiHeart } from "react-icons/ci";
 import { MdDeviceHub, MdLocalPolice } from "react-icons/md";
-import { BiSupport } from "react-icons/bi";
+import ProductShowcase from "../../component/ProductShowcase";
+import { useSelector } from "react-redux";
 
 function RoomDetails() {
+  const { token } = useSelector((state) => state.auth);
   const { id } = useParams();
   const [data, setData] = useState([]);
   const [trangthai, setTrangthai] = useState("");
   const [statusColor, setStatusColor] = useState("");
-  console.log(statusColor);
+  const [roomSame, setRoomSame] = useState([]);
+  const [anh, setAnh] = useState([]);
   const statusMapping = {
     1: { text: "Còn trống", color: "green" },
     0: { text: "Đã có người thuê", color: "red" },
@@ -26,27 +29,29 @@ function RoomDetails() {
   useEffect(() => {
     const fetchData = async () => {
       const res = await axiosInstance.post(`/phongTro/detail/${id}`);
-      setData(res.data.phong);
-      const status = res.data.phong.trang_thai;
+      setData(res.data.data);
+      setAnh(res.data.data.anh);
+      const status = res.data.data.trang_thai;
       const statusInfo = statusMapping[status] || {
         text: "Trạng thái không xác định",
         color: "black",
       };
-
+      const data = await axiosInstance.get("/phongTro/get");
+      const filteredProducts = data.data.data.filter(
+        (product) => product.ma_danh_muc === res.data.data.ma_danh_muc
+      );
+      setRoomSame(filteredProducts);
       setTrangthai(statusInfo.text);
       setStatusColor(statusInfo.color);
     };
     fetchData();
   }, [id]);
-
   const [nut, setNut] = useState("Tổng quan");
-
   // Tạo các ref cho từng phần nội dung
   const overviewRef = useRef(null);
   const amenitiesRef = useRef(null);
   const nearbyRef = useRef(null);
   const addressRef = useRef(null);
-
   // Hàm xử lý cuộn xuống khi chọn tab
   const handleScroll = (tab) => {
     setNut(tab);
@@ -71,16 +76,31 @@ function RoomDetails() {
   };
 
   const tabs = ["Tổng quan", "Tiện nghi", "Phòng trọ cùng khu vực", "Địa chỉ"];
-
+  const handlePile = async (e) => {
+    await axiosInstance.post("/hoadon/Create", { ma_phong: e });
+  };
   return (
     <div className="w-full">
       {data ? (
         <div className="max-w-[1920px] mx-auto px-[150px] mt-[94px]">
           <div className="flex gap-[26px]">
-            <img src={anh1} alt="" className="w-[1072px] h-[446px]" />
+            <img
+              src={anh[0]?.image_url}
+              alt=""
+              className="w-[1072px] h-[446px] object-cover"
+            />
+
             <div>
-              <img src={anh2} alt="" className="w-[523px] h-[215px]" />
-              <img src={anh3} alt="" className="w-[523px] h-[215px]" />
+              <img
+                src={anh[1]?.image_url}
+                alt=""
+                className="w-[523px] h-[215px] object-cover"
+              />
+              <img
+                src={anh3}
+                alt=""
+                className="w-[523px] h-[215px] object-cover"
+              />
             </div>
           </div>
 
@@ -130,8 +150,11 @@ function RoomDetails() {
                 <button className="border border-gray-500 p-3">
                   <CiHeart className="text-xl" />
                 </button>
-                <button className="bg-[#23284C] font-medium py-3 px-8 text-white rounded-md">
-                  Thanh toán ngay
+                <button
+                  className="bg-[#23284C] font-medium py-3 px-8 text-white rounded-md"
+                  onClick={() => handlePile(id)}
+                >
+                  Đặt cọc
                 </button>
               </div>
             </div>
@@ -184,12 +207,17 @@ function RoomDetails() {
             </div>
           </div>
 
-          <h2 ref={amenitiesRef} className="text-3xl font-semibold mt-[33px]">
-            Tiện nghi
-          </h2>
-          <h2 ref={nearbyRef} className="text-3xl font-semibold mt-[33px]">
-            Phòng trọ cùng khu vực
-          </h2>
+          <div className="mt-[33px]">
+            <h2 ref={amenitiesRef} className="text-3xl font-semibold">
+              Tiện nghi
+            </h2>
+          </div>
+          <div className="mt-[33px]">
+            <h2 ref={nearbyRef} className="text-3xl font-semibold">
+              Phòng trọ cùng khu vực
+            </h2>
+            <ProductShowcase data={roomSame} limit={5} />
+          </div>
           <h2 ref={addressRef} className="text-3xl font-semibold mt-[33px]">
             Địa chỉ
           </h2>

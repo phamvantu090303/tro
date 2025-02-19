@@ -49,10 +49,16 @@ function Header() {
           <div className="flex space-x-4">
             {!user ? (
               <>
-                <button className="font-bold text-base border border-white px-9 py-3 rounded-md hover:bg-white hover:text-black transition">
+                <button
+                  className="font-bold text-base border border-white px-9 py-3 rounded-md hover:bg-white hover:text-black transition"
+                  onClick={() => navigate("/Register")}
+                >
                   Register
                 </button>
-                <button className="font-bold text-base bg-white text-black px-9 py-3 rounded-md hover:bg-gray-300 transition">
+                <button
+                  className="font-bold text-base bg-white text-black px-9 py-3 rounded-md hover:bg-gray-300 transition"
+                  onClick={() => navigate("/login")}
+                >
                   Sign In
                 </button>
               </>

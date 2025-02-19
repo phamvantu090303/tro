@@ -21,7 +21,7 @@ const storePhongTro = async (req: Request, res: Response) => {
 const updatePhongTro = async (req: Request, res: Response) => {
   try {
     const { ma_phong } = req.params;
-    const updateData= req.body;
+    const updateData = req.body;
 
     if (!ma_phong) {
       return res
@@ -53,13 +53,10 @@ const updatePhongTro = async (req: Request, res: Response) => {
 
 const getData = async (req: Request, res: Response) => {
   try {
-    const { ma_danh_muc} = req.params;
-        console.log(ma_danh_muc);
-
-        const phongTroList = await phongTroService.getAllPhongTro(ma_danh_muc);
+    const data = await phongTroService.getAllPhongTro();
     res.status(200).json({
       message: "Lấy danh sách phòng trọ thành công!",
-      data: phongTroList,
+      data: data,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -107,9 +104,19 @@ const deleteById = async (req: Request, res: Response) => {
 };
 
 const detailRoom = async (req: Request, res: Response) => {
-  const { ma_phong } = req.params;
-  const phong = await PhongTroModel.findOne({ ma_phong });
-  res.json({ phong });
+  try {
+    const { ma_phong } = req.params;
+    const data = await phongTroService.getDetailPhongTro(ma_phong);
+    res.status(200).json({
+      message: "Lấy chi tiết danh sách phòng trọ thành công!",
+      data: data,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Lỗi khi lấy danh sách phòng trọ.",
+      error: error.message,
+    });
+  }
 };
 
 export {

@@ -108,11 +108,16 @@ class ChiSoDongHoService {
       },
     });
   
+        // Lấy tháng và năm của hóa đơn
+        const ngayTaoHoaDon = new Date(hoadon.ngay_tao_hoa_don);
+        console.log(ngayTaoHoaDon)
+        const thangDongTien = `${ngayTaoHoaDon.getMonth() + 1}/${ngayTaoHoaDon.getFullYear()}`; // Lưu ý: getMonth() trả về từ 0-11 nên cần +1
+        console.log(thangDongTien)
    const mailOptions = {
         from: process.env.MAIL_USERNAME,
         to: user.email,  // Đảm bảo đây là địa chỉ email hợp lệ
-        subject: "Hóa đơn tiền phòng",
-        text: `Chào ${user.username},\n\nDưới đây là hóa đơn tiền phòng của bạn:\n- Tổng tiền: ${hoadon.tong_tien} VNĐ\n- Tiền phòng: ${hoadon.tien_phong} VNĐ\n- Tiền điện: ${hoadon.tien_dien} VNĐ\n\n\nVui lòng thanh toán trước ngày hết hạn.\n\nTrân trọng!`,
+        subject: `Hóa đơn tiền phòng ${thangDongTien}`,
+        text: `Chào ${user.username},\n\nDưới đây là hóa đơn tiền phòng của bạn cho tháng ${thangDongTien}:\n- Tổng tiền: ${hoadon.tong_tien} VNĐ\n- Tiền phòng: ${hoadon.tien_phong} VNĐ\n- Tiền điện: ${hoadon.tien_dien} VNĐ\n\n\nVui lòng thanh toán trước ngày hết hạn.\n\nTrân trọng!`,
     };
   
     await transporter.sendMail(mailOptions);

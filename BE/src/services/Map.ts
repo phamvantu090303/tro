@@ -18,15 +18,9 @@ class MapService {
     await MapModel.findByIdAndDelete(_id);
   }
 
-  async UpdateMap(data: any) {
-    await MapModel.findByIdAndUpdate(data.id, {
-      address: data.address,
-      district: data.district,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      province: data.province,
-      ward: data.ward
-    });
+  async UpdateMap(_id:string,data: any) {
+    const updateMap =await MapModel.findByIdAndUpdate(_id,data,{new :true})
+    return updateMap
   }
 
   async GetAllMap() {

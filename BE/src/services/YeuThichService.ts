@@ -1,16 +1,13 @@
+import { ObjectId } from 'mongodb';
 import yeuthichModel from "../models/YeuThichModel";
 
 export class YeuThichSevice {
     async createYeuThich(body: any): Promise<void> {
         const data = body;
-    
+
         const newYeuThich = new yeuthichModel({
             ma_phong : data.ma_phong,
             id_user : data.id_user,
-            hinh_anh: data.so_luong_thiet_bị,
-            gia_thue: data.gia_thue,
-            mo_ta: data.mo_ta,
-            trang_thai: data.trang_thai,
         }); 
         await newYeuThich.save();
     } 
@@ -23,10 +20,28 @@ export class YeuThichSevice {
         await yeuthichModel.findByIdAndDelete(_id)
     }
 
-    async getDataYeuTich(): Promise<any[]> {
-        const yeuTich = await yeuthichModel.find();
-
-        return yeuTich;
+    async getDataYeuTich(){
+        return await yeuthichModel.aggregate([
+            {
+              $lookup: {
+                'from': 'users', 
+                'localField': 'id_user', 
+                'foreignField': '_id', 
+                'as': 'user_yeu_thich'
+              }
+            }, {
+              $unwind: {
+                'path': '$user_yeu_thich'
+              }
+            }, {
+              $lookup: {
+                'from': 'phongtros', 
+                'localField': 'ma_phong', 
+                'foreignField': 'ma_phong', 
+                'as': 'phongTro_yeu_thich'
+              }
+            }
+        ]);
     }
 }
 const YeuThich = new YeuThichSevice()
