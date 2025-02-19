@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { axiosInstance } from "../../Axios";
+import { axiosInstance } from "../../../Axios";
 
 function CitySelector({ onSelectCity }) {
   const [cities, setCities] = useState([]);
@@ -20,12 +20,11 @@ function CitySelector({ onSelectCity }) {
   const handleChange = (e) => {
     const cityName = e.target.value;
     setSelectedCity(cityName);
-    // Tìm `ma_danh_muc` tương ứng
     const selectedCityData = cities.find(
       (city) => city.ten_danh_muc === cityName
     );
     if (selectedCityData) {
-      onSelectCity(selectedCityData.ma_danh_muc); // Gửi `ma_danh_muc` lên `Category`
+      onSelectCity(selectedCityData.ma_danh_muc);
     }
   };
 
@@ -36,7 +35,7 @@ function CitySelector({ onSelectCity }) {
         value={selectedCity}
         onChange={handleChange}
       >
-        <option value="" disabled>
+        <option value={cities} disabled>
           Chọn thành phố
         </option>
         {cities.map((city) => (

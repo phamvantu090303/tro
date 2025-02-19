@@ -65,6 +65,20 @@ export class PhongtroService {
           as: "anh",
         },
       },
+      {
+        $lookup: {
+          from: "maps",
+          localField: "id_map",
+          foreignField: "id_map",
+          as: "mapDetail",
+        },
+      },
+      {
+        $unwind: {
+          path: "$mapDetail",
+          preserveNullAndEmptyArrays: true, // Giữ lại trường nếu không có đối tượng tương ứng
+        },
+      },
     ]);
     return result[0] || null;
   }

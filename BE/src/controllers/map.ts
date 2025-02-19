@@ -23,7 +23,7 @@ export const UpdateMap = async (req: Request, res: Response) => {
     const formData = req.body;
     console.log(formData)
     const mapServiceInstance = new MapService();
-    await mapServiceInstance.UpdateMap(id, formData);  
+    await mapServiceInstance.UpdateMap(id);  
   
     res.status(200).json({
       message: "Update successfully!!!",
