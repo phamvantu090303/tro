@@ -1,4 +1,7 @@
 html {
-  background: #d6d6d6;
+  background: #f5f4f4;
   font-size: 16px;
+}
+.leaflet-routing-alternatives-container {
+  display: none !important;
 }
