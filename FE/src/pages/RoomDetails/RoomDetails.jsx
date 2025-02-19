@@ -173,7 +173,7 @@ function RoomDetails() {
           <div className="flex gap-[10px] items-center mt-[33px]">
             <div className="flex gap-[10px] items-center ">
               <FaMapMarkerAlt className="text-[#23274A] text-lg" />
-              <p className="text-xl font-medium">1 Fullerton Square -</p>
+              <p className="text-xl font-medium">{data?.mapDetail?.address}</p>
             </div>
             <span className="text-xl font-medium text-[#2F80ED] cursor-pointer">
               Hiển thị bản đồ

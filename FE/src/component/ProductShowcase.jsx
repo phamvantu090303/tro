@@ -1,5 +1,32 @@
 import CardRoom from "./CardRoom";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 function ProductShowcase({ data, desc, limit, link }) {
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 5, // Số lượng card hiển thị cùng lúc
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    rtl: true, // Chạy từ phải qua trái
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end">
@@ -14,7 +41,7 @@ function ProductShowcase({ data, desc, limit, link }) {
       </div>
 
       <div className="mt-6 md:mt-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-6">
+        <Slider {...settings}>
           {data.slice(0, limit).map((item, index) => (
             <CardRoom
               key={index}
@@ -23,9 +50,19 @@ function ProductShowcase({ data, desc, limit, link }) {
               title={item.ten_phong_tro}
               img={item.anh_phong}
               number={item.so_luong_nguoi}
+              dien_tich={item.dien_tich}
+              address={item.mapDetail?.address}
+              district={item.mapDetail?.district}
+              province={item.mapDetail?.province}
+              ward={item.mapDetail?.ward}
             />
           ))}
-        </div>
+        </Slider>
+      </div>
+      <div className="mt-6 md:mt-8 flex justify-center">
+        <button className="px-12 py-4 text-base font-medium bg-[#23284C] text-white rounded-lg  hover:bg-[#2a306e]">
+          Xem toàn bộ
+        </button>
       </div>
     </div>
   );

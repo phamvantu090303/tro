@@ -28,6 +28,20 @@ export class PhongtroService {
           path: "$danh_muc",
         },
       },
+      {
+        $lookup: {
+          from: "maps",
+          localField: "id_map",
+          foreignField: "id_map",
+          as: "mapDetail",
+        },
+      },
+      {
+        $unwind: {
+          path: "$mapDetail",
+          preserveNullAndEmptyArrays: true, // Giữ lại trường nếu không có đối tượng tương ứng
+        },
+      },
     ]);
   }
 
@@ -77,6 +91,19 @@ export class PhongtroService {
         $unwind: {
           path: "$mapDetail",
           preserveNullAndEmptyArrays: true, // Giữ lại trường nếu không có đối tượng tương ứng
+        },
+      },
+      {
+        $lookup: {
+          from: "thiet_bis",
+          localField: "ma_phong",
+          foreignField: "ma_phong",
+          as: "thietBi",
+        },
+      },
+      {
+        $unwind: {
+          path: "$thietBi",
         },
       },
     ]);
