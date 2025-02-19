@@ -14,6 +14,6 @@ routerAdmin.post('/resend-forgot-password', forgotPasswordAdmin, sendPasswordAdm
 routerAdmin.post('/reset-password', ResetPasswordAdmin, resetPasswordAdmin);
 
 routerAdmin.get('/getadmin', accessTokenAdmin, getAdmin);
-routerAdmin.get('/AllUser', getAllAdmin);
+routerAdmin.get('/AllAdmin', getAllAdmin);
 
 export default routerAdmin;

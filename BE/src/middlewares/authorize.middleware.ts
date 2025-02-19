@@ -1,13 +1,13 @@
 import { NextFunction, Request,Response } from "express";
 import QuyenChucNangModel from "../models/QuyenChucNangModel";
-import UserModel from "../models/UserModel";
+import AdminModel from "../models/AdminModel";
 
+//dungf cho chức năng phân quyền
 export const authorize = (requiredFunction:any) => async (req:Request, res:Response, next:NextFunction) => {
     try {
-        const {user}:any=req 
-       
-        const admin = await UserModel.findById(user._id);
-        if (!admin) {
+        const {admin}:any=req 
+        const Admin = await AdminModel.findById(admin._id);
+        if (!Admin) {
             return res.status(401).json({ message: 'Không tìm thấy Admin' });
         }
 

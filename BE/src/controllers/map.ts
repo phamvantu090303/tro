@@ -16,21 +16,25 @@ export const CreateMap = async (req: Request, res: Response) => {
     });
   }
 }
-
 export const UpdateMap = async (req: Request, res: Response) => {
-    try {
-        const dataUdate = req.body;
-        const mapServiceInstance = new MapService();
-        await mapServiceInstance.UpdateMap(dataUdate);  
-    
-        res.status(200).json({
-        message: "Update successfully!!!",
-        });
-    } catch (error: any) {
-        res.status(404).json({
-        message: error.message,
-        });
-    }
+  try {
+    const id = req.params.id;
+    console.log(id)
+    const formData = req.body;
+    console.log(formData)
+    const mapServiceInstance = new MapService();
+    await mapServiceInstance.UpdateMap(id);  
+  
+    res.status(200).json({
+      message: "Update successfully!!!",
+      id: id,
+      data: formData
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
 }
 
 export const DeleteMap = async (req: Request, res: Response) => {
