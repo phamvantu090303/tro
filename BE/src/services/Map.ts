@@ -3,7 +3,7 @@ import MapModel from "../models/MapModel";
 class MapService {
   async CreateMap(data: any) {
     const map = new MapModel({
-      id_map: data.id_map,
+      ma_map: data.ma_map,
       address: data.address,
       district: data.district,
       latitude: data.latitude,
@@ -20,7 +20,7 @@ class MapService {
 
   async UpdateMap(data: any) {
     await MapModel.findByIdAndUpdate(data.id, {
-      id_map: data.id_map,
+      ma_map: data.ma_map,
       address: data.address,
       district: data.district,
       latitude: data.latitude,

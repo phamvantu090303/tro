@@ -4,7 +4,7 @@ import mongoose, { Schema } from "mongoose";
 
 const MapScheme = new Schema(
   {
-    id_map: {
+    ma_map: {
       type: String,
       require: true,
     },

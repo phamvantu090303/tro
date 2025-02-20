@@ -62,7 +62,7 @@ const sendEmail = async (user: User, pdfPath: string) => {
 export const createContract = async (req: Request, res: Response) => {
   try {
     const { user }: any = req;
-    const { maphong, signature, htmlContent } = req.body;
+    const { maphong, signature, htmlContent, start_date, end_date } = req.body;
     const ma_phong = maphong;
     const phong = await PhongtroModel.findOne({ ma_phong });
     console.log(phong);
@@ -117,8 +117,8 @@ export const createContract = async (req: Request, res: Response) => {
       id_users: user._id,
       signaturePath,
       tien_coc: phong.gia_tien / 2,
-      start_date: "2024-02-01", // Thêm ngày bắt đầu
-      end_date: "2025-02-01", // Thêm ngày kết thúc
+      start_date: start_date || new Date().toISOString().split("T")[0], // Mặc định ngày hiện tại nếu không có
+      end_date: end_date || new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0], // Mặc định 1 năm sau nếu không có
       file_hop_dong: pdfPath,
       createdAt: new Date(),
     });
@@ -131,11 +131,6 @@ export const createContract = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Lỗi xử lý hợp đồng." });
   }
 };
-// export const DetailRoom = async (req: Request, res: Response) => {
-//   const { id_phong } = req.params;
-//   const phong = await PhongtroModel.findById(id_phong)
-//   res.json({ phong });
-// }
 
 export const customer = async (req: Request, res: Response) => {
   const { user }: any = req;
