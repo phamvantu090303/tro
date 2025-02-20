@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
+import Select from "react-select";
 
 const MapComponent = () => {
   const [locations, setLocations] = useState([]);
+  const [filteredLocations, setFilteredLocations] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
+    ma_map: "",
     address: "",
     district: "",
     latitude: "",
@@ -22,6 +25,7 @@ const MapComponent = () => {
       try {
         const response = await axios.get("http://localhost:5000/map/AllMap");
         setLocations(response.data.data);
+        setFilteredLocations(response.data.data);
       } catch (error) {
         console.error("Error fetching map data:", error);
       }
@@ -37,7 +41,7 @@ const MapComponent = () => {
 
     const bounds = [];
 
-    locations.forEach((location) => {
+    filteredLocations.forEach((location) => {
       if (location.latitude && location.longitude) {
         const marker = L.marker([location.latitude, location.longitude], {
           icon: L.icon({
@@ -94,7 +98,7 @@ const MapComponent = () => {
     });
 
     return () => map.remove();
-  }, [locations]);
+  }, [filteredLocations]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -107,7 +111,9 @@ const MapComponent = () => {
         formData
       );
       setLocations((prev) => [...prev, response.data.data]);
+      setFilteredLocations((prev) => [...prev, response.data.data]);
       setFormData({
+        ma_map: "",
         address: "",
         district: "",
         latitude: "",
@@ -120,17 +126,21 @@ const MapComponent = () => {
       console.error("Error adding location:", error);
     }
   };
+
   const handleUpdateLocation = async () => {
     try {
       console.log("Updating location:", editingId, formData); // Debug dữ liệu trước khi gửi request
-      const response = await axios.post(`http://localhost:5000/map/updateMap/${editingId}`, formData);
+      const response = await axios.put(`http://localhost:5000/map/updateMap/${editingId}`, formData);
   
       console.log("Update response:", response.data); // Debug phản hồi từ server
   
       setLocations((prev) =>
         prev.map((location) => (location._id === editingId ? response.data.data : location))
       );
-      setFormData({ address: '', district: '', latitude: '', longitude: '', province: '', ward: '' });
+      setFilteredLocations((prev) =>
+        prev.map((location) => (location._id === editingId ? response.data.data : location))
+      );
+      setFormData({ ma_map: "", address: "", district: "", latitude: "", longitude: "", province: "", ward: "" });
       setShowModal(false);
       setIsEditing(false);
       setEditingId(null);
@@ -138,12 +148,12 @@ const MapComponent = () => {
       console.error('Error updating location:', error.response ? error.response.data : error);
     }
   };
-  
 
   const handleDeleteLocation = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/map/deleteMap/${id}`);
+      await axios.delete(`http://localhost:5000/map/deleteMap/${id}`);
       setLocations((prev) => prev.filter((location) => location._id !== id));
+      setFilteredLocations((prev) => prev.filter((location) => location._id !== id));
     } catch (error) {
       console.error('Error deleting location:', error);
     }
@@ -151,6 +161,7 @@ const MapComponent = () => {
 
   const handleEditLocation = (location) => {
     setFormData({
+      ma_map: location.ma_map,
       address: location.address,
       district: location.district,
       latitude: location.latitude,
@@ -163,6 +174,19 @@ const MapComponent = () => {
     setShowModal(true);
   };
 
+  const handleSearchChange = (selectedOption) => {
+    if (selectedOption) {
+      setFilteredLocations(locations.filter(location => location._id === selectedOption.value));
+    } else {
+      setFilteredLocations(locations);
+    }
+  };
+
+  const searchOptions = locations.map(location => ({
+    value: location._id,
+    label: `${location.address}, ${location.ward}, ${location.district}, ${location.province}`
+  }));
+
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       <div
@@ -174,15 +198,23 @@ const MapComponent = () => {
         style={{ width: "50%", padding: "20px", backgroundColor: "#f9f9f9" }}
       >
         <h3>Danh Sách Vị Trí Nhà Trọ</h3>
+        <Select
+          options={searchOptions}
+          onChange={handleSearchChange}
+          isClearable
+          placeholder="Tìm kiếm vị trí..."
+        />
         <table
           style={{
             width: "100%",
             borderCollapse: "collapse",
             backgroundColor: "#fff",
+            marginTop: "10px",
           }}
         >
           <thead>
             <tr style={{ backgroundColor: "#007bff", color: "#fff" }}>
+              <th>Mã map</th>
               <th>Địa Chỉ</th>
               <th>Phường</th>
               <th>Quận</th>
@@ -191,8 +223,9 @@ const MapComponent = () => {
             </tr>
           </thead>
           <tbody>
-            {locations.map((location, index) => (
+            {filteredLocations.map((location, index) => (
               <tr key={index}>
+                <td>{location.ma_map}</td>
                 <td>{location.address}</td>
                 <td>{location.ward}</td>
                 <td>{location.district}</td>
@@ -235,8 +268,9 @@ const MapComponent = () => {
               zIndex: 10000,
             }}
           >
-            <h3>Thêm Vị Trí Nhà Trọ Mới</h3>
+            <h3>{isEditing ? 'Cập Nhật Vị Trí Nhà Trọ' : 'Thêm Vị Trí Nhà Trọ Mới'}</h3>
             {[
+              "ma_map",
               "address",
               "district",
               "latitude",
@@ -245,7 +279,6 @@ const MapComponent = () => {
               "ward",
             ].map((field) => (
               <div key={field} style={{ marginBottom: "10px" }}>
-              
                 <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
                 <input
                   type={
@@ -284,7 +317,7 @@ const MapComponent = () => {
                 setShowModal(false);
                 setIsEditing(false);
                 setEditingId(null);
-                setFormData({ address: '', district: '', latitude: '', longitude: '', province: '', ward: '' });
+                setFormData({ ma_map: "", address: "", district: "", latitude: "", longitude: "", province: "", ward: "" });
               }}
               style={{
                 backgroundColor: "#dc3545",
