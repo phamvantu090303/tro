@@ -12,9 +12,15 @@ import QuyenManagement from "../component/admin/Quyen";
 import Chat from "../component/Mess/mess";
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
 import LoginAdmin from "../component/admin/LoginAdmin/loginAdmin"
 import HomeAdmin from "../component/admin/home/homeAdmin";
+=======
+import LoginAdmin from "../component/admin/LoginAdmin/loginAdmin"
+import HomeAdmin from "../component/admin/home/homeAdmin";
+
+>>>>>>> Stashed changes
 
 
 >>>>>>> Stashed changes
@@ -91,7 +97,6 @@ const Router = new createBrowserRouter([
       </Layout>
     ),
   },
-
   {
     path: "/admin/login",
     element: (
@@ -106,6 +111,5 @@ const Router = new createBrowserRouter([
         <HomeAdmin />
     ),
   }
-
 ]);
 export default Router;
