@@ -11,6 +11,8 @@ import RoomDetails from "../pages/RoomDetails/RoomDetails";
 import QuyenManagement from "../component/admin/Quyen";
 import Chat from "../component/Mess/mess";
 
+import LoginAdmin from "../component/admin/LoginAdmin/loginAdmin"
+import HomeAdmin from "../component/admin/home/homeAdmin";
 
 const Router = new createBrowserRouter([
   {
@@ -55,24 +57,27 @@ const Router = new createBrowserRouter([
   },
   {
     path: "/hopdong/:maphong",
-    element: <Contract />,
+    element: (
+      <Layout>
+        <Contract />
+      </Layout>
+    ),
   },
   {
     path: "/map",
     element: (
       <Layout>
         <MapComponent />
-        </Layout>
+      </Layout>
     ),
   },
   {
-
     path: "/admin/quyen",
     element: (
       <Layout>
         <QuyenManagement />
-        </Layout>
-    )
+      </Layout>
+    ),
   },
   {
     path: "/mess",
@@ -81,7 +86,20 @@ const Router = new createBrowserRouter([
         <Chat />
       </Layout>
     ),
+  },
+  {
+    path: "/admin/login",
+    element: (
+      <Layout>
+        <LoginAdmin />
+      </Layout>
+    ),
+  },
+  {
+    path: "/admin/home",
+    element: (
+        <HomeAdmin />
+    ),
   }
- 
 ]);
 export default Router;

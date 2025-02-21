@@ -24,6 +24,10 @@ const PhongTroScheme = new Schema(
             type: String,
             required: true,
         },
+        dia_chi: {
+            type: String,
+            required: false,
+        },
         anh_phong: {
 			type: String,
 			require: false

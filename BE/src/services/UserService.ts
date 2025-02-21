@@ -99,13 +99,13 @@ export class UserService {
 
   async getMe(user_id: string) {
     const user = await UserModel.findOne({ _id: new ObjectId(user_id) })
-    .select("-password -createdAt -updatedAt -__v")// Ẩn các trường không cần thiết
+    .select(" -createdAt -updatedAt -__v")// Ẩn các trường không cần thiết
 
     return user
   }
 
   async getUserAll() {
-    const user = await UserModel.find().select("-password -createdAt -updatedAt -__v")// Ẩn các trường không cần thiết
+    const user = await UserModel.find().select("-createdAt -updatedAt -__v")// Ẩn các trường không cần thiết
     return user
   }
 }

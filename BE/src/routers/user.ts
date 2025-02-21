@@ -1,3 +1,4 @@
+import { accessTokenAdmin } from './../middlewares/admin.middleware';
 import { Router } from 'express';
 import {
 	register,

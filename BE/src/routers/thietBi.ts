@@ -6,17 +6,17 @@ import {
 	deleteAll,
 	deleteById,
 } from '../controllers/thietBi';
-import { accessTokenValidatetor } from '../middlewares/user.middleware';
 import { authorize } from '../middlewares/authorize.middleware';
+import { accessTokenAdmin } from '../middlewares/admin.middleware';
 
 const router = Router();
 
 
-router.post('/create',accessTokenValidatetor,authorize('33'), storeThietBi);
-router.post('/update/:id',accessTokenValidatetor,authorize('34'), updateThietBi);
-router.get('/',accessTokenValidatetor,authorize('32'), getData);
-router.post('/delete/all',accessTokenValidatetor,authorize('36'), deleteAll);
-router.post('/delete/:id',accessTokenValidatetor,authorize('35'), deleteById);
+router.post('/create',accessTokenAdmin, storeThietBi);
+router.post('/update/:id',accessTokenAdmin, updateThietBi);
+router.get('/', getData);
+router.delete('/delete/all',accessTokenAdmin, deleteAll);
+router.delete('/delete/:id',accessTokenAdmin, deleteById);
 
 
 export default router;

@@ -10,7 +10,6 @@ export const CreateHoaDon = async (req: Request, res: Response) => {
     const { user }: any = req;
     const { ma_phong } = req.body;
     const data = await PhongTroModel.findOne({ ma_phong: ma_phong });
-    console.log("data", data);
     if (!data) return res.status(404).json({ message: "Phòng không tồn tại" });
     const hoadon = {
       ma_phong: data.ma_phong,

@@ -24,7 +24,6 @@ const initSocket = (httpServer: HttpServer) => {
             console.log("Người dùng kết nối:", decoded._id);
             next();
         } catch (error) {
-            console.error("Lỗi xác thực:", error);
             next(new Error("Token không hợp lệ!"));
         }
     });

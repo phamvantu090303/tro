@@ -48,7 +48,7 @@ app.use("/danh-muc", danhMucRouter);
 app.use("/yeu-thich", YeuThichRouter);
 app.use("/thiet-bi", thietBiRouter);
 app.use("/Image-phong", routeImage);
-app.use("/phongTro", routerPhong); //chưa thêm middleware cho dử liệu
+app.use("/phongTro", routerPhong);
 app.use("/dich-vu", routeDichVu);
 app.use("/map", mapRoutes);
 app.use("/hoadon", routeHoaDon);
