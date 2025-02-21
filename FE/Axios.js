@@ -12,6 +12,8 @@ axiosInstance.interceptors.request.use(
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; // 🛠 Gán token vào headers
+    } else {
+      console.log("token không tồn tại");
     }
     return config;
   },
