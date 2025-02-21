@@ -20,7 +20,7 @@ const useAdminData = () => {
     const fetchAccounts = async () => {
         setLoading(true);
         try {
-            const res = await axiosInstance.get('/thiet-bi/');
+            const res = await axiosInstance.get('/thiet-bi');
             setUser(res.data.data || []);
         } catch {
             setError('Failed to load admins');

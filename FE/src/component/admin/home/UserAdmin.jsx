@@ -41,7 +41,7 @@ const useAdminData = () => {
     return { user, setUser, searchTerm, setSearchTerm, fetchAccounts, loading, error };
 };
 
-export default function DanhMucAdmin() {
+export default function UserAdmin() {
     const { user, setUser, searchTerm, setSearchTerm, fetchAccounts, loading, error } = useAdminData();
     const [modal, setModal] = useState(null);
     const [selectedAdmin, setSelectedAdmin] = useState(defaultAdmin);
@@ -51,7 +51,7 @@ export default function DanhMucAdmin() {
         setSelectedAdmin((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSaveAnhPhong = async () => {
+    const handleSaveUserAdmin = async () => {
         try {
             if (modal === 'edit') {
                 await axiosInstance.post(`/auth/update/${selectedAdmin.email}`, selectedAdmin);
@@ -67,7 +67,7 @@ export default function DanhMucAdmin() {
         }
     };
 
-    const handleDeleteAnhPhong = async (email) => {
+    const handleDeleteUserAdmin = async (email) => {
         if (window.confirm('Are you sure?')) {
             try {
                 await axiosInstance.delete(`/yeu-thich/delete/${email}`);
@@ -105,7 +105,7 @@ export default function DanhMucAdmin() {
                                         className='border bg-white border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500'
                                     />
                                 ))}
-                                <button onClick={handleSaveAnhPhong} className='bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition'>
+                                <button onClick={handleSaveUserAdmin} className='bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition'>
                                     {modal === 'edit' ? 'Update' : 'Create'}
                                 </button>
                                 {error && <p className='text-red-500 mt-2'>{error}</p>}
@@ -138,7 +138,7 @@ export default function DanhMucAdmin() {
                                             <button onClick={() => { setSelectedAdmin(admin); setModal('edit'); }} className='bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition'>
                                                 <AiOutlineEdit />
                                             </button>
-                                            <button onClick={() => handleDeleteAnhPhong(admin.email)} className='bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition'>
+                                            <button onClick={() => handleDeleteUserAdmin(admin.email)} className='bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition'>
                                                 <AiOutlineDelete />
                                             </button>
                                         </td>

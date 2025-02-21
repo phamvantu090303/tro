@@ -11,6 +11,13 @@ import RoomDetails from "../pages/RoomDetails/RoomDetails";
 import QuyenManagement from "../component/admin/Quyen";
 import Chat from "../component/Mess/mess";
 
+<<<<<<< Updated upstream
+=======
+import LoginAdmin from "../component/admin/LoginAdmin/loginAdmin"
+import HomeAdmin from "../component/admin/home/homeAdmin";
+
+
+>>>>>>> Stashed changes
 const Router = new createBrowserRouter([
   {
     path: "/Login",
@@ -84,5 +91,21 @@ const Router = new createBrowserRouter([
       </Layout>
     ),
   },
+
+  {
+    path: "/admin/login",
+    element: (
+      <Layout>
+        <LoginAdmin />
+      </Layout>
+    ),
+  },
+  {
+    path: "/admin/home",
+    element: (
+        <HomeAdmin />
+    ),
+  }
+
 ]);
 export default Router;

@@ -4,6 +4,7 @@ import { axiosInstance } from '../../../../Axios';
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
 
 const defaultAdmin = {
+  id_quyen: '',
   username: '',
   password: '',
   email: '',

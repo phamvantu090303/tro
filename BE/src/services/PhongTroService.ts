@@ -102,11 +102,6 @@ export class PhongtroService {
           as: "thietBi",
         },
       },
-      {
-        $unwind: {
-          path: "$thietBi",
-        },
-      },
     ]);
     return result[0] || null;
   }

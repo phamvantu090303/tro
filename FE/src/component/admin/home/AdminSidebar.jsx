@@ -1,10 +1,11 @@
 import { useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
 
 export default function AdminSidebar({ setActiveComponent }) {
-  const admin = useSelector((state) => state.auth.admin);
+  const { admin } = useSelector((state) => state.authAdmin);
+  console.log(admin)
   const navigate = useNavigate();
   const location = useLocation();
 

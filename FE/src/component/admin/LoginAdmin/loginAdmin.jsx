@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { axiosInstance } from "../../../../Axios";
 import { toast } from "react-toastify";
-import { login } from "../../../Store/filterUser";
+import { loginAdmin } from "../../../Store/filterAdmin";
 
 
 function LoginAdmin() {
@@ -21,12 +21,12 @@ function LoginAdmin() {
         password: password,
       });
       dispatch(
-        login({
+        loginAdmin({
           admin: res.data.data.admin,
           token: res.data.data.token,
         })
       );
-      navigate("/")
+      navigate("/admin/home")
       console.log('ress',res.data.data)
       console.log("admin:", res.data.data.admin);
       console.log("token:", res.data.data.token);

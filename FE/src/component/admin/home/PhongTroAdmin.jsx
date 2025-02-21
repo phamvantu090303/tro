@@ -8,7 +8,7 @@ const { Option } = Select;
 
 const defaultAdmin = {
   ma_phong: '',
-  id_map: '',
+  ma_map: '',
   ma_danh_muc: '',
   id_users: '',
   ten_phong_tro: '',
@@ -22,7 +22,7 @@ const defaultAdmin = {
 
 const useAdminData = () => {
   const [user, setUser] = useState([]);
-  const [danhMucList, setDanhMucList] = useState([]); // State để lưu danh sách mã danh mục
+  const [danhMucList, setDanhMucList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
