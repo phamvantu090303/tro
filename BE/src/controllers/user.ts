@@ -48,6 +48,7 @@ export const login = async (req: Request, res: Response) => {
       data: {
         token,
         user: {
+          id: user._id,
           username: user.username,
           email: user.email,
           hovaten: user.ho_va_ten,
@@ -144,32 +145,31 @@ export const verifypassword = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { user } = req as any;
 
-    try {
-        const { user } = req as any;
+    console.log(user);
 
-        console.log(user);
+    const data = req.body;
+    const userService = new UserService();
+    await userService.updateUserService(user._id, data);
 
-        const data = req.body;
-        const userService = new UserService();
-        await userService.updateUserService(user._id, data);
-
-        res.status(200).json({
-            message: 'user đã được cập nhật thành công'
-        });
-    } catch (error: any) {
-        res.status(404).json({
-            message: error.message,
-        });
-    }
-}
+    res.status(200).json({
+      message: "user đã được cập nhật thành công",
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
 
 export const getMe = async (req: any, res: any) => {
   try {
     const user = req.user;
 
     if (!user) {
-      return res.status(404).json({ message: 'Người dùng không tồn tại.' });
+      return res.status(404).json({ message: "Người dùng không tồn tại." });
     }
 
     const userService = new UserService();
@@ -181,16 +181,14 @@ export const getMe = async (req: any, res: any) => {
     });
   } catch (error: any) {
     res.status(500).json({
-      message: 'Lỗi khi lấy thông tin người dùng.',
+      message: "Lỗi khi lấy thông tin người dùng.",
       error: error.message,
     });
   }
 };
 
-
 export const getAllUser = async (req: any, res: any) => {
   try {
-
     const userService = new UserService();
     const data = await userService.getUserAll();
 
@@ -200,7 +198,7 @@ export const getAllUser = async (req: any, res: any) => {
     });
   } catch (error: any) {
     res.status(500).json({
-      message: 'Lỗi khi lấy thông tin người dùng.',
+      message: "Lỗi khi lấy thông tin người dùng.",
       error: error.message,
     });
   }

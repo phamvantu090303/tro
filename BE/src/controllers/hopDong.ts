@@ -65,9 +65,7 @@ export const createContract = async (req: Request, res: Response) => {
     const { maphong, signature, htmlContent, start_date, end_date } = req.body;
     const ma_phong = maphong;
     const phong = await PhongtroModel.findOne({ ma_phong });
-    console.log(phong);
     const { username, email } = user;
-
     // Tạo file image từ base64
     const signaturePath = path.join(
       __dirname,
@@ -118,7 +116,11 @@ export const createContract = async (req: Request, res: Response) => {
       signaturePath,
       tien_coc: phong.gia_tien / 2,
       start_date: start_date || new Date().toISOString().split("T")[0], // Mặc định ngày hiện tại nếu không có
-      end_date: end_date || new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0], // Mặc định 1 năm sau nếu không có
+      end_date:
+        end_date ||
+        new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+          .toISOString()
+          .split("T")[0], // Mặc định 1 năm sau nếu không có
       file_hop_dong: pdfPath,
       createdAt: new Date(),
     });
