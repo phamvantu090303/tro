@@ -52,7 +52,6 @@ const getData = async (req: any, res: any) => {
     }
 };
 
-
 const deleteAll = async (req: any, res: any) => {
     try{
         const thietBiService = new ThietBiService();

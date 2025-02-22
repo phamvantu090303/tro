@@ -35,3 +35,19 @@ export const getDataYeuThich = async (req:any, res: any) => {
         });
     }
 }
+
+export const getALLYeuThich = async (req:any, res: any) => {
+    try{
+        const yeuThichService = new YeuThichSevice();
+        const data = await yeuThichService.getAllYeuTich();
+
+        res.status(200).json({
+            status: "200",
+            data : data
+        });
+    } catch(error: any) {
+        res.status(404).json({
+            message: error.message,
+        });
+    }
+}

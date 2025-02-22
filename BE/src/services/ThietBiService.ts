@@ -13,7 +13,6 @@ export class ThietBiService {
             trang_thai
         });
 
-        // Lưu thiết bị vào cơ sở dữ liệu
         await newThietBi.save();
     }
 
@@ -47,7 +46,6 @@ export class ThietBiService {
         // Trả về kết quả
         return thietBi;
     }
-
 
     async deleteAllThietBi() {
        return await ThietBiModal.deleteMany();
