@@ -24,7 +24,7 @@ function CardRoom({
   };
   return (
     <div
-      className="w-full md:max-w-[300px] shadow-xl bg-white p-4 rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105"
+      className="w-full md:max-w-[300px] lg:min-h-[468px] shadow-xl flex flex-col justify-between bg-white p-4 rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105"
       onClick={() => handleCard(id)}
     >
       <div className="w-full  min-h-[200px] md:h-[220px] flex items-center justify-center">
@@ -41,7 +41,7 @@ function CardRoom({
         </p>
       </div>
       <div className="mt-4">
-        {address && ward && district && province && (
+        {address && ward && district && (
           <p className="flex items-center gap-2 text-base">
             {address}, {ward}, {district}, {province}
           </p>

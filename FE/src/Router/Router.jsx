@@ -7,12 +7,11 @@ import Homepage from "../pages/Home/Home";
 import MapComponent from "../component/Map";
 import Search from "../pages/Search/Search";
 import RoomDetails from "../pages/RoomDetails/RoomDetails";
-
-import QuyenManagement from "../component/admin/Quyen";
+import QuyenManagement from "../pages/Admin/Quyen";
 import Chat from "../component/Mess/mess";
 
-import LoginAdmin from "../component/admin/LoginAdmin/loginAdmin"
-import HomeAdmin from "../component/admin/home/homeAdmin";
+import LoginAdmin from "../pages/Admin/LoginAdmin/loginAdmin";
+import HomeAdmin from "../pages/Admin/home/homeAdmin";
 
 const Router = new createBrowserRouter([
   {
@@ -97,9 +96,7 @@ const Router = new createBrowserRouter([
   },
   {
     path: "/admin/home",
-    element: (
-        <HomeAdmin />
-    ),
-  }
+    element: <HomeAdmin />,
+  },
 ]);
 export default Router;

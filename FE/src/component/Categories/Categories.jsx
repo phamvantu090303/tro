@@ -45,7 +45,7 @@ function Category() {
                   id={product.ma_phong}
                   price={product.gia_tien}
                   title={product.ten_phong_tro}
-                  img={product.Img}
+                  img={product.anh_phong}
                   number={product.so_luong_nguoi}
                 />
               </div>
