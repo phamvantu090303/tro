@@ -44,6 +44,25 @@ export class YeuThichSevice {
     ]);
     return result[0] || null;
   }
+
+  async getAllYeuTich(): Promise<any[]> {
+
+    return await yeuthichModel.aggregate([
+      {
+        $lookup: {
+          'from': 'phongtros',
+          'localField': 'ma_phong',
+          'foreignField': 'ma_phong',
+          'as': 'phongTro_yeu_thich'
+        }
+      }, {
+        $unwind: {
+          'path': '$phongTro_yeu_thich',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+    ]);
+  }
 }
 const YeuThich = new YeuThichSevice()
 export default YeuThich

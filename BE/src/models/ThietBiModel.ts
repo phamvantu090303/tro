@@ -1,5 +1,3 @@
-/** @format */
-
 import mongoose, { Schema } from 'mongoose';
 
 const ThietBiScheme = new Schema(
