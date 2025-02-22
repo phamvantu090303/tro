@@ -5,7 +5,6 @@ import { IoIosLogOut } from "react-icons/io";
 
 export default function AdminSidebar({ setActiveComponent }) {
   const { admin } = useSelector((state) => state.authAdmin);
-  console.log(admin)
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -87,6 +86,15 @@ export default function AdminSidebar({ setActiveComponent }) {
             >
               <MdOutlineAdminPanelSettings className="text-xl" />
               Quản lý User
+            </li>
+            <li
+              className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
+                isActive("mess") ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
+              }`}
+              onClick={() => setActiveComponent("mess")}
+            >
+              <MdOutlineAdminPanelSettings className="text-xl" />
+              Mess
             </li>
           </ul>
         </nav>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import SearchBar from '../../admin/home/SearchBar';
 import { axiosInstance } from '../../../../Axios';
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
-import { Select } from 'antd'; // Import Select từ Ant Design
+import { Select } from 'antd'; 
 
 const { Option } = Select;
 
@@ -23,6 +23,7 @@ const defaultAdmin = {
 const useAdminData = () => {
   const [user, setUser] = useState([]);
   const [danhMucList, setDanhMucList] = useState([]);
+  const [mapList, setMapList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -53,11 +54,25 @@ const useAdminData = () => {
     fetchDanhMucList();
   }, []);
 
-  return { user, setUser, danhMucList, searchTerm, setSearchTerm, fetchAccounts, loading, error };
+  const fetchMapList = async () => {
+    try {
+      const res = await axiosInstance.get('/map/AllMap');
+      setMapList(res.data.data || []);
+    } catch {
+      setError('Failed to load category list.');
+    }
+  };
+
+  useEffect(() => {
+    fetchAccounts();
+    fetchMapList();
+  }, []);
+
+  return { user, setUser, danhMucList, mapList, searchTerm, setSearchTerm, fetchAccounts, loading, error };
 };
 
 export default function PhongTroAdmin() {
-  const { user, setUser, danhMucList, searchTerm, setSearchTerm, fetchAccounts, loading, error } = useAdminData();
+  const { user, setUser, danhMucList, mapList, searchTerm, setSearchTerm, fetchAccounts, loading, error } = useAdminData();
   const [modal, setModal] = useState(null);
   const [selectedAdmin, setSelectedAdmin] = useState(defaultAdmin);
 
@@ -136,17 +151,31 @@ export default function PhongTroAdmin() {
                         ))}
                       </Select>
                     </div>
-                  ) : (
-                    <input
-                      key={key}
-                      type='text'
-                      name={key}
-                      placeholder={key.replace('_', ' ')}
-                      value={selectedAdmin[key] || ''}
-                      onChange={handleInputChange}
-                      className='border bg-white border-gray-300 p-3 rounded-lg w-full'
-                    />
-                  )
+                  ) : key === 'ma_map' ? (
+                    <div key={key}>
+                      <label>Mã Map</label>
+                      <Select
+                        value={selectedAdmin.ma_map}
+                        onChange={(value) => setSelectedAdmin((prev) => ({ ...prev, ma_map: value }))}
+                        className="border bg-white border-gray-300 p-3 rounded-lg w-full"
+                      >
+                        {mapList.map((dm) => (
+                          <Option key={dm.ma_map} value={dm.ma_map}>{dm.ma_map}</Option>
+                        ))}
+                      </Select>
+                    </div>
+                  ) :
+                    (
+                      <input
+                        key={key}
+                        type='text'
+                        name={key}
+                        placeholder={key.replace('_', ' ')}
+                        value={selectedAdmin[key] || ''}
+                        onChange={handleInputChange}
+                        className='border bg-white border-gray-300 p-3 rounded-lg w-full'
+                      />
+                    )
                 ))}
                 <button onClick={handleSavePhongTro} className='bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition'>
                   {modal === 'edit' ? 'Update' : 'Create'}
@@ -177,33 +206,87 @@ export default function PhongTroAdmin() {
             <tbody>
               {filteredUsers.map((admin) => (
                 <tr key={admin.ma_phong}>
-                  {Object.keys(defaultAdmin).map((key) => (
-                    key === 'trang_thai' ? (
-                      <td key={key} className='py-2 pl-3'>
-                        <Select
-                          value={admin.trang_thai}
-                          onChange={async (value) => {
-                            try {
-                              await axiosInstance.post(`/phongTro/update/${admin.ma_phong}`, {
-                                ...admin,
-                                trang_thai: value
-                              });
-                              fetchAccounts();
-                            } catch {
-                              alert('Cập nhật trạng thái thất bại!');
-                            }
-                          }}
-                          className="border bg-white border-gray-300 p-3 rounded-lg w-full"
-                        >
-                          <Option value={0}>Chưa thuê</Option>
-                          <Option value={1}>Đang thuê</Option>
-                          <Option value={2}>Sửa chữa</Option>
-                        </Select>
-                      </td>
-                    ) : (
-                      <td key={key} className='py-2 pl-3'>{admin[key] || '-'}</td>
-                    )
-                  ))}
+                  {Object.keys(defaultAdmin).map((key) => {
+                    if (key === 'trang_thai') {
+                      return (
+                        <td key={key} className='py-2 pl-3'>
+                          <Select
+                            value={admin.trang_thai}
+                            onChange={async (value) => {
+                              try {
+                                await axiosInstance.post(`/phongTro/update/${admin.ma_phong}`, {
+                                  ...admin,
+                                  trang_thai: value
+                                });
+                                fetchAccounts();
+                              } catch {
+                                alert('Cập nhật trạng thái thất bại!');
+                              }
+                            }}
+                            className="border bg-white border-gray-300 p-3 rounded-lg w-full"
+                          >
+                            <Option value={0}>Chưa thuê</Option>
+                            <Option value={1}>Đang thuê</Option>
+                            <Option value={2}>Sửa chữa</Option>
+                          </Select>
+                        </td>
+                      );
+                    }
+
+                    if (key === 'ma_map') {
+                      return (
+                        <td key={key} className='py-2 pl-3'>
+                          <Select
+                            value={admin.ma_map}
+                            onChange={async (value) => {
+                              try {
+                                await axiosInstance.post(`/phongTro/update/${admin.ma_phong}`, {
+                                  ...admin,
+                                  ma_map: value
+                                });
+                                fetchAccounts();
+                              } catch {
+                                alert('Cập nhật trạng thái thất bại!');
+                              }
+                            }}
+                            className="border bg-white border-gray-300 p-3 rounded-lg w-full"
+                          >
+                            {mapList.map((dm) => (
+                              <Option key={dm.ma_map} value={dm.ma_map}>{dm.ma_map}</Option>
+                            ))}
+                          </Select>
+                        </td>
+                      );
+                    }
+
+                    if (key === 'ma_danh_muc') {
+                      return (
+                        <td key={key} className='py-2 pl-3'>
+                          <Select
+                            value={admin.ma_danh_muc}
+                            onChange={async (value) => {
+                              try {
+                                await axiosInstance.post(`/phongTro/update/${admin.ma_phong}`, {
+                                  ...admin,
+                                  ma_danh_muc: value
+                                });
+                                fetchAccounts();
+                              } catch {
+                                alert('Cập nhật trạng thái thất bại!');
+                              }
+                            }}
+                            className="border bg-white border-gray-300 p-3 rounded-lg w-full"
+                          >
+                            {danhMucList.map((dm) => (
+                              <Option key={dm.ma_danh_muc} value={dm.ma_danh_muc}>{dm.ten_danh_muc}</Option>
+                            ))}
+                          </Select>
+                        </td>
+                      );
+                    }
+
+                    return <td key={key} className='py-2 pl-3'>{admin[key] || '-'}</td>;
+                  })}
                   <td className='py-2 pl-3 flex gap-2'>
                     <button onClick={() => { setSelectedAdmin(admin); setModal('edit'); }} className='bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition'>
                       <AiOutlineEdit />

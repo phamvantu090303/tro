@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import SearchBar from '../../admin/home/SearchBar';
 import { axiosInstance } from '../../../../Axios';
-import { GrLinkNext, GrLinkPrevious } from 'react-icons/gr';
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
+import { Select } from 'antd';
+
+const { Option } = Select;
 
 const defaultAdmin = {
     ma_phong: '',
@@ -13,7 +15,9 @@ const defaultAdmin = {
 
 const useAdminData = () => {
     const [user, setUser] = useState([]);
+    const [maPhongList, setMaPhongList] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedMaPhong, setSelectedMaPhong] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -23,7 +27,7 @@ const useAdminData = () => {
             const res = await axiosInstance.get('/thiet-bi');
             setUser(res.data.data || []);
         } catch {
-            setError('Failed to load admins');
+            setError('Failed to load devices');
         } finally {
             setLoading(false);
         }
@@ -33,11 +37,22 @@ const useAdminData = () => {
         fetchAccounts();
     }, []);
 
-    return { user, setUser, searchTerm, setSearchTerm, fetchAccounts, loading, error };
+    return {
+        user, setUser,
+        searchTerm, setSearchTerm,
+        selectedMaPhong, setSelectedMaPhong,
+        fetchAccounts, loading, error
+    };
 };
 
 export default function DanhMucAdmin() {
-    const { user, setUser, searchTerm, setSearchTerm, fetchAccounts, loading, error } = useAdminData();
+    const {
+        user, setUser,
+        searchTerm, setSearchTerm,
+        selectedMaPhong, setSelectedMaPhong,
+        fetchAccounts, loading, error
+    } = useAdminData();
+
     const [modal, setModal] = useState(null);
     const [selectedAdmin, setSelectedAdmin] = useState(defaultAdmin);
 
@@ -58,7 +73,7 @@ export default function DanhMucAdmin() {
             setModal(null);
             fetchAccounts();
         } catch {
-            setError('Failed to save admin user.');
+            alert('Failed to save device.');
         }
     };
 
@@ -69,7 +84,7 @@ export default function DanhMucAdmin() {
                 alert('Deleted successfully!');
                 fetchAccounts();
             } catch {
-                setError('Failed to delete admin user.');
+                alert('Failed to delete device.');
             }
         }
     };
@@ -81,12 +96,13 @@ export default function DanhMucAdmin() {
                 alert('Deleted successfully!');
                 fetchAccounts();
             } catch {
-                setError('Failed to delete admin user.');
+                alert('Failed to delete all devices.');
             }
         }
     };
 
     const filteredUsers = user.filter((item) =>
+        (selectedMaPhong ? item.ma_phong === selectedMaPhong : true) &&
         item.ma_phong.toLowerCase().includes(searchTerm.toLowerCase().trim())
     );
 
@@ -102,15 +118,29 @@ export default function DanhMucAdmin() {
                             <button className='bg-red-500 text-white p-2 rounded-lg' onClick={() => setModal(null)}>Close</button>
                             <div className='flex flex-col gap-4'>
                                 {Object.keys(defaultAdmin).map((key) => (
-                                    <input
-                                        key={key}
-                                        type='text'
-                                        name={key}
-                                        placeholder={key.replace('_', ' ')}
-                                        value={selectedAdmin[key] || ''}
-                                        onChange={handleInputChange}
-                                        className='border bg-white border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500'
-                                    />
+                                    key === 'trang_thai' ? (
+                                        <div key={key}>
+                                            <label>Trạng thái</label>
+                                            <Select
+                                                value={selectedAdmin.trang_thai}
+                                                onChange={(value) => setSelectedAdmin((prev) => ({ ...prev, trang_thai: value }))}
+                                                className="border bg-white border-gray-300 p-3 rounded-lg w-full"
+                                            >
+                                                <Option value={0}>Dừng hoạt động</Option>
+                                                <Option value={1}>Đang hoạt động</Option>
+                                            </Select>
+                                        </div>
+                                    ) : (
+                                        <input
+                                            key={key}
+                                            type='text'
+                                            name={key}
+                                            placeholder={key.replace('_', ' ')}
+                                            value={selectedAdmin[key] || ''}
+                                            onChange={handleInputChange}
+                                            className='border bg-white border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500'
+                                        />
+                                    )
                                 ))}
                                 <button onClick={handleSaveDanhMuc} className='bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition'>
                                     {modal === 'edit' ? 'Update' : 'Create'}
@@ -123,6 +153,21 @@ export default function DanhMucAdmin() {
 
                 <div className='flex gap-5'>
                     <SearchBar onSearch={setSearchTerm} />
+
+                    <Select
+                        placeholder="Chọn mã phòng"
+                        value={selectedMaPhong}
+                        onChange={(value) => {
+                            setSelectedMaPhong(value);
+                        }}
+                        className="border bg-white border-gray-300 p-3 rounded-lg"
+                    >
+                        {Array.from(new Set(user.map((item) => item.ma_phong))).map((maPhong) => (
+                            <Option key={maPhong} value={maPhong}>{maPhong}</Option>
+                        ))}
+                    </Select>
+
+
                     <button className='bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600' onClick={() => { setSelectedAdmin(defaultAdmin); setModal('create'); }}>
                         New User
                     </button>
@@ -143,7 +188,34 @@ export default function DanhMucAdmin() {
                             {filteredUsers.length > 0 ? (
                                 filteredUsers.map((admin) => (
                                     <tr key={admin._id}>
-                                        {Object.keys(defaultAdmin).map((key) => <td key={key} className='py-2 pl-3'>{admin[key] || '-'}</td>)}
+                                        {Object.keys(defaultAdmin).map((key) => {
+                                            if (key === 'trang_thai') {
+                                                return (
+                                                    <td key={key} className='py-2 pl-3'>
+                                                        <Select
+                                                            value={admin.trang_thai}
+                                                            onChange={async (value) => {
+                                                                try {
+                                                                    await axiosInstance.post(`/thiet-bi/update/${admin._id}`, {
+                                                                        ...admin,
+                                                                        trang_thai: value
+                                                                    });
+                                                                    fetchAccounts();
+                                                                } catch {
+                                                                    alert('Cập nhật trạng thái thất bại!');
+                                                                }
+                                                            }}
+                                                            className="border bg-white border-gray-300 p-3 rounded-lg w-full"
+                                                        >
+                                                            <Option value={0}>Dừng hoạt động</Option>
+                                                            <Option value={1}>Đang hoạt động</Option>
+                                                        </Select>
+                                                    </td>
+                                                );
+                                            }
+
+                                            return <td key={key} className='py-2 pl-3'>{admin[key] || '-'}</td>;
+                                        })}
                                         <td className='py-2 pl-3 flex gap-2'>
                                             <button onClick={() => { setSelectedAdmin(admin); setModal('edit'); }} className='bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition'>
                                                 <AiOutlineEdit />

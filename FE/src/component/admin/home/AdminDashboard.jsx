@@ -5,6 +5,7 @@ import ThietBiAdmin from '../../admin/home/ThietBiAdmin'
 import AnhPhongAdmin from '../../admin/home/AnhPhongAdmin'
 import YeuThichAdmin from '../../admin/home/YeuThichAdmin'
 import UserAdmin from '../../admin/home/UserAdmin'
+import MessAdmin from '../../Mess/messAdmin'
 
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
@@ -23,7 +24,8 @@ function AdminDashboard({ activeComponent }) {
         return <YeuThichAdmin />
       case 'adminuser':
         return <UserAdmin />
-
+        case 'mess':
+          return <MessAdmin />
     }
   }
 

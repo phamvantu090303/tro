@@ -31,7 +31,7 @@ function Homepage() {
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
         <div className="space-y-10">
           {/* Top Rated */}
-          <ProductShowcase desc={"Top Rated"} data={dataTop} limit={5} />
+          <ProductShowcase desc={"Top Rated"} data={dataTop} limit={10} />
 
           {/* Danh mục */}
           <Category />
