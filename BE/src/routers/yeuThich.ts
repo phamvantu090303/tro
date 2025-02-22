@@ -8,6 +8,6 @@ const router = Router();
 router.post('/create',creatYeuThich)
 router.post('/delete/:id', deleteYeuThich)
 
-router.get('/getdata', getDataYeuThich)
+router.get('/getdata/:id_user', getDataYeuThich)
 
 export default router
