@@ -31,14 +31,24 @@ function Homepage() {
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
         <div className="space-y-10">
           {/* Top Rated */}
-          <ProductShowcase desc={"Top Rated"} data={dataTop} limit={10} />
+          <ProductShowcase
+            desc={"Top Rated"}
+            data={dataTop}
+            limit={10}
+            slide={true}
+          />
 
           {/* Danh mục */}
           <Category />
 
           {/* Danh sách phòng */}
           <div className="mt-10">
-            <ProductShowcase desc={"Room List"} data={listdata} limit={5} />
+            <ProductShowcase
+              desc={"Room List"}
+              data={listdata}
+              limit={10}
+              slide={false}
+            />
           </div>
         </div>
       </div>
