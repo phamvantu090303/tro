@@ -1,5 +1,3 @@
-/** @format */
-
 import mongoose, { Schema } from "mongoose";
 
 const MapScheme = new Schema(

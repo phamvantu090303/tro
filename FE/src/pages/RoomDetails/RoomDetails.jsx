@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import anh3 from "../../assets/anh3.png";
-import { FaArrowsAlt, FaMapMarkerAlt, FaUserFriends } from "react-icons/fa";
+import {
+  FaArrowsAlt,
+  FaBed,
+  FaMapMarkerAlt,
+  FaUserFriends,
+} from "react-icons/fa";
 import { useParams } from "react-router";
 import { axiosInstance } from "../../../Axios";
 import { CiHeart } from "react-icons/ci";
@@ -9,6 +14,8 @@ import ProductShowcase from "../../component/ProductShowcase";
 import MapDetail from "../../component/RoomDetailsComponent/MapDetail";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { useSelector } from "react-redux";
+import { MdChair } from "react-icons/md";
+import { PiDesk } from "react-icons/pi";
 
 function RoomDetails() {
   const { user } = useSelector((state) => state.auth);
@@ -27,7 +34,20 @@ function RoomDetails() {
     4: { text: "Đã được đặt", color: "blue" },
     5: { text: "Không cho thuê", color: "gray" },
   };
-
+  const thietbiImg = {
+    ghế: {
+      icon: <MdChair />,
+      text: "Ghế",
+    },
+    bàn: {
+      icon: <PiDesk />,
+      text: "Bàn",
+    },
+    giường: {
+      icon: <FaBed />,
+      text: "Giường",
+    },
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {

@@ -8,7 +8,7 @@ const PhongTroScheme = new Schema(
             type: String,
             required: true,
         },
-        id_map: {
+        ma_map: {
             type: String,
             required: false,
         },
