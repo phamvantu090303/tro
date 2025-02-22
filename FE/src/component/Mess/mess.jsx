@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { io } from "socket.io-client";
-import axios from "axios";
+import { axiosInstance } from "../../../Axios";
 import { FaPaperPlane } from "react-icons/fa";
 
-const accessToken = localStorage.getItem("accessToken");
+const token = localStorage.getItem("token");
 const socket = io("http://localhost:5000", {
-  auth: { Authorization: `Bearer ${accessToken}` },
+  auth: { Authorization: `Bearer ${token}` },
 });
 
 const Chat = () => {
@@ -16,21 +16,21 @@ const Chat = () => {
   const [userName, setUserName] = useState("");
   const [danhSachNguoiDung, setDanhSachNguoiDung] = useState([]);
 
-  // get thông tin use
+  // get thông tin user
   useEffect(() => {
-    axios.get("http://localhost:5000/auth/me", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    })
-    .then(({ data }) => {
-      setNguoiGui(data.data._id);
-      setUserName(data.data.username);
-    })
-    .catch((error) => console.error("Lỗi lấy thông tin người dùng:", error));
+    axiosInstance
+      .get("/auth/me")
+      .then(({ data }) => {
+        setNguoiGui(data.data._id);
+        setUserName(data.data.username);
+      })
+      .catch((error) => console.error("Lỗi lấy thông tin người dùng:", error));
   }, []);
 
   // get thông tin danh sách người dùng
   useEffect(() => {
-    axios.get("http://localhost:5000/auth/AllUser")
+    axiosInstance
+      .get("/admin/AllAdmin")
       .then(({ data }) => setDanhSachNguoiDung(data.data))
       .catch((error) => console.error("Lỗi lấy danh sách người dùng:", error));
   }, []);
@@ -39,11 +39,10 @@ const Chat = () => {
   useEffect(() => {
     if (!nguoiGui || !nguoiNhan) return;
 
-    axios.get(`http://localhost:5000/tin-nhan/mess/${nguoiNhan}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    })
-    .then(({ data }) => setMessages(data.data))
-    .catch((error) => console.error("Lỗi lấy tin nhắn:", error));
+    axiosInstance
+      .get(`/tin-nhan/mess/${nguoiNhan}`)
+      .then(({ data }) => setMessages(data.data))
+      .catch((error) => console.error("Lỗi lấy tin nhắn:", error));
   }, [nguoiGui, nguoiNhan]);
 
   // Lắng nghe tin nhắn mới từ socket

@@ -5,11 +5,12 @@ import { GrLinkNext, GrLinkPrevious } from 'react-icons/gr';
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
 
 const defaultAdmin = {
-    username: '',
+    id_quyen: '',
     email: '',
+    password:'',
+    username: '',
     ho_va_ten: '',
     ngay_sinh: '',
-    id_quyen: '',
     que_quan: '',
     so_dien_thoai: '',
     gioi_tinh: '',
