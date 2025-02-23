@@ -54,6 +54,7 @@ const updatePhongTro = async (req: Request, res: Response) => {
 const getData = async (req: Request, res: Response) => {
   try {
     const data = await phongTroService.getAllPhongTro();
+    console.log(data)
     res.status(200).json({
       message: "Lấy danh sách phòng trọ thành công!",
       data: data,

@@ -8,6 +8,7 @@ import { Request, Response } from "express";
 import HopDongModel from "../models/HopDongModel";
 import PhongtroModel from "../models/PhongTroModel";
 
+
 const generatePDF = async (htmlContent: string, email: string) => {
   // Đường dẫn thư mục pdfs
   const pdfDirectory = path.join(__dirname, "..", "pdfs");
@@ -62,8 +63,10 @@ const sendEmail = async (user: User, pdfPath: string) => {
 export const createContract = async (req: Request, res: Response) => {
   try {
     const { user }: any = req;
-    const { maphong, signature, htmlContent, start_date, end_date } = req.body;
+    const { maphong, signature, htmlContent, start_date, end_date  } = req.body;
     const ma_phong = maphong;
+
+      
     const phong = await PhongtroModel.findOne({ ma_phong });
     const { username, email } = user;
     // Tạo file image từ base64
