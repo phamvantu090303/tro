@@ -232,14 +232,14 @@ function RoomDetails() {
             </div>
 
             {/*tiện nghi phòng */}
-            <div className="">
+            <div>
               <h2 ref={amenitiesRef} className="text-3xl font-semibold">
                 Tiện nghi
               </h2>
             </div>
 
             {/*phòng trọ khu vực */}
-            <div className="">
+            <div>
               <ProductShowcase
                 data={roomSame}
                 limit={5}
@@ -248,7 +248,7 @@ function RoomDetails() {
             </div>
 
             {/*Bản đồ */}
-            <div className="">
+            <div>
               <h2 ref={addressRef} className="text-3xl font-semibold mb-4">
                 Địa chỉ
               </h2>

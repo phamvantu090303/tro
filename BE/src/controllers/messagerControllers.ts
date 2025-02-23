@@ -23,3 +23,25 @@ export const getAllMess = async (req: Request, res: Response) => {
         });
     }
 }
+
+export const getAllMessAdmin = async (req: Request, res: Response) => {
+    try {
+        const { admin } = req as any;  
+        const { id_nguoi_nhan } = req.params;
+
+        const messService = new MessagersService();
+        const data = await messService.messAllAdmin(admin._id, id_nguoi_nhan);  
+
+        console.log(admin);
+        console.log(admin._id, id_nguoi_nhan);
+
+        res.status(200).json({
+        message: "GetAll successfully!!!",
+        data: data
+        });
+    } catch (error: any) {
+        res.status(404).json({
+        message: error.message,
+        });
+    }
+}

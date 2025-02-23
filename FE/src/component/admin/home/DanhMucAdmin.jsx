@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import SearchBar from '../../admin/home/SearchBar';
 import { axiosInstance } from '../../../../Axios';
-import { GrLinkNext, GrLinkPrevious } from 'react-icons/gr';
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
+import { Select } from 'antd';
 
 const defaultAdmin = {
     ma_danh_muc: '',
     ten_danh_muc: '',
-    trang_thai: '',
     mo_ta: '',
+    trang_thai: 1,
 };
 
 const useAdminData = () => {
@@ -102,7 +102,19 @@ export default function DanhMucAdmin() {
                             <button className='bg-red-500 text-white p-2 rounded-lg' onClick={() => setModal(null)}>Close</button>
                             <div className='flex flex-col gap-4'>
                                 {Object.keys(defaultAdmin).map((key) => (
-                                    <input
+                                    key === 'trang_thai' ? (
+                                        <div key={key}>
+                                            <label>Trạng thái</label>
+                                            <Select
+                                                value={selectedAdmin.trang_thai}
+                                                onChange={(value) => setSelectedAdmin((prev) => ({ ...prev, trang_thai: value }))}
+                                                className="border bg-white border-gray-300 p-3 rounded-lg w-full"
+                                            >
+                                                <Option value={0}>Dừng hoạt động</Option>
+                                                <Option value={1}>Đang hoạt động</Option>
+                                            </Select>
+                                        </div>
+                                    ) : (<input
                                         key={key}
                                         type='text'
                                         name={key}
@@ -111,6 +123,7 @@ export default function DanhMucAdmin() {
                                         onChange={handleInputChange}
                                         className='border bg-white border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500'
                                     />
+                                    )
                                 ))}
                                 <button onClick={handleSaveDanhMuc} className='bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition'>
                                     {modal === 'edit' ? 'Update' : 'Create'}
@@ -143,7 +156,34 @@ export default function DanhMucAdmin() {
                             {filteredUsers.length > 0 ? (
                                 filteredUsers.map((admin) => (
                                     <tr key={admin._id}>
-                                        {Object.keys(defaultAdmin).map((key) => <td key={key} className='py-2 pl-3'>{admin[key] || '-'}</td>)}
+                                        {Object.keys(defaultAdmin).map((key) => {
+                                            if (key === 'trang_thai') {
+                                                return (
+                                                    <td key={key} className='py-2 pl-3'>
+                                                        <Select
+                                                            value={admin.trang_thai}
+                                                            onChange={async (value) => {
+                                                                try {
+                                                                    await axiosInstance.post(`/danh-muc/update/${admin._id}`, {
+                                                                        ...admin,
+                                                                        trang_thai: value
+                                                                    });
+                                                                    fetchAccounts();
+                                                                } catch {
+                                                                    alert('Cập nhật trạng thái thất bại!');
+                                                                }
+                                                            }}
+                                                            className="border bg-white border-gray-300 p-3 rounded-lg w-full"
+                                                        >
+                                                            <Option value={0}>Dừng hoạt động</Option>
+                                                            <Option value={1}>Đang hoạt động</Option>
+                                                        </Select>
+                                                    </td>
+                                                );
+                                            }
+
+                                            return <td key={key} className='py-2 pl-3'>{admin[key] || '-'}</td>;
+                                        })}
                                         <td className='py-2 pl-3 flex gap-2'>
                                             <button onClick={() => { setSelectedAdmin(admin); setModal('edit'); }} className='bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition'>
                                                 <AiOutlineEdit />

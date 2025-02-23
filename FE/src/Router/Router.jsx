@@ -82,9 +82,7 @@ const Router = new createBrowserRouter([
   {
     path: "/mess",
     element: (
-      <Layout>
         <Chat />
-      </Layout>
     ),
   },
   {

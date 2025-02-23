@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux'
 function Admin() {
   const [activeComponent, setActiveComponent] = useState('account')
   const {admin }= useSelector((state)=>state.authAdmin)
-  console.log(admin)
   return (
     <div className='flex gap-3 border-r-2 border-[#000000]'>
       <AdminSidebar setActiveComponent={setActiveComponent} />

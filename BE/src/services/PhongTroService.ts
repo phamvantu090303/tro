@@ -83,15 +83,15 @@ export class PhongtroService {
       {
         $lookup: {
           from: "maps",
-          localField: "id_map",
-          foreignField: "id_map",
+          localField: "ma_map",
+          foreignField: "ma_map",
           as: "mapDetail",
         },
       },
       {
         $unwind: {
           path: "$mapDetail",
-          preserveNullAndEmptyArrays: true, // Giữ lại trường nếu không có đối tượng tương ứng
+          preserveNullAndEmptyArrays: true,
         },
       },
       {
