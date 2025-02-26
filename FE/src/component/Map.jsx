@@ -2,14 +2,11 @@ import React, { useEffect, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
-import Select from "react-select";
 
 const MapComponent = () => {
   const [locations, setLocations] = useState([]);
-  const [filteredLocations, setFilteredLocations] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
-    ma_map: "",
     address: "",
     district: "",
     latitude: "",
@@ -25,7 +22,6 @@ const MapComponent = () => {
       try {
         const response = await axios.get("http://localhost:5000/map/AllMap");
         setLocations(response.data.data);
-        setFilteredLocations(response.data.data);
       } catch (error) {
         console.error("Error fetching map data:", error);
       }
@@ -41,7 +37,7 @@ const MapComponent = () => {
 
     const bounds = [];
 
-    filteredLocations.forEach((location) => {
+    locations.forEach((location) => {
       if (location.latitude && location.longitude) {
         const marker = L.marker([location.latitude, location.longitude], {
           icon: L.icon({
@@ -85,10 +81,10 @@ const MapComponent = () => {
             ...prev,
             latitude: lat.toFixed(6),
             longitude: lng.toFixed(6),
-            address: data.road || "",
-            district: data.suburb || data.city_district || "",
-            province: data.state || "",
-            ward: data.village || data.town || data.city || "",
+            address: data.road ?? "",
+            district: data.suburb ?? data.city_district ?? "",
+            province: data.state ?? "",
+            ward: data.village ?? data.town ?? data.city ?? "",
           }));
           setShowModal(true);
         } catch (error) {
@@ -98,7 +94,7 @@ const MapComponent = () => {
     });
 
     return () => map.remove();
-  }, [filteredLocations]);
+  }, [locations]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -111,9 +107,7 @@ const MapComponent = () => {
         formData
       );
       setLocations((prev) => [...prev, response.data.data]);
-      setFilteredLocations((prev) => [...prev, response.data.data]);
       setFormData({
-        ma_map: "",
         address: "",
         district: "",
         latitude: "",
@@ -137,10 +131,7 @@ const MapComponent = () => {
       setLocations((prev) =>
         prev.map((location) => (location._id === editingId ? response.data.data : location))
       );
-      setFilteredLocations((prev) =>
-        prev.map((location) => (location._id === editingId ? response.data.data : location))
-      );
-      setFormData({ ma_map: "", address: "", district: "", latitude: "", longitude: "", province: "", ward: "" });
+      setFormData({ address: '', district: '', latitude: '', longitude: '', province: '', ward: '' });
       setShowModal(false);
       setIsEditing(false);
       setEditingId(null);
@@ -153,7 +144,6 @@ const MapComponent = () => {
     try {
       await axios.delete(`http://localhost:5000/map/deleteMap/${id}`);
       setLocations((prev) => prev.filter((location) => location._id !== id));
-      setFilteredLocations((prev) => prev.filter((location) => location._id !== id));
     } catch (error) {
       console.error('Error deleting location:', error);
     }
@@ -161,7 +151,6 @@ const MapComponent = () => {
 
   const handleEditLocation = (location) => {
     setFormData({
-      ma_map: location.ma_map,
       address: location.address,
       district: location.district,
       latitude: location.latitude,
@@ -174,19 +163,6 @@ const MapComponent = () => {
     setShowModal(true);
   };
 
-  const handleSearchChange = (selectedOption) => {
-    if (selectedOption) {
-      setFilteredLocations(locations.filter(location => location._id === selectedOption.value));
-    } else {
-      setFilteredLocations(locations);
-    }
-  };
-
-  const searchOptions = locations.map(location => ({
-    value: location._id,
-    label: `${location.address}, ${location.ward}, ${location.district}, ${location.province}`
-  }));
-
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       <div
@@ -198,23 +174,15 @@ const MapComponent = () => {
         style={{ width: "50%", padding: "20px", backgroundColor: "#f9f9f9" }}
       >
         <h3>Danh Sách Vị Trí Nhà Trọ</h3>
-        <Select
-          options={searchOptions}
-          onChange={handleSearchChange}
-          isClearable
-          placeholder="Tìm kiếm vị trí..."
-        />
         <table
           style={{
             width: "100%",
             borderCollapse: "collapse",
             backgroundColor: "#fff",
-            marginTop: "10px",
           }}
         >
           <thead>
             <tr style={{ backgroundColor: "#007bff", color: "#fff" }}>
-              <th>Mã map</th>
               <th>Địa Chỉ</th>
               <th>Phường</th>
               <th>Quận</th>
@@ -223,9 +191,8 @@ const MapComponent = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredLocations.map((location, index) => (
+            {locations.map((location, index) => (
               <tr key={index}>
-                <td>{location.ma_map}</td>
                 <td>{location.address}</td>
                 <td>{location.ward}</td>
                 <td>{location.district}</td>
@@ -270,7 +237,6 @@ const MapComponent = () => {
           >
             <h3>{isEditing ? 'Cập Nhật Vị Trí Nhà Trọ' : 'Thêm Vị Trí Nhà Trọ Mới'}</h3>
             {[
-              "ma_map",
               "address",
               "district",
               "latitude",
@@ -317,7 +283,7 @@ const MapComponent = () => {
                 setShowModal(false);
                 setIsEditing(false);
                 setEditingId(null);
-                setFormData({ ma_map: "", address: "", district: "", latitude: "", longitude: "", province: "", ward: "" });
+                setFormData({ address: '', district: '', latitude: '', longitude: '', province: '', ward: '' });
               }}
               style={{
                 backgroundColor: "#dc3545",
