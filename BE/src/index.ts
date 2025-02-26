@@ -19,6 +19,9 @@ import initSocket from "./utils/socket";
 import { createServer } from "http";
 import routerMess from "./routers/messager";
 import routerAdmin from "./routers/adminRouter";
+import { saveEndOfDayData } from "./controllers/electricityController";
+import router from "./routers/TinhTienDienIOT";
+import schedule from "node-schedule";
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -73,7 +76,10 @@ const connectDB = async () => {
 
 // socket
 initSocket(server);
+app.use("/api", router);
 
+// Lưu dữ liệu cuối ngày
+schedule.scheduleJob("59 23 * * *", saveEndOfDayData);
 
 connectDB()
   .then(() => {
