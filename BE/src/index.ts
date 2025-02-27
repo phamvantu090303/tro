@@ -22,6 +22,7 @@ import routerAdmin from "./routers/adminRouter";
 import { saveEndOfDayData } from "./controllers/electricityController";
 import router from "./routers/TinhTienDienIOT";
 import schedule from "node-schedule";
+import routerDanhGia from "./routers/danhGia";
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -60,6 +61,7 @@ app.use("/phan_quyen", RouteQuyen);
 app.use("/quyenchucnang", QuyenChucNangRouter);
 
 app.use("/tin-nhan", routerMess);
+app.use("/danh_gia", routerDanhGia);
 
 
 //hợp đồng
@@ -76,6 +78,7 @@ const connectDB = async () => {
 
 // socket
 initSocket(server);
+//api chạy thông tin từ ESP32
 app.use("/api", router);
 
 // Lưu dữ liệu cuối ngày
