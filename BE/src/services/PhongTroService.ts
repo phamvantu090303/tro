@@ -31,7 +31,7 @@ export class PhongtroService {
       },
       {
         $match: {
-          "danh_muc.trang_thai": 1,
+          "danh_muc.trang_thai": 1, // Chỉ lấy những danh mục có trạng thái = 1
         },
       },
       {
