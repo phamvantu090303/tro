@@ -2,27 +2,21 @@ import { useState, useEffect } from "react";
 import { axiosInstance } from "../../../Axios";
 import CitySelector from "./CitySelector";
 import CardRoom from "../CardRoom";
+import { usePhongTro } from "../../Context/PhongTroContext";
 
 function Category() {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [products, setProducts] = useState([]);
-  useEffect(() => {
-    if (!selectedCategoryId) return;
-    const fetchProducts = async () => {
-      try {
-        const res = await axiosInstance.get("/phongTro/get");
-        const filteredProducts = res.data.data.filter(
-          (product) => product.ma_danh_muc === selectedCategoryId
-        );
-        setProducts(filteredProducts);
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu phòng trọ:", error);
-      }
-    };
+  const { phongTro } = usePhongTro();
 
-    fetchProducts();
-  }, [selectedCategoryId]);
-  console.log(products);
+  useEffect(() => {
+    if (!selectedCategoryId || phongTro.length === 0) return;
+    const filteredProducts = phongTro.filter(
+      (product) => product.ma_danh_muc === selectedCategoryId
+    );
+    setProducts(filteredProducts);
+  }, [selectedCategoryId, phongTro]);
+
   return (
     <div className="mt-[40px]">
       <div className="items-end">
@@ -45,8 +39,13 @@ function Category() {
                   id={product.ma_phong}
                   price={product.gia_tien}
                   title={product.ten_phong_tro}
-                  img={product.Img}
+                  img={product.anh_phong}
                   number={product.so_luong_nguoi}
+                  dien_tich={product.dien_tich}
+                  address={product.mapDetail?.address}
+                  district={product.mapDetail?.district}
+                  province={product.mapDetail?.province}
+                  ward={product.mapDetail?.ward}
                 />
               </div>
             ))
