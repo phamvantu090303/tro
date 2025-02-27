@@ -7,12 +7,13 @@ import { CiHeart } from "react-icons/ci";
 import { MdDeviceHub, MdLocalPolice } from "react-icons/md";
 import ProductShowcase from "../../component/ProductShowcase";
 import MapDetail from "../../component/RoomDetailsComponent/MapDetail";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { useSelector } from "react-redux";
+import { usePhongTro } from "../../Context/PhongTroContext";
 
 function RoomDetails() {
   const { user } = useSelector((state) => state.auth);
   const { id } = useParams();
+  const { phongTro } = usePhongTro();
   const [data, setData] = useState([]);
   const [trangthai, setTrangthai] = useState("");
   const [statusColor, setStatusColor] = useState("");
@@ -41,8 +42,7 @@ function RoomDetails() {
           text: "Trạng thái không xác định",
           color: "black",
         };
-        const data = await axiosInstance.get("/phongTro/get");
-        const filteredProducts = data.data.data.filter(
+        const filteredProducts = phongTro.filter(
           (product) => product.ma_danh_muc === res.data.data.ma_danh_muc
         );
         setRoomSame(filteredProducts);

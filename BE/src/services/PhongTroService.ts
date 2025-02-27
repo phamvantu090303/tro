@@ -30,6 +30,11 @@ export class PhongtroService {
         },
       },
       {
+        $match: {
+          "danh_muc.trang_thai": 1,
+        },
+      },
+      {
         $lookup: {
           from: "maps",
           localField: "ma_map",

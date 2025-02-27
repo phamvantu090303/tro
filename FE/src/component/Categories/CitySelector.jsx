@@ -1,27 +1,23 @@
-import { useState, useEffect } from "react";
-import { axiosInstance } from "../../../Axios";
+import { useEffect, useState } from "react";
+import { useDanhMuc } from "../../Context/DanhMucContext";
 
 function CitySelector({ onSelectCity }) {
-  const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
+  const { danhMuc } = useDanhMuc();
 
   useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const res = await axiosInstance.get("/danh-muc/");
-        setCities(res.data.data);
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu thành phố:", error);
-      }
-    };
-    fetchCities();
-  }, []);
+    if (danhMuc.length > 0) {
+      setSelectedCity(danhMuc[0].ma_danh_muc);
+      onSelectCity(danhMuc[0].ma_danh_muc);
+    }
+  }, [danhMuc, onSelectCity]);
 
   const handleChange = (e) => {
-    const cityName = e.target.value;
-    setSelectedCity(cityName);
-    const selectedCityData = cities.find(
-      (city) => city.ten_danh_muc === cityName
+    const selectedCityId = e.target.value;
+    setSelectedCity(selectedCityId);
+
+    const selectedCityData = danhMuc.find(
+      (city) => city.ma_danh_muc === selectedCityId
     );
     if (selectedCityData) {
       onSelectCity(selectedCityData.ma_danh_muc);
@@ -35,11 +31,11 @@ function CitySelector({ onSelectCity }) {
         value={selectedCity}
         onChange={handleChange}
       >
-        <option value={cities} disabled>
+        <option value="" disabled>
           Chọn thành phố
         </option>
-        {cities.map((city) => (
-          <option key={city.ma_danh_muc} value={city.ten_danh_muc}>
+        {danhMuc.map((city) => (
+          <option key={city.ma_danh_muc} value={city.ma_danh_muc}>
             {city.ten_danh_muc}
           </option>
         ))}

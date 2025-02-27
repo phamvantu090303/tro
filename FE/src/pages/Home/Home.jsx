@@ -1,26 +1,20 @@
-import { useSelector } from "react-redux";
 import wallhome from "../../assets/roomwallperhome.jpg";
 import ProductShowcase from "../../component/ProductShowcase";
 import { useEffect, useState } from "react";
-import { axiosInstance } from "../../../Axios";
 import Category from "../../component/Categories/Categories";
+import { usePhongTro } from "../../Context/PhongTroContext";
 function Homepage() {
-  const { user } = useSelector((state) => state.auth);
-  const [dataTop, setDataTop] = useState([]);
   const [listdata, setListdata] = useState([]);
-
+  const { phongTro } = usePhongTro();
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await axiosInstance.get("/phongTro/get");
-      setDataTop(res.data.data);
-      const sortedBooks = res.data.data.sort(
+    if (phongTro.length > 0) {
+      const sortedBooks = [...phongTro].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
       setListdata(sortedBooks);
-    };
+    }
+  }, [phongTro]);
 
-    fetchData();
-  }, []);
   return (
     <div className="w-full ">
       <img
@@ -33,7 +27,7 @@ function Homepage() {
           {/* Top Rated */}
           <ProductShowcase
             desc={"Top Rated"}
-            data={dataTop}
+            data={phongTro}
             limit={10}
             slide={true}
           />

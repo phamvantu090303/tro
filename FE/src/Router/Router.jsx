@@ -8,11 +8,12 @@ import MapComponent from "../component/Map";
 import Search from "../pages/Search/Search";
 import RoomDetails from "../pages/RoomDetails/RoomDetails";
 
-import QuyenManagement from "../component/admin/Quyen";
+import QuyenManagement from "../pages/admin/Quyen";
 import Chat from "../component/Mess/mess";
 
-import LoginAdmin from "../component/admin/LoginAdmin/loginAdmin"
-import HomeAdmin from "../component/admin/home/homeAdmin";
+import LoginAdmin from "../pages/admin/LoginAdmin/loginAdmin";
+import HomeAdmin from "../pages/admin/home/homeAdmin";
+import BillPayment from "../pages/BillPayment/BillPayment";
 
 const Router = new createBrowserRouter([
   {
@@ -81,9 +82,7 @@ const Router = new createBrowserRouter([
   },
   {
     path: "/mess",
-    element: (
-        <Chat />
-    ),
+    element: <Chat />,
   },
   {
     path: "/admin/login",
@@ -95,9 +94,15 @@ const Router = new createBrowserRouter([
   },
   {
     path: "/admin/home",
+    element: <HomeAdmin />,
+  },
+  {
+    path: "/BillPayment",
     element: (
-        <HomeAdmin />
+      <Layout>
+        <BillPayment />
+      </Layout>
     ),
-  }
+  },
 ]);
 export default Router;
