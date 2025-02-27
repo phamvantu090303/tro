@@ -7,10 +7,10 @@ let latestData: Record<string, IElectricity> = {};
 
 // Nhận dữ liệu từ ESP32
 export const receiveElectricityData = (req: Request, res: Response): void => {
-  const { room_id, user_id, voltage, power, power_factor, frequency, energy, current } = req.body;
+  const { room_id , voltage, power, power_factor, frequency, energy, current } = req.body;
 
   // Kiểm tra dữ liệu đầu vào
-  if (!room_id || !user_id || voltage === undefined || current === undefined || power === undefined) {
+  if (!room_id || voltage === undefined || current === undefined || power === undefined) {
     res.status(400).json({ message: "Thiếu thông tin dữ liệu!" });
     return;
   }
@@ -30,7 +30,6 @@ export const receiveElectricityData = (req: Request, res: Response): void => {
   // Cập nhật dữ liệu vào bộ nhớ tạm
   latestData[room_id] = {
     room_id,
-    user_id,
     voltage: safeVoltage,
     current: safeCurrent,
     power: safePower,
@@ -41,7 +40,7 @@ export const receiveElectricityData = (req: Request, res: Response): void => {
     timestamp: new Date(),
   } as IElectricity;
 
-  console.log(`📡 Nhận dữ liệu từ phòng ${room_id}: ${safeVoltage}V - ${safeCurrent}A - ${safePower}W`);
+  console.log(`Nhận dữ liệu từ phòng ${room_id}: ${safeVoltage}V - ${safeCurrent}A - ${safePower}W`);
 
   res.json({ message: "Dữ liệu đã nhận!" });
 };
@@ -49,19 +48,19 @@ export const receiveElectricityData = (req: Request, res: Response): void => {
 // Hàm lưu dữ liệu vào cuối ngày
 export const saveEndOfDayData = async (): Promise<void> => {
   const now = moment().format("YYYY-MM-DD HH:mm:ss");
-  console.log(`💾 Lưu dữ liệu cuối ngày vào lúc: ${now}`);
+  console.log(`Lưu dữ liệu vào lúc: ${now}`);
 
   try {
     for (const room_id in latestData) {
       const data = latestData[room_id];
       const newRecord = new Electricity(data);
       await newRecord.save();
-      console.log(`✅ Dữ liệu phòng ${room_id} đã lưu vào database.`);
+      console.log(`Dữ liệu phòng ${room_id} đã lưu vào database.`);
     }
 
-    // Xóa bộ nhớ tạm để chuẩn bị cho ngày mới
+    // Xóa bộ nhớ tạm để chuẩn bị cho lần tiếp theo
     latestData = {};
   } catch (error) {
-    console.error("❌ Lỗi khi lưu dữ liệu cuối ngày:", error);
+    console.error("Lỗi khi lưu dữ liệu:", error);
   }
 };

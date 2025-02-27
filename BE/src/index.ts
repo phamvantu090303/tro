@@ -83,6 +83,7 @@ app.use("/api", router);
 
 // Lưu dữ liệu cuối ngày
 schedule.scheduleJob("59 23 * * *", saveEndOfDayData);
+//*:Phút (0 - 59) *:Giờ (0 - 23) *:Ngày trong (tháng (1 - 31)) *:Tháng (1 - 12)    *:Ngày trong tuần (0 - 7) (Chủ nhật có thể là 0 hoặc 7)
 
 connectDB()
   .then(() => {
