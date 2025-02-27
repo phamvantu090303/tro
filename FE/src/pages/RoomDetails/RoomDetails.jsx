@@ -7,12 +7,14 @@ import { CiHeart } from "react-icons/ci";
 import { MdDeviceHub, MdLocalPolice } from "react-icons/md";
 import ProductShowcase from "../../component/ProductShowcase";
 import MapDetail from "../../component/RoomDetailsComponent/MapDetail";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { useSelector } from "react-redux";
+import { usePhongTro } from "../../Context/PhongTroContext";
+import RoomReview from "../../component/RoomDetailsComponent/Review";
 
 function RoomDetails() {
   const { user } = useSelector((state) => state.auth);
   const { id } = useParams();
+  const { phongTro } = usePhongTro();
   const [data, setData] = useState([]);
   const [trangthai, setTrangthai] = useState("");
   const [statusColor, setStatusColor] = useState("");
@@ -41,8 +43,7 @@ function RoomDetails() {
           text: "Trạng thái không xác định",
           color: "black",
         };
-        const data = await axiosInstance.get("/phongTro/get");
-        const filteredProducts = data.data.data.filter(
+        const filteredProducts = phongTro.filter(
           (product) => product.ma_danh_muc === res.data.data.ma_danh_muc
         );
         setRoomSame(filteredProducts);
@@ -61,6 +62,7 @@ function RoomDetails() {
   const amenitiesRef = useRef(null);
   const nearbyRef = useRef(null);
   const addressRef = useRef(null);
+  const reviewRef = useRef(null)
   // Hàm xử lý cuộn xuống khi chọn tab
   const handleScroll = (tab) => {
     setNut(tab);
@@ -78,6 +80,9 @@ function RoomDetails() {
       case "Địa chỉ":
         ref = addressRef;
         break;
+case "Danh gia":
+        ref = reviewRef;
+        break
       default:
         ref = null;
     }
@@ -253,6 +258,12 @@ function RoomDetails() {
                 Địa chỉ
               </h2>
               {toado ? <MapDetail toado={toado} /> : <p>Đang tải vị trí...</p>}
+            </div>
+            <div>
+              <h2 ref={reviewRef} className="text-3xl font-semibold mb-4">
+                Danh gia
+              </h2>
+              <RoomReview id={id}/>
             </div>
           </div>
         </div>

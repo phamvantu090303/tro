@@ -1,307 +1,204 @@
-import React, { useEffect, useState } from "react";
-import L from "leaflet";
+import { useEffect, useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Circle,
+  useMap,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import axios from "axios";
+import { axiosInstance } from "../../Axios";
 
-const MapComponent = () => {
-  const [locations, setLocations] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    address: "",
-    district: "",
-    latitude: "",
-    longitude: "",
-    province: "",
-    ward: "",
+export default function DiscoverSouthernIndia() {
+  const [locations, setLocations] = useState({});
+  const [selectedState, setSelectedState] = useState(null);
+  const [states, setStates] = useState([]);
+  const [mapCenter, setMapCenter] = useState({
+    latitude: 21.0285,
+    longitude: 105.8542,
   });
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState(null);
+  const [radius, setRadius] = useState(3000);
+  const [filteredPhongTro, setFilteredPhongTro] = useState([]);
 
   useEffect(() => {
-    const fetchLocations = async () => {
+    const fetchMap = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/map/AllMap");
-        setLocations(response.data.data);
+        const res = await axiosInstance.get("/map/AllMap");
+
+        if (!res.data || !res.data.data) {
+          console.error("Invalid API response structure", res.data);
+          return;
+        }
+
+        // Chuyển đổi dữ liệu để phù hợp với object `{ "ward": { "0": {...}, "1": {...} } }`
+        const locationData = res.data.data.reduce((acc, item) => {
+          const { ward, latitude, longitude } = item;
+
+          if (
+            !ward ||
+            typeof latitude !== "number" ||
+            typeof longitude !== "number"
+          )
+            return acc;
+
+          if (!acc[ward]) acc[ward] = {}; // Sử dụng object thay vì array
+          const index = Object.keys(acc[ward]).length;
+          acc[ward][index] = { latitude, longitude };
+
+          return acc;
+        }, {});
+
+        setLocations(locationData);
+        setStates(Object.keys(locationData));
+
+        if (Object.keys(locationData).length > 0) {
+          const firstState = Object.keys(locationData)[0];
+          setSelectedState(firstState);
+          setMapCenter(locationData[firstState]["0"]);
+        }
       } catch (error) {
         console.error("Error fetching map data:", error);
       }
     };
-    fetchLocations();
+
+    fetchMap();
   }, []);
 
   useEffect(() => {
-    const map = L.map("map").setView([16.0471, 108.2062], 13);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap contributors",
-    }).addTo(map);
+    if (!selectedState || !locations[selectedState]) return;
 
-    const bounds = [];
-
-    locations.forEach((location) => {
-      if (location.latitude && location.longitude) {
-        const marker = L.marker([location.latitude, location.longitude], {
-          icon: L.icon({
-            iconUrl: "https://cdn-icons-png.flaticon.com/512/252/252025.png",
-            iconSize: [30, 30],
-          }),
-        }).addTo(map).bindPopup(`
-            <b>${location.address}</b><br/>
-            Phường: ${location.ward}<br/>
-            Quận: ${location.district}<br/>
-            Tỉnh: ${location.province}
-          `);
-
-        bounds.push([location.latitude, location.longitude]);
+    const filtered = Object.values(locations[selectedState]).filter(
+      ({ latitude, longitude }) => {
+        const distance = getDistanceFromLatLonInMeters(
+          latitude,
+          longitude,
+          mapCenter.latitude,
+          mapCenter.longitude
+        );
+        return distance <= radius;
       }
-    });
+    );
 
-    if (bounds.length > 0) {
-      map.fitBounds(bounds, { padding: [50, 50] });
-    }
+    setFilteredPhongTro(filtered);
+  }, [selectedState, locations, radius]);
 
-    map.on("click", async (e) => {
-      if (e.latlng) {
-        const { lat, lng } = e.latlng;
+  function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
 
-        try {
-          const res = await axios.get(
-            `https://nominatim.openstreetmap.org/reverse`,
-            {
-              params: {
-                lat,
-                lon: lng,
-                format: "json",
-              },
-            }
-          );
-
-          const data = res.data.address;
-
-          setFormData((prev) => ({
-            ...prev,
-            latitude: lat.toFixed(6),
-            longitude: lng.toFixed(6),
-            address: data.road ?? "",
-            district: data.suburb ?? data.city_district ?? "",
-            province: data.state ?? "",
-            ward: data.village ?? data.town ?? data.city ?? "",
-          }));
-          setShowModal(true);
-        } catch (error) {
-          console.error("Error fetching address:", error);
-        }
-      }
-    });
-
-    return () => map.remove();
-  }, [locations]);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleAddLocation = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/map/creatMap",
-        formData
-      );
-      setLocations((prev) => [...prev, response.data.data]);
-      setFormData({
-        address: "",
-        district: "",
-        latitude: "",
-        longitude: "",
-        province: "",
-        ward: "",
-      });
-      setShowModal(false);
-    } catch (error) {
-      console.error("Error adding location:", error);
-    }
-  };
-
-  const handleUpdateLocation = async () => {
-    try {
-      console.log("Updating location:", editingId, formData); // Debug dữ liệu trước khi gửi request
-      const response = await axios.put(`http://localhost:5000/map/updateMap/${editingId}`, formData);
-  
-      console.log("Update response:", response.data); // Debug phản hồi từ server
-  
-      setLocations((prev) =>
-        prev.map((location) => (location._id === editingId ? response.data.data : location))
-      );
-      setFormData({ address: '', district: '', latitude: '', longitude: '', province: '', ward: '' });
-      setShowModal(false);
-      setIsEditing(false);
-      setEditingId(null);
-    } catch (error) {
-      console.error('Error updating location:', error.response ? error.response.data : error);
-    }
-  };
-
-  const handleDeleteLocation = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/map/deleteMap/${id}`);
-      setLocations((prev) => prev.filter((location) => location._id !== id));
-    } catch (error) {
-      console.error('Error deleting location:', error);
-    }
-  };
-
-  const handleEditLocation = (location) => {
-    setFormData({
-      address: location.address,
-      district: location.district,
-      latitude: location.latitude,
-      longitude: location.longitude,
-      province: location.province,
-      ward: location.ward,
-    });
-    setIsEditing(true);
-    setEditingId(location._id);
-    setShowModal(true);
-  };
+  function ChangeMapCenter({ center }) {
+    const map = useMap();
+    map.setView([center.latitude, center.longitude], 12);
+    return null;
+  }
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      <div
-        id="map"
-        style={{ flex: 1, height: "80vh", borderRight: "2px solid #ddd" }}
-      ></div>
+    <div className="p-6 w-full mx-auto flex gap-6">
+      <div className="w-1/2">
+        <h2 className="text-3xl font-bold mb-4">Discover Southern India</h2>
 
-      <div
-        style={{ width: "50%", padding: "20px", backgroundColor: "#f9f9f9" }}
-      >
-        <h3>Danh Sách Vị Trí Nhà Trọ</h3>
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            backgroundColor: "#fff",
-          }}
-        >
-          <thead>
-            <tr style={{ backgroundColor: "#007bff", color: "#fff" }}>
-              <th>Địa Chỉ</th>
-              <th>Phường</th>
-              <th>Quận</th>
-              <th>Tỉnh</th>
-              <th>Hành Động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {locations.map((location, index) => (
-              <tr key={index}>
-                <td>{location.address}</td>
-                <td>{location.ward}</td>
-                <td>{location.district}</td>
-                <td>{location.province}</td>
-                <td>
-                  <button onClick={() => handleEditLocation(location)} style={{ marginRight: '10px' }}>
-                    Sửa
-                  </button>
-                  <button onClick={() => handleDeleteLocation(location._id)}>Xóa</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="flex space-x-2 mb-4">
+          {states.map((state) => (
+            <button
+              key={state}
+              onClick={() => {
+                setSelectedState(state);
+                setMapCenter(locations[state]["0"]);
+              }}
+              className={`px-4 py-2 text-sm rounded-full border ${
+                selectedState === state
+                  ? "bg-blue-600 text-white"
+                  : "border-gray-300 text-gray-600"
+              }`}
+            >
+              {state}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center space-x-4 mb-4">
+          <span className="text-gray-600 text-sm">Bán kính:</span>
+          <select
+            className="border border-gray-300 rounded px-3 py-1"
+            value={radius}
+            onChange={(e) => setRadius(Number(e.target.value))}
+          >
+            <option value={1000}>1 km</option>
+            <option value={3000}>3 km</option>
+            <option value={5000}>5 km</option>
+            <option value={10000}>10 km</option>
+          </select>
+        </div>
+
+        {selectedState && (
+          <div className="border rounded-lg p-4">
+            <h3 className="text-xl font-bold">{selectedState}</h3>
+            <p className="text-gray-600 text-sm mt-2">
+              "Explore {selectedState} and find amazing rental options!"
+            </p>
+          </div>
+        )}
       </div>
 
-      {showModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-            overflow: "auto",
-          }}
+      <div className="w-full">
+        <MapContainer
+          center={[mapCenter.latitude, mapCenter.longitude]}
+          zoom={12}
+          style={{ height: "700px", width: "100%" }}
         >
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "20px",
-              borderRadius: "10px",
-              width: "400px",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-              zIndex: 10000,
-            }}
-          >
-            <h3>{isEditing ? 'Cập Nhật Vị Trí Nhà Trọ' : 'Thêm Vị Trí Nhà Trọ Mới'}</h3>
-            {[
-              "address",
-              "district",
-              "latitude",
-              "longitude",
-              "province",
-              "ward",
-            ].map((field) => (
-              <div key={field} style={{ marginBottom: "10px" }}>
-                <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
-                <input
-                  type={
-                    field === "latitude" || field === "longitude"
-                      ? "number"
-                      : "text"
-                  }
-                  name={field}
-                  value={formData[field]}
-                  onChange={handleChange}
-                  style={{
-                    width: "100%",
-                    padding: "8px",
-                    borderRadius: "5px",
-                    border: "1px solid #ccc",
-                  }}
-                  required
+          <ChangeMapCenter center={mapCenter} />
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+          {/* Vòng tròn bán kính */}
+          {selectedState &&
+            locations[selectedState] &&
+            (() => {
+              const wardLocations = Object.values(locations[selectedState]);
+
+              if (wardLocations.length === 0) return null;
+
+              const avgLat =
+                wardLocations.reduce((sum, loc) => sum + loc.latitude, 0) /
+                wardLocations.length;
+              const avgLon =
+                wardLocations.reduce((sum, loc) => sum + loc.longitude, 0) /
+                wardLocations.length;
+
+              return (
+                <Circle
+                  center={[avgLat, avgLon]}
+                  radius={radius}
+                  color="blue"
+                  fillColor="blue"
+                  fillOpacity={0.2}
                 />
-              </div>
-            ))}
-            <button
-              onClick={isEditing ? handleUpdateLocation : handleAddLocation}
-              style={{
-                backgroundColor: "#28a745",
-                color: "white",
-                padding: "10px",
-                width: "100%",
-                border: "none",
-                borderRadius: "5px",
-              }}
-            >
-              {isEditing ? 'Cập Nhật Vị Trí' : 'Lưu Vị Trí'}
-            </button>
-            <button
-              onClick={() => {
-                setShowModal(false);
-                setIsEditing(false);
-                setEditingId(null);
-                setFormData({ address: '', district: '', latitude: '', longitude: '', province: '', ward: '' });
-              }}
-              style={{
-                backgroundColor: "#dc3545",
-                color: "white",
-                padding: "10px",
-                width: "100%",
-                border: "none",
-                borderRadius: "5px",
-                marginTop: "10px",
-              }}
-            >
-              Đóng
-            </button>
-          </div>
-        </div>
-      )}
+              );
+            })()}
+
+          {/* Hiển thị phòng trọ trong vùng bán kính */}
+          {filteredPhongTro.map((pt, index) => (
+            <Marker key={index} position={[pt.latitude, pt.longitude]}>
+              <Popup>
+                <strong>Phòng Trọ</strong>
+                <p>
+                  Tọa độ: {pt.latitude}, {pt.longitude}
+                </p>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      </div>
     </div>
   );
-};
-
-export default MapComponent;
+}
