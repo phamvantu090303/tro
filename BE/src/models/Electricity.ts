@@ -17,7 +17,7 @@ export interface IElectricity extends Document {
 // Định nghĩa schema cho Mongoose
 const ElectricitySchema: Schema = new Schema({
   room_id: { type: String, required: true },
-  user_id: { type: String, required: true },
+  user_id: { type: String, required: false },
   voltage: { type: Number, required: true },
   current: { type: Number, required: true },
   power: { type: Number, required: true },
