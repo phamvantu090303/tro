@@ -4,6 +4,7 @@ import {
   deleteById,
   detailRoom,
   getData,
+  getPhongTroByMap,
   storePhongTro,
   updatePhongTro,
 } from "../controllers/phongTro";
@@ -17,4 +18,6 @@ routerPhong.delete("/delete/all", deleteAll);
 routerPhong.delete("/delete/:ma_phong", deleteById);
 
 routerPhong.post("/detail/:ma_phong", detailRoom);
+//lấy phòng theo mã map
+routerPhong.post("/getPhongByMaMap/:ma_map", getPhongTroByMap);
 export default routerPhong;
