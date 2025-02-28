@@ -119,6 +119,21 @@ const detailRoom = async (req: Request, res: Response) => {
     });
   }
 };
+const getPhongTroByMap = async (req: Request, res: Response) => {
+  try {
+    const { ma_map } = req.params;
+    const data = await phongTroService.getPhongTroByMap(ma_map);
+    res.status(200).json({
+      message: "Lấy danh sách phòng trọ theo mã map thành công!",
+      data: data,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Lỗi khi lấy danh sách phòng trọ.",
+      error: error.message,
+    });
+  }
+}
 
 export {
   storePhongTro,
@@ -127,4 +142,5 @@ export {
   deleteAll,
   deleteById,
   detailRoom,
+  getPhongTroByMap
 };

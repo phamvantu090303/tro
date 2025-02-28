@@ -110,4 +110,7 @@ export class PhongtroService {
     ]);
     return result[0] || null;
   }
+  async getPhongTroByMap(ma_map: string) {
+    return await PhongTroModel.find({ ma_map });
+  }
 }
