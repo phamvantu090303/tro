@@ -22,7 +22,7 @@ function Category() {
       <div className="items-end">
         <div>
           <div className="flex items-center justify-between">
-            <p className="text-[#23274A] font-bold text-2xl">Category</p>
+            <p className="text-[#23274A] font-bold text-2xl">Mục lục</p>
             <CitySelector onSelectCity={setSelectedCategoryId} />
           </div>
           <div className="w-[117px] h-[4px] bg-[#FEBB02] mt-8"></div>

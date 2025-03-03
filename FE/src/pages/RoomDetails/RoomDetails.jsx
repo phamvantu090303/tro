@@ -62,7 +62,7 @@ function RoomDetails() {
   const amenitiesRef = useRef(null);
   const nearbyRef = useRef(null);
   const addressRef = useRef(null);
-  const reviewRef = useRef(null)
+  const reviewRef = useRef(null);
   // Hàm xử lý cuộn xuống khi chọn tab
   const handleScroll = (tab) => {
     setNut(tab);
@@ -80,9 +80,9 @@ function RoomDetails() {
       case "Địa chỉ":
         ref = addressRef;
         break;
-case "Danh gia":
+      case "Danh gia":
         ref = reviewRef;
-        break
+        break;
       default:
         ref = null;
     }
@@ -263,7 +263,7 @@ case "Danh gia":
               <h2 ref={reviewRef} className="text-3xl font-semibold mb-4">
                 Danh gia
               </h2>
-              <RoomReview id={id}/>
+              <RoomReview id={id} />
             </div>
           </div>
         </div>

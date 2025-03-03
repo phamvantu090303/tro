@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
+import { FaMap } from "react-icons/fa";
 
 export default function AdminSidebar({ setActiveComponent }) {
   const { admin } = useSelector((state) => state.authAdmin);
@@ -26,7 +27,9 @@ export default function AdminSidebar({ setActiveComponent }) {
           <ul className="flex flex-col gap-4">
             <li
               className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
-                isActive("admin") ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                isActive("admin")
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
               }`}
               onClick={() => setActiveComponent("admin")}
             >
@@ -35,7 +38,9 @@ export default function AdminSidebar({ setActiveComponent }) {
             </li>
             <li
               className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
-                isActive("phongtro") ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                isActive("phongtro")
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
               }`}
               onClick={() => setActiveComponent("phongtro")}
             >
@@ -44,7 +49,9 @@ export default function AdminSidebar({ setActiveComponent }) {
             </li>
             <li
               className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
-                isActive("danhmuc") ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                isActive("danhmuc")
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
               }`}
               onClick={() => setActiveComponent("danhmuc")}
             >
@@ -53,7 +60,9 @@ export default function AdminSidebar({ setActiveComponent }) {
             </li>
             <li
               className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
-                isActive("thietbi") ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                isActive("thietbi")
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
               }`}
               onClick={() => setActiveComponent("thietbi")}
             >
@@ -62,7 +71,9 @@ export default function AdminSidebar({ setActiveComponent }) {
             </li>
             <li
               className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
-                isActive("anhphong") ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                isActive("anhphong")
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
               }`}
               onClick={() => setActiveComponent("anhphong")}
             >
@@ -71,7 +82,9 @@ export default function AdminSidebar({ setActiveComponent }) {
             </li>
             <li
               className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
-                isActive("yeuthich") ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                isActive("yeuthich")
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
               }`}
               onClick={() => setActiveComponent("yeuthich")}
             >
@@ -80,7 +93,9 @@ export default function AdminSidebar({ setActiveComponent }) {
             </li>
             <li
               className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
-                isActive("adminuser") ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                isActive("adminuser")
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
               }`}
               onClick={() => setActiveComponent("adminuser")}
             >
@@ -89,12 +104,25 @@ export default function AdminSidebar({ setActiveComponent }) {
             </li>
             <li
               className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
-                isActive("mess") ? "bg-gray-700 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                isActive("mess")
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
               }`}
               onClick={() => setActiveComponent("mess")}
             >
               <MdOutlineAdminPanelSettings className="text-xl" />
               Mess
+            </li>
+            <li
+              className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
+                isActive("map")
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
+              }`}
+              onClick={() => setActiveComponent("map")}
+            >
+              <FaMap className="text-xl" />
+              map
             </li>
           </ul>
         </nav>
