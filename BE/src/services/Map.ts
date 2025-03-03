@@ -18,15 +18,17 @@ class MapService {
     await MapModel.findByIdAndDelete(_id);
   }
 
-  async UpdateMap(data: any) {
-    await MapModel.findByIdAndUpdate(data.id, {
-      ma_map: data.ma_map,
-      address: data.address,
-      district: data.district,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      province: data.province,
-      ward: data.ward,
+  async UpdateMap(id: any, updateData: any) {
+    console.log("id", id);
+    console.log("data update", updateData);
+    await MapModel.findByIdAndUpdate(id, {
+      ma_map: updateData.ma_map,
+      address: updateData.address,
+      district: updateData.district,
+      latitude: updateData.latitude,
+      longitude: updateData.longitude,
+      province: updateData.province,
+      ward: updateData.ward,
     });
   }
 

@@ -5,7 +5,7 @@ export const CreateMap = async (req: Request, res: Response) => {
   try {
     const data = req.body;
     const mapServiceInstance = new MapService();
-    await mapServiceInstance.CreateMap(data);  
+    await mapServiceInstance.CreateMap(data);
 
     res.status(200).json({
       message: "Create successfully!!!",
@@ -15,56 +15,54 @@ export const CreateMap = async (req: Request, res: Response) => {
       message: error.message,
     });
   }
-}
+};
 export const UpdateMap = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    console.log(id)
     const formData = req.body;
-    console.log(formData)
     const mapServiceInstance = new MapService();
-    await mapServiceInstance.UpdateMap(id);  
-  
+    await mapServiceInstance.UpdateMap(id, formData);
+
     res.status(200).json({
       message: "Update successfully!!!",
       id: id,
-      data: formData
+      data: formData,
     });
   } catch (error: any) {
     res.status(404).json({
       message: error.message,
     });
   }
-}
+};
 
 export const DeleteMap = async (req: Request, res: Response) => {
-    try {
-        const id = req.params.id;
-        const mapServiceInstance = new MapService();
-        await mapServiceInstance.DeleteMap(id);  
-    
-        res.status(200).json({
-        message: "Delete successfully!!!",
-        });
-    } catch (error: any) {
-        res.status(404).json({
-        message: error.message,
-        });
-    }
-}
+  try {
+    const id = req.params.id;
+    const mapServiceInstance = new MapService();
+    await mapServiceInstance.DeleteMap(id);
+
+    res.status(200).json({
+      message: "Delete successfully!!!",
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
 
 export const GetAllMap = async (req: Request, res: Response) => {
-    try {
-        const mapServiceInstance = new MapService();
-        const data = await mapServiceInstance.GetAllMap();  
-    
-        res.status(200).json({
-        message: "GetAll successfully!!!",
-        data: data
-        });
-    } catch (error: any) {
-        res.status(404).json({
-        message: error.message,
-        });
-    }
-}
+  try {
+    const mapServiceInstance = new MapService();
+    const data = await mapServiceInstance.GetAllMap();
+
+    res.status(200).json({
+      message: "GetAll successfully!!!",
+      data: data,
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
