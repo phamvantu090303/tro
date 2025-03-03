@@ -82,12 +82,12 @@ initSocket(server);
 app.use("/api", router);
 
 // Lưu dữ liệu cuối ngày
-schedule.scheduleJob("59 23 * * *", saveEndOfDayData);
+schedule.scheduleJob("*1 * * *", saveEndOfDayData);
 
 connectDB()
   .then(() => {
     server.listen(PORT, () => {
-      console.log(`Server is stating at http://localhost:${PORT}`);
+      console.log(`Server is stating at http://192.168.100.173:${PORT}`);
     });
   })
   .catch((error) => {
