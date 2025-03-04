@@ -5,3 +5,12 @@ html {
 .leaflet-routing-alternatives-container {
   display: none !important;
 }
+.slick-slide {
+  max-width: 100% !important;
+}
+.slick-slide {
+  flex: 1 0 auto !important;
+}
+.slick-slide {
+  flex: 0 0 300px !important; /* Đảm bảo slide không co giãn */
+}
