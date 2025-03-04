@@ -126,7 +126,7 @@ const ModalMap = ({ data, reload }) => {
                 : "Thêm mới bản đồ"}
             </h2>
 
-            <div className="space-y-3 ">
+            <div className="space-y-3 max-h-[400px] overflow-auto">
               <div className="flex justify-between gap-10">
                 <div className="w-full">
                   <label className="block text-base mb-4 font-medium">

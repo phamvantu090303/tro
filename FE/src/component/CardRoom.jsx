@@ -35,25 +35,27 @@ function CardRoom({
         />
       </div>
       <div className="mt-4">
-        <p className="text-lg font-bold text-[#23284C]">{title}</p>
-        <p className="mt-2 text-lg text-[#FEBB02] font-bold">
+        <p className="2xl:text-lg text-base font-bold text-[#23284C]">
+          {title}
+        </p>
+        <p className="mt-2 2xl:text-lg text-base text-[#FEBB02] font-bold">
           {price} VND / Tiền cọc
         </p>
       </div>
       <div className="mt-4">
         {address && ward && district && (
-          <p className="flex items-center gap-2 text-base">
+          <p className="flex items-center gap-2 2xl:text-base text-sm">
             {address}, {ward}, {district}, {province}
           </p>
         )}
       </div>
       <div className="flex justify-between mt-4">
-        <p className="flex items-center gap-2 text-xl">
-          <FaUserFriends className="text-2xl text-gray-600" />
+        <p className="flex items-center gap-2 xl:text-xl text-lg">
+          <FaUserFriends className="2xl:text-2xl text-lg text-gray-600" />
           {number}
         </p>
-        <p className="flex items-center gap-2 text-xl">
-          <FaArrowsAlt className="text-2xl text-gray-600" />
+        <p className="flex items-center gap-2 xl:text-xl text-lg">
+          <FaArrowsAlt className="2xl:text-2xl text-lg text-gray-600" />
           {dien_tich}
         </p>
       </div>

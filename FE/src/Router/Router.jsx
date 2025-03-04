@@ -14,6 +14,7 @@ import Chat from "../component/Mess/mess";
 import LoginAdmin from "../pages/admin/LoginAdmin/loginAdmin";
 import HomeAdmin from "../pages/admin/home/homeAdmin";
 import BillPayment from "../pages/BillPayment/BillPayment";
+import VerifySuccess from "../pages/Login/VerifySuccess";
 
 const Router = new createBrowserRouter([
   {
@@ -39,6 +40,10 @@ const Router = new createBrowserRouter([
         <Register />
       </Layout>
     ),
+  },
+  {
+    path: "/verify-email",
+    element: <VerifySuccess />,
   },
   {
     path: "/Search",

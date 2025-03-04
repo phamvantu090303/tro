@@ -39,12 +39,12 @@ app.use(
     credentials: true, // Cho phép gửi cookie
   })
 );
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+//   res.header("Access-Control-Allow-Headers", "Content-Type");
+//   next();
+// });
 app.use("/admin", routerAdmin);
 
 app.use("/auth", userRouter);
@@ -63,7 +63,6 @@ app.use("/quyenchucnang", QuyenChucNangRouter);
 app.use("/tin-nhan", routerMess);
 app.use("/danh_gia", routerDanhGia);
 
-
 //hợp đồng
 app.use("/api/contracts", contractRoutes);
 const connectDB = async () => {
@@ -74,7 +73,6 @@ const connectDB = async () => {
     console.log(`Can not connect to db ${error}`);
   }
 };
-
 
 // socket
 initSocket(server);

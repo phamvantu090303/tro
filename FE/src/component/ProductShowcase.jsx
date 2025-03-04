@@ -8,20 +8,32 @@ function ProductShowcase({ data, desc, limit, link, slide }) {
     dots: false,
     infinite: data.length > 1,
     speed: 500,
-    slidesToShow: Math.min(5, data.length),
+    slidesToShow: 5,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
     rtl: true,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1600, // Laptop màn lớn
         settings: {
-          slidesToShow: Math.min(3, data.length),
+          slidesToShow: 3,
         },
       },
       {
-        breakpoint: 640,
+        breakpoint: 1280, // Laptop phổ thông
+        settings: {
+          slidesToShow: 3,
+        },
+      },
+      {
+        breakpoint: 1024, // Laptop nhỏ hơn (13 inch)
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 640, // Tablet & Mobile
         settings: {
           slidesToShow: 1,
           vertical: true,
@@ -46,7 +58,10 @@ function ProductShowcase({ data, desc, limit, link, slide }) {
 
       {/* Kiểm tra nếu slide === true thì dùng Slider, nếu không thì dùng Grid */}
       {slide ? (
-        <Slider {...settings} className="mt-[33px]">
+        <Slider
+          {...settings}
+          className="mt-[33px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-6"
+        >
           {data.slice(0, limit).map((item, index) => (
             <CardRoom
               key={index}
@@ -64,7 +79,7 @@ function ProductShowcase({ data, desc, limit, link, slide }) {
           ))}
         </Slider>
       ) : (
-        <div className="mt-[33px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+        <div className="mt-[33px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-6">
           {data.slice(0, limit).map((item, index) => (
             <CardRoom
               key={index}
