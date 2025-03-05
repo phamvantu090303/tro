@@ -45,13 +45,18 @@ class DanhGiaService {
         }
     }
     
-    async DeleteDanhGia(id: string) {
-        try {
-            await DanhGiaModel.findByIdAndDelete(id);
-        } catch (error: any) {
-            throw new Error(error.message);
-        }
-    }
+    async FindDanhGiaById(id: string) {
+      return await DanhGiaModel.findById(id);
+  }
+  
+  async DeleteDanhGia(id: string) {
+      try {
+          await DanhGiaModel.findByIdAndDelete(id);
+      } catch (error: any) {
+          throw new Error(error.message);
+      }
+  }
+  
     async topdanhgia(){
         try {
             const danhGia = await DanhGiaModel.aggregate([

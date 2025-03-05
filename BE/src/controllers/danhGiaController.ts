@@ -62,17 +62,27 @@ export const getDataDanhGia = async (req: Request, res: Response) => {
 export const DeleteDanhGia = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
+        const {user}:any = req;
+        
+        const userId = user._id; // Lấy ID của người dùng hiện tại từ token
+        
+        const danhGia = await danhGiaService.FindDanhGiaById(id);
+        if (!danhGia) {
+            return res.status(404).json({ message: "Không tìm thấy đánh giá" });
+        }
+        // Kiểm tra xem đánh giá này có phải của người đang đăng nhập không
+        if (!danhGia.id_user || danhGia.id_user.toString() !== userId.toString()) {
+            return res.status(403).json({ message: "Bạn không có quyền xóa đánh giá này" });
+        }
 
         await danhGiaService.DeleteDanhGia(id);
-        res.status(200).json({
-            message: "Đánh giá đã được xóa thành công",
-        });
+        res.status(200).json({ message: "Đánh giá đã được xóa thành công" });
+
     } catch (error: any) {
-        res.status(404).json({
-            message: error.message,
-        });
+        res.status(500).json({ message: error.message });
     }
-}
+};
+
 
 
 export const Topdanhgia = async (req: Request, res: Response) => {
