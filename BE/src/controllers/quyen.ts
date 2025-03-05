@@ -3,10 +3,10 @@ import QuyenService from '../services/QuyenService';
 import QuyensModel from '../models/QuyenModel';
 import ChucNangModel from '../models/ChucNangModel';
 
+const quyenService = new QuyenService();
 export const storeQuyen = async (req: Request, res: Response) => {
     try {
         const body = req.body;
-        const quyenService = new QuyenService();
         const result = await quyenService.createQuyen(body);
         res.status(200).json({ message: "Tạo quyền thành công!", data: result });
     } catch (error: any) {
@@ -18,7 +18,6 @@ export const updateQuyen = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const body = req.body;
-        const quyenService = new QuyenService();
         const updatedQuyen = await quyenService.updateQuyen(id, body);
 
         if (!updatedQuyen) {
@@ -34,7 +33,6 @@ export const updateQuyen = async (req: Request, res: Response) => {
 export const deleteQuyen = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const quyenService = new QuyenService();
         const result = await quyenService.DeleteQuyen(id);
 
         if (!result) {
@@ -49,7 +47,7 @@ export const deleteQuyen = async (req: Request, res: Response) => {
 
 export const getQuyen = async (req: Request, res: Response) => {
     try {
-        const quyenService = new QuyenService();
+   
         const data = await quyenService.getQuyen();
 
         if (!data || data.length === 0) {

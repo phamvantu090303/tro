@@ -5,6 +5,8 @@ import { AdminService } from "../services/AdminServiec";
 
 dotenv.config();
 
+const adminService = new AdminService();
+
 const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
@@ -16,7 +18,7 @@ const transporter = nodemailer.createTransport({
 export const loginAdmin = async (req: Request, res: Response) => {
     try {
         const { admin } = req as any;
-        const adminService = new AdminService();
+     
         const token = await adminService.loginAdminService(admin._id, admin.verify);
 
         return res.json({
@@ -48,7 +50,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
 export const createAdmin = async (req: Request, res: Response) => {
     try {
         const data = req.body;
-        const adminService = new AdminService();
+     
         await adminService.createAdminService(data);
 
         res.status(200).json({
@@ -66,7 +68,7 @@ export const updateAdmin = async (req: Request, res: Response) => {
     try {
         const { admin } = req as any;
         const data = req.body;
-        const adminService = new AdminService();
+     
         await adminService.updateAdminService(admin._id, data);
 
         res.status(200).json({
@@ -82,7 +84,7 @@ export const updateAdmin = async (req: Request, res: Response) => {
 export const deleteAdmin = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const adminService = new AdminService();
+     
         await adminService.deleteAdminService({ id });
 
         res.status(200).json({
@@ -98,7 +100,7 @@ export const deleteAdmin = async (req: Request, res: Response) => {
 export const sendPasswordAdmin = async (req: Request, res: Response) => {
     try {
         const { admin } = req as any;
-        const adminService = new AdminService();
+     
         const result = await adminService.forgotPasswordAdminService(admin._id, admin.verify);
         const mailOptions = {
             from: process.env.MAIL_USERNAME,
@@ -121,7 +123,7 @@ export const resetPasswordAdmin = async (req: Request, res: Response) => {
     try {
         const { admin } = req as any;
         const { New_password, confirm_Password } = req.body;
-        const adminService = new AdminService();
+     
 
         if (New_password !== confirm_Password) {
             return res.status(400).json({ message: "Mật khẩu xác nhận không khớp." });
@@ -143,9 +145,7 @@ export const getAdmin = async (req: any, res: any) => {
         if (!admin) {
             return res.status(404).json({ message: 'Người dùng không tồn tại.' });
         }
-
-        const userService = new AdminService();
-        const data = await userService.getAdmin(admin._id);
+        const data = await adminService.getAdmin(admin._id);
 
         res.status(200).json({
             status: 200,
@@ -162,10 +162,7 @@ export const getAdmin = async (req: any, res: any) => {
 
 export const getAllAdmin = async (req: any, res: any) => {
     try {
-
-        const userService = new AdminService();
-        const data = await userService.getAdminAll();
-
+        const data = await adminService.getAdminAll();
         res.status(200).json({
             status: 200,
             data: data,

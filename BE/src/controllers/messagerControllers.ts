@@ -1,13 +1,14 @@
 import { Request,Response } from "express";
 import MessagersService from "../services/messagerServiec";
 
+const messService = new MessagersService();
 
 export const getAllMess = async (req: Request, res: Response) => {
     try {
         const { user } = req as any;  
         const { id_nguoi_nhan } = req.params;
 
-        const messService = new MessagersService();
+
         const data = await messService.messAll(user._id, id_nguoi_nhan);  
 
         console.log(user);
@@ -29,7 +30,7 @@ export const getAllMessAdmin = async (req: Request, res: Response) => {
         const { admin } = req as any;  
         const { id_nguoi_nhan } = req.params;
 
-        const messService = new MessagersService();
+
         const data = await messService.messAllAdmin(admin._id, id_nguoi_nhan);  
 
         console.log(admin);

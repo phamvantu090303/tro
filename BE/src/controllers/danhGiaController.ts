@@ -1,12 +1,15 @@
 import DanhGiaService from "../services/DanhGiaService";
 import e, { Request, Response } from 'express';
 
+
+const danhGiaService = new DanhGiaService();
+
 export const createDanhGia = async (req: Request, res: Response) => {
     try {
         const { user } = req as any;
         console.log(user);
         const data = req.body;
-        const danhGiaService = new DanhGiaService();
+
         await danhGiaService.createDanhGia(data, user._id);
         res.status(200).json({
         message: "Đánh giá đã được tạo thành công",
@@ -20,8 +23,6 @@ export const createDanhGia = async (req: Request, res: Response) => {
 export const getDataDanhGia = async (req: Request, res: Response) => {
     try {
         const { ma_phong } = req.params;
-        console.log(ma_phong);
-        const danhGiaService = new DanhGiaService();
         const data = await danhGiaService.getDataDanhGia(ma_phong);
 
         // Hàm xây dựng cây phản hồi
@@ -61,7 +62,7 @@ export const getDataDanhGia = async (req: Request, res: Response) => {
 export const DeleteDanhGia = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const danhGiaService = new DanhGiaService();
+
         await danhGiaService.DeleteDanhGia(id);
         res.status(200).json({
             message: "Đánh giá đã được xóa thành công",
