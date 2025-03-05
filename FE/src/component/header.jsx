@@ -89,7 +89,10 @@ function Header() {
               </>
             ) : (
               <div className="flex items-center gap-5">
-                <CiHeart className="w-[30px] h-[30px]" />
+                <CiHeart
+                  className="w-[30px] h-[30px] cursor-pointer"
+                  onClick={() => navigate("/yeuthich")}
+                />
                 <FaRegUser className="w-[25px] h-[25px]" />
               </div>
             )}
