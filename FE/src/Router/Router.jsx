@@ -10,7 +10,6 @@ import RoomDetails from "../pages/RoomDetails/RoomDetails";
 
 import QuyenManagement from "../pages/admin/Quyen";
 import Chat from "../component/Mess/mess";
-import ThongKeYeuThich from "../pages/Chart/thongKeYeuThich";
 
 import LoginAdmin from "../pages/admin/LoginAdmin/loginAdmin";
 import HomeAdmin from "../pages/admin/home/homeAdmin";
@@ -111,10 +110,6 @@ const Router = new createBrowserRouter([
         <RepairRequests />
       </Layout>
     ),
-  },
-  {
-    path: "/ThongKe",
-    element: <ThongKeYeuThich />,
   },
   {
     path: "/yeuthich",

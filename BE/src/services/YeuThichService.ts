@@ -103,77 +103,7 @@ export class YeuThichSevice {
       },
     ]);
   }
-
-  async getChartData(): Promise<any> {
-    // Thống kê yêu thích theo phòng
-    const yeuThichTheoPhong = await yeuthichModel.aggregate([
-      {
-        $group: {
-          _id: "$ma_phong",
-          soLuong: { $sum: 1 }, // Đếm số lượng yêu thích
-        },
-      },
-      {
-        $lookup: {
-          from: "phongtros",
-          localField: "_id",
-          foreignField: "ma_phong",
-          as: "thongTinPhong",
-        },
-      },
-      {
-        $unwind: "$thongTinPhong",
-      },
-      {
-        $project: {
-          maPhong: "$_id", // Mã phòng
-          tenPhong: "$thongTinPhong.ten_phong", // Tên phòng
-          soLuotYeuThich: "$soLuong", // Số lượt yêu thích
-        },
-      },
-      {
-        $sort: { soLuotYeuThich: -1 }, // Sắp xếp giảm dần theo số lượt yêu thích
-      },
-      {
-        $limit: 10, // Giới hạn 10 phòng được yêu thích nhất
-      },
-    ]);
-
-    // Thống kê yêu thích theo thời gian
-    const yeuThichTheoThoiGian = await yeuthichModel.aggregate([
-      {
-        $group: {
-          _id: {
-            nam: { $year: "$createdAt" }, // Năm
-            thang: { $month: "$createdAt" }, // Tháng
-          },
-          soLuong: { $sum: 1 }, // Đếm số lượng yêu thích
-        },
-      },
-      {
-        $sort: { "_id.nam": 1, "_id.thang": 1 }, // Sắp xếp tăng dần theo năm và tháng
-      },
-      {
-        $project: {
-          thoiGian: {
-            // Thời gian (YYYY-MM)
-            $concat: [
-              { $toString: "$_id.nam" },
-              "-",
-              { $toString: "$_id.thang" },
-            ],
-          },
-          soLuotYeuThich: "$soLuong", // Số lượt yêu thích
-        },
-      },
-    ]);
-
-    // Trả về dữ liệu với tên tiếng Việt
-    return {
-      yeuThichTheoPhong, // Danh sách yêu thích theo phòng
-      yeuThichTheoThoiGian, // Danh sách yêu thích theo thời gian
-    };
-  }
+  
   async isYeuThich(id_user: string, ma_phong: string): Promise<boolean> {
     const result = await yeuthichModel.findOne({
       id_user: new ObjectId(id_user),
