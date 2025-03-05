@@ -2,6 +2,8 @@ import { ObjectId } from 'mongodb';
 import { Request,Response } from "express"
 import YeuThich, { YeuThichSevice } from "../services/YeuThichService"
 
+const yeuThichService = new YeuThichSevice();
+
 export const creatYeuThich = async(req:Request,res:Response) => {
     const data = req.body;
     await YeuThich.createYeuThich(data);
@@ -22,7 +24,7 @@ export const getDataYeuThich = async (req:any, res: any) => {
     try{
         const {id_user} = req.params;
         console.log(id_user)
-        const yeuThichService = new YeuThichSevice();
+
         const data = await yeuThichService.getDataYeuTich(id_user);
 
         res.status(200).json({
@@ -38,7 +40,7 @@ export const getDataYeuThich = async (req:any, res: any) => {
 
 export const getALLYeuThich = async (req:any, res: any) => {
     try{
-        const yeuThichService = new YeuThichSevice();
+
         const data = await yeuThichService.getAllYeuTich();
 
         res.status(200).json({

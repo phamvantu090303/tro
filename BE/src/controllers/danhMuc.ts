@@ -2,10 +2,12 @@ import dotenv from "dotenv";
 import { DanhMucService } from "../services/DanhMucService";
 dotenv.config();
 
+const danhMucService = new DanhMucService();
+
 const storeDanhMuc = async (req: any, res: any) => {
   const body = req.body;
   try {
-    const danhMucService = new DanhMucService();
+
     await danhMucService.createDanhMuc(body);
 
     res.status(200).json({
@@ -21,7 +23,7 @@ const updateDanhMuc = async (req: any, res: any) => {
   try {
     const _id = req.params;
     const data = req.body;
-    const danhMucService = new DanhMucService();
+
     await danhMucService.updateDanhMuc(_id, data);
 
     res.status(200).json({
@@ -36,7 +38,7 @@ const updateDanhMuc = async (req: any, res: any) => {
 
 const getData = async (req: any, res: any) => {
   try {
-    const danhMucService = new DanhMucService();
+
     const data = await danhMucService.getDataDanhMuc();
 
     res.status(200).json({
@@ -52,7 +54,7 @@ const getData = async (req: any, res: any) => {
 
 const deleteAll = async (req: any, res: any) => {
   try {
-    const danhMucService = new DanhMucService();
+
     await danhMucService.deleteAllDanhMuc();
     res.status(200).json({
       status: "200",
@@ -68,7 +70,7 @@ const deleteAll = async (req: any, res: any) => {
 const deleteById = async (req: any, res: any) => {
   const { id } = req.params;
   try {
-    const danhMucService = new DanhMucService();
+
     await danhMucService.deleteByIdaDanhMuc({ id });
 
     res.status(200).json({

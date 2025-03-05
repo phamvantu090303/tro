@@ -74,6 +74,7 @@ const Contract = () => {
       // Hiển thị thông báo khi gửi hợp đồng thành công
       alert(response.data.message);
     } catch (error) {
+      console.log("error", error);
       // Xử lý lỗi nếu có
       if (error.response) {
         // Lỗi từ server (response có sẵn)

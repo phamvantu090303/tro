@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { ImageService } from "../services/ImagePhongService";
 
+const imageService = new ImageService();
+
 const createImage = async (req: Request, res: Response) => {
     const { ma_phong, image_url } = req.body;
     try {
-        const imageService = new ImageService();
+   
         await imageService.createImage({ ma_phong, image_url });
 
         res.status(200).json({
@@ -21,7 +23,7 @@ const updateImage = async (req: Request, res: Response) => {
     const { ma_phong } = req.params;
     const body = req.body;
     try {
-        const imageService = new ImageService();
+   
         await imageService.updateImage(ma_phong, body);
 
         res.status(200).json({
@@ -36,7 +38,7 @@ const updateImage = async (req: Request, res: Response) => {
 
 const getAllImages = async (req: Request, res: Response) => {
     try {
-        const imageService = new ImageService();
+   
         const images = await imageService.getAllImages();
 
         res.status(200).json({
@@ -52,7 +54,7 @@ const getAllImages = async (req: Request, res: Response) => {
 
 const deleteAllImages = async (req: Request, res: Response) => {
     try {
-        const imageService = new ImageService();
+   
         await imageService.deleteAllImages();
 
         res.status(200).json({
@@ -69,7 +71,7 @@ const deleteAllImages = async (req: Request, res: Response) => {
 const deleteImageById = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const imageService = new ImageService();
+   
         await imageService.deleteImageById({id});
 
         res.status(200).json({

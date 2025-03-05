@@ -23,6 +23,7 @@ import { saveEndOfDayData } from "./controllers/electricityController";
 import router from "./routers/TinhTienDienIOT";
 import schedule from "node-schedule";
 import routerDanhGia from "./routers/danhGia";
+import routerSuaChua from "./routers/SuaChua";
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -39,12 +40,12 @@ app.use(
     credentials: true, // Cho phép gửi cookie
   })
 );
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+//   res.header("Access-Control-Allow-Headers", "Content-Type");
+//   next();
+// });
 app.use("/admin", routerAdmin);
 
 app.use("/auth", userRouter);
@@ -62,7 +63,7 @@ app.use("/quyenchucnang", QuyenChucNangRouter);
 
 app.use("/tin-nhan", routerMess);
 app.use("/danh_gia", routerDanhGia);
-
+app.use("/sua_chua", routerSuaChua);
 
 //hợp đồng
 app.use("/api/contracts", contractRoutes);
@@ -75,19 +76,20 @@ const connectDB = async () => {
   }
 };
 
-
 // socket
 initSocket(server);
 //api chạy thông tin từ ESP32
 app.use("/api", router);
 
 // Lưu dữ liệu cuối ngày
-schedule.scheduleJob("*1 * * *", saveEndOfDayData);
+schedule.scheduleJob("59 23 * * *", saveEndOfDayData);
+//*:Phút (0 - 59) *:Giờ (0 - 23) *:Ngày trong (tháng (1 - 31)) *:Tháng (1 - 12)    *:Ngày trong tuần (0 - 7) (Chủ nhật có thể là 0 hoặc 7)
+
 
 connectDB()
   .then(() => {
     server.listen(PORT, () => {
-      console.log(`Server is stating at http://192.168.100.173:${PORT}`);
+      console.log(`Server is stating at http:/localhost:${PORT}`);
     });
   })
   .catch((error) => {

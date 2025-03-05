@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
 import { ThietBiService } from '../services/ThietBiService';
 dotenv.config();
-
+const thietBiService = new ThietBiService();
 const storeThietBi = async (req: any, res: any) => {
     try {
-        const thietBiService = new ThietBiService();
+   
         await thietBiService.createThietBi(req.body);
 
         res.status(201).json({
@@ -22,7 +22,7 @@ const updateThietBi = async (req: any, res: any) => {
     try {
         const _id = req.params;
         const data = req.body;
-        const thietBiService = new ThietBiService();
+   
         await thietBiService.updateThietBi(_id, data);
 
         res.status(200).json({
@@ -38,7 +38,7 @@ const updateThietBi = async (req: any, res: any) => {
 
 const getData = async (req: any, res: any) => {
     try {
-        const thietBiService = new ThietBiService();
+   
         const data = await thietBiService.getDataThietBi();
 
         res.status(200).json({
@@ -54,7 +54,7 @@ const getData = async (req: any, res: any) => {
 
 const deleteAll = async (req: any, res: any) => {
     try{
-        const thietBiService = new ThietBiService();
+   
         await thietBiService.deleteAllThietBi()
             res.status(200).json({
                 status: "200",
@@ -69,7 +69,7 @@ const deleteAll = async (req: any, res: any) => {
 
 const deleteById = async (req: any, res: any) => {
     try {
-        const thietBiService = new ThietBiService();
+   
         await thietBiService.deleteByIdaThietBi(req.params);
 
         res.status(200).json({

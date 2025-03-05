@@ -10,6 +10,7 @@ import MapDetail from "../../component/RoomDetailsComponent/MapDetail";
 import { useSelector } from "react-redux";
 import { usePhongTro } from "../../Context/PhongTroContext";
 import RoomReview from "../../component/RoomDetailsComponent/Review";
+import axios from "axios";
 
 function RoomDetails() {
   const { user } = useSelector((state) => state.auth);
@@ -62,7 +63,7 @@ function RoomDetails() {
   const amenitiesRef = useRef(null);
   const nearbyRef = useRef(null);
   const addressRef = useRef(null);
-  const reviewRef = useRef(null)
+  const reviewRef = useRef(null);
   // Hàm xử lý cuộn xuống khi chọn tab
   const handleScroll = (tab) => {
     setNut(tab);
@@ -80,18 +81,49 @@ function RoomDetails() {
       case "Địa chỉ":
         ref = addressRef;
         break;
-case "Danh gia":
+      case "Danh gia":
         ref = reviewRef;
-        break
+        break;
       default:
         ref = null;
     }
     ref?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+  // const token =
+  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2M1YzNiMzA4ZWJiOWZkOTk3YzY2Y2EiLCJ2ZXJpZnkiOiIxIiwiaWF0IjoxNzQxMDc0MjYwfQ._P77jM9FYN4Vx1oZVVg5eTphGEamx7SAvCusuBTJofA";
 
   const tabs = ["Tổng quan", "Tiện nghi", "Phòng trọ cùng khu vực", "Địa chỉ"];
   const handlePile = async (e) => {
-    await axiosInstance.post("/hoadon/Create", { ma_phong: e });
+    try {
+      await axiosInstance.post("/hoadon/Create", {
+        ma_phong: e,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    // try {
+    //   const token = localStorage.getItem("token"); // Lấy token từ localStorage
+    //   if (!token) {
+    //     console.error("Không có token, vui lòng đăng nhập lại!");
+    //     return;
+    //   }
+
+    //   const response = await axios.post(
+    //     "http://localhost:5000/hoadon/Create",
+    //     { ma_phong: e },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`, // Gửi token để xác thực
+    //         "Content-Type": "application/json",
+    //       },
+    //       withCredentials: true, // Đảm bảo gửi cookie nếu có
+    //     }
+    //   );
+
+    //   console.log("Hóa đơn được tạo thành công:", response.data);
+    // } catch (error) {
+    //   console.error("Lỗi khi tạo hóa đơn:", error);
+    // }
   };
 
   const handleHeart = async (idUser, maphong) => {
@@ -263,7 +295,7 @@ case "Danh gia":
               <h2 ref={reviewRef} className="text-3xl font-semibold mb-4">
                 Danh gia
               </h2>
-              <RoomReview id={id}/>
+              <RoomReview id={id} />
             </div>
           </div>
         </div>

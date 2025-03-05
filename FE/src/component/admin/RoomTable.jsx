@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { CiCircleMore } from "react-icons/ci";
 
-function RoomTable({ displayedRooms }) {
-  const roomsPerPage = 10;
+function RoomTable({ displayedRooms, roomsPerPage }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Tính tổng số trang (tránh chia cho 0)
@@ -11,6 +10,9 @@ function RoomTable({ displayedRooms }) {
     1,
     Math.ceil(displayedRooms.length / roomsPerPage)
   );
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [displayedRooms]);
 
   // Cắt danh sách phòng theo trang hiện tại
   const startIndex = (currentPage - 1) * roomsPerPage;
@@ -25,7 +27,6 @@ function RoomTable({ displayedRooms }) {
       setCurrentPage(page);
     }
   };
-
   const Availability = {
     0: { text: "Đã cho thuê", bgColor: "bg-red-500" },
     1: { text: "Phòng còn trống", bgColor: "bg-green-500" },

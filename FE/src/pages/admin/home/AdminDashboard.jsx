@@ -6,6 +6,7 @@ import AnhPhongAdmin from "../../admin/home/AnhPhongAdmin";
 import YeuThichAdmin from "../../admin/home/YeuThichAdmin";
 import UserAdmin from "../../admin/home/UserAdmin";
 import MessAdmin from "../../../component/Mess/messAdmin";
+import MapAdmin from "./Map";
 
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
@@ -26,6 +27,8 @@ function AdminDashboard({ activeComponent }) {
         return <UserAdmin />;
       case "mess":
         return <MessAdmin />;
+      case "map":
+        return <MapAdmin />;
     }
   };
 

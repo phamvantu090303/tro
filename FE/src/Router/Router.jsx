@@ -4,7 +4,7 @@ import Login from "../pages/Login/login";
 import Contract from "../component/hopdong";
 import Register from "../pages/Login/Register";
 import Homepage from "../pages/Home/Home";
-import MapComponent from "../component/Map";
+import MapComponent from "../pages/admin/home/Map";
 import Search from "../pages/Search/Search";
 import RoomDetails from "../pages/RoomDetails/RoomDetails";
 
@@ -14,6 +14,8 @@ import Chat from "../component/Mess/mess";
 import LoginAdmin from "../pages/admin/LoginAdmin/loginAdmin";
 import HomeAdmin from "../pages/admin/home/homeAdmin";
 import BillPayment from "../pages/BillPayment/BillPayment";
+import VerifySuccess from "../pages/Login/VerifySuccess";
+import RepairRequests from "../pages/RepairRequests/RepairRequests";
 
 const Router = new createBrowserRouter([
   {
@@ -41,6 +43,10 @@ const Router = new createBrowserRouter([
     ),
   },
   {
+    path: "/verify-email",
+    element: <VerifySuccess />,
+  },
+  {
     path: "/Search",
     element: (
       <Layout>
@@ -61,14 +67,6 @@ const Router = new createBrowserRouter([
     element: (
       <Layout>
         <Contract />
-      </Layout>
-    ),
-  },
-  {
-    path: "/map",
-    element: (
-      <Layout>
-        <MapComponent />
       </Layout>
     ),
   },
@@ -101,6 +99,14 @@ const Router = new createBrowserRouter([
     element: (
       <Layout>
         <BillPayment />
+      </Layout>
+    ),
+  },
+  {
+    path: "/suachua",
+    element: (
+      <Layout>
+        <RepairRequests />
       </Layout>
     ),
   },
