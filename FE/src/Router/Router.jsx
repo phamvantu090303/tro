@@ -17,6 +17,7 @@ import HomeAdmin from "../pages/admin/home/homeAdmin";
 import BillPayment from "../pages/BillPayment/BillPayment";
 import VerifySuccess from "../pages/Login/VerifySuccess";
 import RepairRequests from "../pages/RepairRequests/RepairRequests";
+import Favourite from "../pages/Favourite/Favourite";
 
 const Router = new createBrowserRouter([
   {
@@ -113,8 +114,14 @@ const Router = new createBrowserRouter([
   },
   {
     path: "/ThongKe",
+    element: <ThongKeYeuThich />,
+  },
+  {
+    path: "/yeuthich",
     element: (
-        <ThongKeYeuThich />
+      <Layout>
+        <Favourite />
+      </Layout>
     ),
   },
 ]);

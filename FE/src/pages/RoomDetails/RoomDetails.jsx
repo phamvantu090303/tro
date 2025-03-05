@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import anh3 from "../../assets/anh3.png";
-import { FaArrowsAlt, FaMapMarkerAlt, FaUserFriends } from "react-icons/fa";
+import {
+  FaArrowsAlt,
+  FaMapMarkerAlt,
+  FaUserFriends,
+  FaHeart,
+} from "react-icons/fa";
 import { useParams } from "react-router";
 import { axiosInstance } from "../../../Axios";
 import { CiHeart } from "react-icons/ci";
@@ -10,7 +15,6 @@ import MapDetail from "../../component/RoomDetailsComponent/MapDetail";
 import { useSelector } from "react-redux";
 import { usePhongTro } from "../../Context/PhongTroContext";
 import RoomReview from "../../component/RoomDetailsComponent/Review";
-import axios from "axios";
 
 function RoomDetails() {
   const { user } = useSelector((state) => state.auth);
@@ -22,6 +26,7 @@ function RoomDetails() {
   const [roomSame, setRoomSame] = useState([]);
   const [anh, setAnh] = useState([]);
   const [toado, setToado] = useState(null);
+  const [yeuthich, setYeuthich] = useState(false);
   const statusMapping = {
     1: { text: "Còn trống", color: "green" },
     0: { text: "Đã có người thuê", color: "red" },
@@ -29,6 +34,13 @@ function RoomDetails() {
     3: { text: "Chờ xác nhận", color: "yellow" },
     4: { text: "Đã được đặt", color: "blue" },
     5: { text: "Không cho thuê", color: "gray" },
+  };
+
+  const fetchYeuthich = async () => {
+    const favourite = await axiosInstance.get(
+      `/yeu-thich/getThichPhong/${user.id}?ma_phong=${id}`
+    );
+    setYeuthich(favourite.data.isFavourite);
   };
 
   useEffect(() => {
@@ -54,8 +66,10 @@ function RoomDetails() {
         console.log("error", error);
       }
     };
+
     fetchData();
-  }, [id]);
+    fetchYeuthich();
+  }, [id, user.id]);
 
   const [nut, setNut] = useState("Tổng quan");
   // Tạo các ref cho từng phần nội dung
@@ -89,8 +103,6 @@ function RoomDetails() {
     }
     ref?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
-  // const token =
-  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2M1YzNiMzA4ZWJiOWZkOTk3YzY2Y2EiLCJ2ZXJpZnkiOiIxIiwiaWF0IjoxNzQxMDc0MjYwfQ._P77jM9FYN4Vx1oZVVg5eTphGEamx7SAvCusuBTJofA";
 
   const tabs = ["Tổng quan", "Tiện nghi", "Phòng trọ cùng khu vực", "Địa chỉ"];
   const handlePile = async (e) => {
@@ -98,39 +110,31 @@ function RoomDetails() {
       await axiosInstance.post("/hoadon/Create", {
         ma_phong: e,
       });
+      fetchYeuthich();
     } catch (error) {
       console.log(error);
     }
-    // try {
-    //   const token = localStorage.getItem("token"); // Lấy token từ localStorage
-    //   if (!token) {
-    //     console.error("Không có token, vui lòng đăng nhập lại!");
-    //     return;
-    //   }
-
-    //   const response = await axios.post(
-    //     "http://localhost:5000/hoadon/Create",
-    //     { ma_phong: e },
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`, // Gửi token để xác thực
-    //         "Content-Type": "application/json",
-    //       },
-    //       withCredentials: true, // Đảm bảo gửi cookie nếu có
-    //     }
-    //   );
-
-    //   console.log("Hóa đơn được tạo thành công:", response.data);
-    // } catch (error) {
-    //   console.error("Lỗi khi tạo hóa đơn:", error);
-    // }
   };
 
   const handleHeart = async (idUser, maphong) => {
-    await axiosInstance.post("/yeu-thich/create", {
-      ma_phong: maphong,
-      id_user: idUser,
-    });
+    try {
+      await axiosInstance.post("/yeu-thich/create", {
+        ma_phong: maphong,
+        id_user: idUser,
+      });
+      fetchYeuthich();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axiosInstance.delete(`/yeu-thich/delete/${user.id}`);
+      fetchYeuthich();
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="w-full">
@@ -204,10 +208,18 @@ function RoomDetails() {
                 </p>
                 <div className="flex items-center gap-4 mt-4">
                   <button className="border border-gray-500 p-3">
-                    <CiHeart
-                      className="text-xl"
-                      onClick={() => handleHeart(user.id, id)}
-                    />
+                    {yeuthich ? (
+                      <FaHeart
+                        color="red"
+                        className="text-xl"
+                        onClick={handleDelete}
+                      />
+                    ) : (
+                      <CiHeart
+                        className="text-xl "
+                        onClick={() => handleHeart(user.id, id)}
+                      />
+                    )}
                   </button>
                   <button
                     className="bg-[#23284C] font-medium py-3 px-8 text-white rounded-md"
@@ -293,7 +305,7 @@ function RoomDetails() {
             </div>
             <div>
               <h2 ref={reviewRef} className="text-3xl font-semibold mb-4">
-                Danh gia
+                Đánh giá
               </h2>
               <RoomReview id={id} />
             </div>
