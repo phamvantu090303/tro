@@ -24,6 +24,7 @@ import router from "./routers/TinhTienDienIOT";
 import schedule from "node-schedule";
 import routerDanhGia from "./routers/danhGia";
 import routerSuaChua from "./routers/SuaChua";
+import routerSearch from "./routers/Search";
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -64,6 +65,7 @@ app.use("/quyenchucnang", QuyenChucNangRouter);
 app.use("/tin-nhan", routerMess);
 app.use("/danh_gia", routerDanhGia);
 app.use("/sua_chua", routerSuaChua);
+app.use("/api", routerSearch);
 
 //hợp đồng
 app.use("/api/contracts", contractRoutes);
@@ -82,7 +84,7 @@ initSocket(server);
 app.use("/api", router);
 
 // Lưu dữ liệu cuối ngày
-schedule.scheduleJob("*/1 * * *", saveEndOfDayData);
+schedule.scheduleJob("59 23 * *", saveEndOfDayData);
 //*:Phút (0 - 59) *:Giờ (0 - 23) *:Ngày trong (tháng (1 - 31)) *:Tháng (1 - 12)    *:Ngày trong tuần (0 - 7) (Chủ nhật có thể là 0 hoặc 7)
 
 
