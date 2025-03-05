@@ -35,7 +35,7 @@ export const deleteSuaChua = async (req: Request, res: Response): Promise<Respon
 }
 export const getAllSuaChua = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const data = await suaChuaService.GetAllSuachua();
+        const data = await suaChuaService.GetAllSuachua(); 
         return res.status(200).json({ data });
     } catch (error: any) {
         return res.status(500).json({ message: "Internal server error" });

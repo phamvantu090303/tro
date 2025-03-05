@@ -74,3 +74,17 @@ export const DeleteDanhGia = async (req: Request, res: Response) => {
     }
 }
 
+
+export const Topdanhgia = async (req: Request, res: Response) => {
+    try {
+       const data = await danhGiaService.topdanhgia();
+        res.status(200).json({
+            message: "lấy danh sách top đánh giá thành công",
+            data
+        });
+    } catch (error: any) {
+        res.status(404).json({
+            message: error.message,
+        });
+    }
+}
