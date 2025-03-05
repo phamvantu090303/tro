@@ -5,9 +5,12 @@ import moment from "moment";
 // Bộ nhớ tạm để lưu dữ liệu cuối ngày
 let latestData: Record<string, IElectricity> = {};
 
+// Ngưỡng năng lượng tiêu thụ quy định (Wh)
+const ENERGY_LIMIT = 0.15; // Bạn có thể thay đổi giá trị này nếu cần
+
 // Nhận dữ liệu từ ESP32
 export const receiveElectricityData = (req: Request, res: Response): void => {
-  const { room_id , voltage, power, power_factor, frequency, energy, current } = req.body;
+  const { room_id, voltage, power, power_factor, frequency, energy, current } = req.body;
 
   // Kiểm tra dữ liệu đầu vào
   if (!room_id || voltage === undefined || current === undefined || power === undefined) {
@@ -25,7 +28,13 @@ export const receiveElectricityData = (req: Request, res: Response): void => {
 
   // Tính tiền điện (3000đ/kWh)
   const electricityPrice = 3000;
-  const total_cost = (safePower / 1000) * electricityPrice;
+  const total_cost = (safeEnergy / 1000) * electricityPrice;
+
+  // Kiểm tra năng lượng tiêu thụ vượt mức quy định
+  if (safeEnergy > ENERGY_LIMIT) {
+    console.log(`CẢNH BÁO: Phòng ${room_id} - Năng lượng tiêu thụ vượt mức quy định (${ENERGY_LIMIT}Wh)!`);
+    console.log(`- Năng lượng hiện tại: ${safeEnergy.toFixed(10)}Wh`);
+  }
 
   // Cập nhật dữ liệu vào bộ nhớ tạm
   latestData[room_id] = {
@@ -40,7 +49,15 @@ export const receiveElectricityData = (req: Request, res: Response): void => {
     timestamp: new Date(),
   } as IElectricity;
 
-  console.log(`Nhận dữ liệu từ phòng ${room_id}: ${safeVoltage}V - ${safeCurrent}A - ${safePower}W`);
+  // In thông tin nhận được
+  console.log(`Nhận dữ liệu từ phòng ${room_id}:`);
+  console.log(`- Điện áp (Voltage): ${safeVoltage}V`);
+  console.log(`- Dòng điện (Current): ${safeCurrent}A`);
+  console.log(`- Công suất (Power): ${safePower}W`);
+  console.log(`- Hệ số công suất (Power Factor): ${safePowerFactor}`);
+  console.log(`- Tần số (Frequency): ${safeFrequency}Hz`);
+  console.log(`- Năng lượng tiêu thụ (Energy): ${safeEnergy}Wh`);
+  console.log(`- Tổng chi phí (Total Cost): ${total_cost.toFixed(2)}đ`);
 
   res.json({ message: "Dữ liệu đã nhận!" });
 };
@@ -63,4 +80,4 @@ export const saveEndOfDayData = async (): Promise<void> => {
   } catch (error) {
     console.error("Lỗi khi lưu dữ liệu:", error);
   }
-};
+}
