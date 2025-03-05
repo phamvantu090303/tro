@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { axiosInstance } from "../../../Axios";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaComment } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
 export default function RoomReview({ id }) {
   const { user } = useSelector((state) => state.auth);
-  console.log("user", user);
   const [review, setReview] = useState("");
   const [reviews, setReviews] = useState([]);
   const formatDate = (dateString) => {
@@ -54,10 +53,7 @@ export default function RoomReview({ id }) {
   };
 
   return (
-    <div className="w-full mx-auto mt-10 p-6 bg-gray-100 rounded-xl shadow-md">
-      {/* Phần nhập đánh giá */}
-
-      {/* Hiển thị danh sách đánh giá */}
+    <div className="w-full mx-auto bg-gray-100 rounded-xl shadow-md">
       <div className="w-full mx-auto mt-6 p-6 bg-white rounded-xl shadow-md">
         <h3 className="text-xl font-semibold mb-4">Đánh giá từ khách hàng</h3>
         {reviews.length > 0 ? (
@@ -71,23 +67,20 @@ export default function RoomReview({ id }) {
         ) : (
           <p className="text-gray-600">Chưa có đánh giá nào.</p>
         )}
+        <div className="h-[1px] w-full bg-gray-800 mt-4"></div>
         {user ? (
-          <div className=" flex gap-3">
-            <div className="flex gap-3">
-              <FaUser size={30} />
-              <p>{user.username}</p>
-            </div>
-            <div className="w-full">
+          <div className=" flex gap-3 mt-10">
+            <div className="w-full relative">
               <textarea
-                className="w-full p-3  border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows="4"
+                className="w-full p-3  border rounded-md outline-none text-black bg-gray-100 placeholder-gray-500 focus:outline-slate-700 "
+                rows="5"
                 placeholder="Nhập nhận xét của bạn..."
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
               ></textarea>
 
               <button
-                className="flex bg-blue-600 text-white py-3 px-5 font-medium mt-5 rounded-lg hover:bg-blue-700 transition-all ml-auto"
+                className="absolute bottom-5 right-4  flex bg-[#23284C] text-white py-3 px-5 font-medium mt-5 rounded-full hover:bg-blue-700 transition-all ml-auto"
                 onClick={handleSubmit}
               >
                 Gửi đánh giá
@@ -142,26 +135,40 @@ function ReviewItem({ review, fetchReviews }) {
   console.log("review", review);
   return (
     <div className="mb-4 p-4 border rounded-lg bg-gray-50">
-      <div className="flex gap-3 items-start">
-        <div>
-          <p className="font-medium text-xl">{review.user.username}</p>
-          <p className="font-normal">{review.createdAt}</p>
-          <p className="text-gray-600 text-lg">{review.noi_dung}</p>
+      <div className="">
+        <div className="flex gap-3">
+          <FaUser size={30} className="border border-gray-500 rounded-full" />
+          <div>
+            <p className="font-medium text-lg">{review.user.username}</p>
+            <p className="text-black text-lg mt-3">{review.noi_dung}</p>
+            <div className="flex gap-4 mt-2">
+              <button
+                className="text-gray-600 hover:underline flex items-center gap-1"
+                onClick={() => setIsReplying(!isReplying)}
+              >
+                {isReplying ? (
+                  "Hủy"
+                ) : (
+                  <>
+                    {" "}
+                    <FaComment />
+                    Trả lời
+                  </>
+                )}
+              </button>
+
+              <button
+                className="text-red-600 hover:underline"
+                onClick={handleDelete}
+              >
+                Thu hồi
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Nút trả lời & thu hồi */}
-      <div className="flex gap-4 mt-2">
-        <button
-          className="text-blue-600 hover:underline"
-          onClick={() => setIsReplying(!isReplying)}
-        >
-          {isReplying ? "Hủy" : "Trả lời"}
-        </button>
-        <button className="text-red-600 hover:underline" onClick={handleDelete}>
-          Thu hồi
-        </button>
-      </div>
 
       {/* Form nhập trả lời */}
       {isReplying && (

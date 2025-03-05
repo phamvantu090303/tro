@@ -6,6 +6,9 @@ export default {
       colors: {
         customBlue: "#23284C",
       },
+      backgroundColor: {
+        customBg: "#23284C",
+      },
     },
   },
   plugins: [],

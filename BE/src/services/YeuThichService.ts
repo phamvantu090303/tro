@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId } from "mongodb";
 import yeuthichModel from "../models/YeuThichModel";
 
 export class YeuThichSevice {
@@ -20,104 +20,86 @@ export class YeuThichSevice {
     await yeuthichModel.deleteOne({ id_user });
   }
 
-  async getDataYeuTich(id_user: string): Promise<any> {
+  async getDataYeuTich(id_user: string): Promise<any[]> {
     const id = new ObjectId(id_user);
 
     const result = await yeuthichModel.aggregate([
       {
-        $match: { id_user: id }
+        $match: { id_user: id },
       },
       {
         $lookup: {
-          from: 'phongtros',
-          localField: 'ma_phong',
-          foreignField: 'ma_phong',
-          as: 'phongTro_yeu_thich'
-        }
+          from: "phongtros",
+          localField: "ma_phong",
+          foreignField: "ma_phong",
+          as: "phongTro_yeu_thich",
+        },
+      },
+      {
+        $lookup: {
+          from: "maps",
+          localField: "phongTro_yeu_thich.ma_map",
+          foreignField: "ma_map",
+          as: "mapDetail",
+        },
+      },
+      {
+        $unwind: "$phongTro_yeu_thich",
       },
       {
         $project: {
           ma_phong: 1,
           id_user: 1,
           phongTro_yeu_thich: {
-            $map: {
-              input: '$phongTro_yeu_thich',
-              as: 'pt',
-              in: {
-                ma_phong: '$$pt.ma_phong',
-                id_users: '$$pt.id_users',
-                ten_phong_tro: '$$pt.ten_phong_tro',
-                dia_chi: '$$pt.dia_chi',
-                anh_phong: '$$pt.anh_phong',
-                mo_ta: '$$pt.mo_ta',
-                dien_tich: '$$pt.dien_tich',
-                gia_tien: '$$pt.gia_tien',
-                trang_thai: '$$pt.trang_thai',
-                so_luong_nguoi: '$$pt.so_luong_nguoi',
-                createdAt: '$$pt.createdAt',
-                updatedAt: '$$pt.updatedAt',
-                __v: '$$pt.__v'
-              }
-            }
-          }
-        }
+            ma_phong: "$phongTro_yeu_thich.ma_phong",
+            id_users: "$_id",
+            ten_phong_tro: "$phongTro_yeu_thich.ten_phong_tro",
+            dia_chi: "$phongTro_yeu_thich.dia_chi",
+            anh_phong: "$phongTro_yeu_thich.anh_phong",
+            mo_ta: "$phongTro_yeu_thich.mo_ta",
+            dien_tich: "$phongTro_yeu_thich.dien_tich",
+            gia_tien: "$phongTro_yeu_thich.gia_tien",
+            trang_thai: "$phongTro_yeu_thich.trang_thai",
+            so_luong_nguoi: "$phongTro_yeu_thich.so_luong_nguoi",
+            createdAt: "$phongTro_yeu_thich.createdAt",
+            updatedAt: "$phongTro_yeu_thich.updatedAt",
+            __v: "$phongTro_yeu_thich.__v",
+            mapDetail: { $arrayElemAt: ["$mapDetail", 0] },
+          },
+        },
       },
       {
         $group: {
-          _id: '$id_user',
-          phongTro_yeu_thich: { $push: '$phongTro_yeu_thich' }
-        }
+          _id: "$id_user",
+          phongTro_yeu_thich: { $addToSet: "$phongTro_yeu_thich" }, // Loại bỏ trùng lặp
+        },
       },
       {
         $project: {
-          phongTro_yeu_thich: {
-            $reduce: { // Loại bỏ các ma_phong trùng lặp
-              input: '$phongTro_yeu_thich',
-              initialValue: [],
-              in: {
-                $cond: {
-                  if: { $eq: [{ $size: '$$value' }, 0] }, // Nếu mảng rỗng, thêm tất cả
-                  then: '$$this',
-                  else: {
-                    $concatArrays: [
-                      '$$value',
-                      {
-                        $cond: {
-                          if: {
-                            $in: ['$$this.ma_phong', '$$value.ma_phong'] // Kiểm tra ma_phong đã tồn tại chưa
-                          },
-                          then: [], // Nếu trùng, không thêm
-                          else: ['$$this'] // Nếu không trùng, thêm vào
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+          _id: 0, // Ẩn `_id`
+          phongTro_yeu_thich: 1,
+        },
+      },
     ]);
 
-    return result[0] || null; // Trả về bản ghi đầu tiên hoặc null nếu không có dữ liệu
+    return result.length > 0 ? result[0].phongTro_yeu_thich : [];
   }
 
   async getAllYeuTich(): Promise<any[]> {
-
     return await yeuthichModel.aggregate([
       {
         $lookup: {
-          'from': 'phongtros',
-          'localField': 'ma_phong',
-          'foreignField': 'ma_phong',
-          'as': 'phongTro_yeu_thich'
-        }
-      }, {
+          from: "phongtros",
+          localField: "ma_phong",
+          foreignField: "ma_phong",
+          as: "phongTro_yeu_thich",
+        },
+      },
+      {
         $unwind: {
-          'path': '$phongTro_yeu_thich',
-          preserveNullAndEmptyArrays: true
-        }
+          path: "$phongTro_yeu_thich",
+          preserveNullAndEmptyArrays: true,
+        },
       },
     ]);
   }
@@ -128,33 +110,33 @@ export class YeuThichSevice {
       {
         $group: {
           _id: "$ma_phong",
-          soLuong: { $sum: 1 } // Đếm số lượng yêu thích
-        }
+          soLuong: { $sum: 1 }, // Đếm số lượng yêu thích
+        },
       },
       {
         $lookup: {
           from: "phongtros",
           localField: "_id",
           foreignField: "ma_phong",
-          as: "thongTinPhong"
-        }
+          as: "thongTinPhong",
+        },
       },
       {
-        $unwind: "$thongTinPhong"
+        $unwind: "$thongTinPhong",
       },
       {
         $project: {
           maPhong: "$_id", // Mã phòng
           tenPhong: "$thongTinPhong.ten_phong", // Tên phòng
-          soLuotYeuThich: "$soLuong" // Số lượt yêu thích
-        }
+          soLuotYeuThich: "$soLuong", // Số lượt yêu thích
+        },
       },
       {
-        $sort: { soLuotYeuThich: -1 } // Sắp xếp giảm dần theo số lượt yêu thích
+        $sort: { soLuotYeuThich: -1 }, // Sắp xếp giảm dần theo số lượt yêu thích
       },
       {
-        $limit: 10 // Giới hạn 10 phòng được yêu thích nhất
-      }
+        $limit: 10, // Giới hạn 10 phòng được yêu thích nhất
+      },
     ]);
 
     // Thống kê yêu thích theo thời gian
@@ -163,34 +145,44 @@ export class YeuThichSevice {
         $group: {
           _id: {
             nam: { $year: "$createdAt" }, // Năm
-            thang: { $month: "$createdAt" } // Tháng
+            thang: { $month: "$createdAt" }, // Tháng
           },
-          soLuong: { $sum: 1 } // Đếm số lượng yêu thích
-        }
+          soLuong: { $sum: 1 }, // Đếm số lượng yêu thích
+        },
       },
       {
-        $sort: { "_id.nam": 1, "_id.thang": 1 } // Sắp xếp tăng dần theo năm và tháng
+        $sort: { "_id.nam": 1, "_id.thang": 1 }, // Sắp xếp tăng dần theo năm và tháng
       },
       {
         $project: {
-          thoiGian: { // Thời gian (YYYY-MM)
+          thoiGian: {
+            // Thời gian (YYYY-MM)
             $concat: [
               { $toString: "$_id.nam" },
               "-",
-              { $toString: "$_id.thang" }
-            ]
+              { $toString: "$_id.thang" },
+            ],
           },
-          soLuotYeuThich: "$soLuong" // Số lượt yêu thích
-        }
-      }
+          soLuotYeuThich: "$soLuong", // Số lượt yêu thích
+        },
+      },
     ]);
 
     // Trả về dữ liệu với tên tiếng Việt
     return {
       yeuThichTheoPhong, // Danh sách yêu thích theo phòng
-      yeuThichTheoThoiGian // Danh sách yêu thích theo thời gian
+      yeuThichTheoThoiGian, // Danh sách yêu thích theo thời gian
     };
   }
+  async isYeuThich(id_user: string, ma_phong: string): Promise<boolean> {
+    const result = await yeuthichModel.findOne({
+      id_user: new ObjectId(id_user),
+      ma_phong: ma_phong,
+    });
+
+    return !!result; // Trả về true nếu tìm thấy, false nếu không
+  }
 }
-const YeuThich = new YeuThichSevice()
-export default YeuThich
+
+const YeuThich = new YeuThichSevice();
+export default YeuThich;
