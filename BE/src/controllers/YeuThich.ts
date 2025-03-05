@@ -12,18 +12,24 @@ export const creatYeuThich = async(req:Request,res:Response) => {
     })
 }
 
-export const deleteYeuThich = async(req:Request,res:Response) => {
-    const {id} = req.params;
-    await YeuThich.deleteById(id);
-    res.status(200).json({
-        message:'Đã hủy bỏ yêu thích!!'
-    })
-}
+export const deleteYeuThich = async (req: any, res: any) => {
+    try {
+        const { id_user } = req.params;
+        const yeuThichDelete = new YeuThichSevice();
+        await yeuThichDelete.deleteById(id_user);
+        res.status(200).json({
+            message: 'Đã hủy bỏ yêu thích!!'
+        });
+    } catch (error: any) {
+        res.status(404).json({
+            message: error.message || 'Có lỗi xảy ra khi xóa mục yêu thích'
+        });
+    }
+};
 
 export const getDataYeuThich = async (req:any, res: any) => {
     try{
         const {id_user} = req.params;
-        console.log(id_user)
 
         const data = await yeuThichService.getDataYeuTich(id_user);
 
@@ -48,6 +54,22 @@ export const getALLYeuThich = async (req:any, res: any) => {
             data : data
         });
     } catch(error: any) {
+        res.status(404).json({
+            message: error.message,
+        });
+    }
+}
+
+export const getYeuThichChartData = async (req: Request, res: Response) => {
+    try {
+        const yeuThichService = new YeuThichSevice();
+        const chartData = await yeuThichService.getChartData();
+
+        res.status(200).json({
+            status: "200",
+            data: chartData
+        });
+    } catch (error: any) {
         res.status(404).json({
             message: error.message,
         });
