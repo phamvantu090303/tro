@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { axiosInstance } from "../../../Axios";
 import CardSearch from "../../component/Search/CardSearch";
+import { data } from "autoprefixer";
 
 function Search() {
   const [search, setSearch] = useState("");
@@ -125,9 +126,27 @@ function Search() {
         </div>
 
         {/* Kết quả tìm kiếm */}
-        <div>
+        <div className="w-full" >
           <p className="font-bold text-2xl">Kết quả tìm kiếm: {search}</p>
-          <CardSearch data={dataSearch} />
+         <div className="space-y-5">
+         {dataSearch.length > 0 ? (
+            dataSearch.map((item) =>
+            <CardSearch  
+            key={item.id}
+            ma_phong={item.ma_phong}
+            price={item.gia_tien}
+            title={item.ten_phong_tro}
+            img={item.anh_phong}
+            noidung={item.mo_ta}
+            number={item.so_luong_nguoi}
+            dientich={item.dien_tich}
+            diachi={item.dia_chi}
+            trangthai={item.trang_thai}
+            thanhpho={item.ward} />
+          )):(
+            <p>Không tìm thấy kết quả nào</p>
+          )}
+         </div>
         </div>
       </div>
     </div>
