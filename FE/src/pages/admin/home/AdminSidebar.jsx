@@ -124,6 +124,17 @@ export default function AdminSidebar({ setActiveComponent }) {
               <FaMap className="text-xl" />
               map
             </li>
+            <li
+              className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 ${
+                isActive("thongke")
+                  ? "bg-gray-700 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white"
+              }`}
+              onClick={() => setActiveComponent("thongke")}
+            >
+              <MdOutlineAdminPanelSettings className="text-xl" />
+              Thống Kê
+            </li>
           </ul>
         </nav>
       </div>

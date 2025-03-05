@@ -7,6 +7,7 @@ import YeuThichAdmin from "../../admin/home/YeuThichAdmin";
 import UserAdmin from "../../admin/home/UserAdmin";
 import MessAdmin from "../../../component/Mess/messAdmin";
 import MapAdmin from "./Map";
+import ThongKe from "../../Chart/ThongKeAll";
 
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
@@ -29,6 +30,8 @@ function AdminDashboard({ activeComponent }) {
         return <MessAdmin />;
       case "map":
         return <MapAdmin />;
+      case "thongke":
+        return <ThongKe />;
     }
   };
 

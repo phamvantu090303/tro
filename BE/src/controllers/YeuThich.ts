@@ -81,18 +81,3 @@ export const getThichPhong = async (req: Request, res: Response) => {
     });
   }
 };
-export const getYeuThichChartData = async (req: Request, res: Response) => {
-  try {
-    const yeuThichService = new YeuThichSevice();
-    const chartData = await yeuThichService.getChartData();
-
-    res.status(200).json({
-      status: "200",
-      data: chartData,
-    });
-  } catch (error: any) {
-    res.status(404).json({
-      message: error.message,
-    });
-  }
-};

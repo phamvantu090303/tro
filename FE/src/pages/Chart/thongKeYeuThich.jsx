@@ -2,105 +2,233 @@ import React, { useEffect, useState } from "react";
 import { axiosInstance } from '../../../Axios';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { Select } from 'antd';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const ThongKeYeuThich = () => {
   const [duLieuBieuDo, setDuLieuBieuDo] = useState({
     yeuThichTheoPhong: [],
+    yeuThichTheoNgay: [],
+    yeuThichTheoThang: [],
+    yeuThichTheoNam: [],
   });
   const [dangTai, setDangTai] = useState(true);
+  const [loaiBieuDo, setLoaiBieuDo] = useState("phong");
+  const [ngayChon, setNgayChon] = useState("");
+  const [thangChon, setThangChon] = useState("");
+  const [namChon, setNamChon] = useState("");
+
+  const layDuLieuBieuDo = async () => {
+    setDangTai(true);
+    try {
+      const params = {};
+      if (loaiBieuDo === "ngay" && ngayChon) params.ngay = ngayChon;
+      if (loaiBieuDo === "thang" && thangChon) params.thang = thangChon;
+      if (loaiBieuDo === "nam" && namChon) params.nam = namChon;
+
+      const phanHoi = await axiosInstance.get('/thong-ke/chart-yeu-tich', { params });
+      setDuLieuBieuDo({
+        yeuThichTheoPhong: phanHoi.data.data.yeuThichTheoPhong || [],
+        yeuThichTheoNgay: phanHoi.data.data.yeuThichTheoNgay || [],
+        yeuThichTheoThang: phanHoi.data.data.yeuThichTheoThang || [],
+        yeuThichTheoNam: phanHoi.data.data.yeuThichTheoNam || [],
+      });
+    } catch (loi) {
+      console.error("Lỗi khi lấy dữ liệu biểu đồ:", loi);
+    } finally {
+      setDangTai(false);
+    }
+  };
 
   useEffect(() => {
-    const layDuLieuBieuDo = async () => {
-      try {
-        const phanHoi = await axiosInstance.get('/yeu-thich/chart-data');
-        // Lấy trực tiếp từ phanHoi.data thay vì phanHoi.data.data
-        setDuLieuBieuDo({
-          yeuThichTheoPhong: phanHoi.data.data.yeuThichTheoPhong || [],
-        });
-        setDangTai(false);
-      } catch (loi) {
-        console.error("Lỗi khi lấy dữ liệu biểu đồ:", loi);
-        setDangTai(false);
-      }
-    };
-
     layDuLieuBieuDo();
-  }, []);
+  }, [ngayChon, thangChon, namChon]); // Chỉ gọi khi thay đổi giá trị chọn
 
-  // Tạo gradient màu dựa trên số lượng phòng
+  useEffect(() => {
+    if (loaiBieuDo === "phong") layDuLieuBieuDo(); // Gọi khi chuyển về "Tổng quan"
+  }, [loaiBieuDo]);
+
   const createGradient = (ctx, chartArea) => {
     const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-    gradient.addColorStop(0, 'rgba(255, 215, 0, 0.8)'); // Vàng nhạt cho phòng đầu
-    gradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.8)'); // Cam cho giữa
-    gradient.addColorStop(1, 'rgba(255, 69, 0, 0.8)'); // Đỏ đậm cho phòng cuối
+    gradient.addColorStop(0, 'rgba(255, 215, 0, 0.8)');
+    gradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.8)');
+    gradient.addColorStop(1, 'rgba(255, 69, 0, 0.8)');
     return gradient;
   };
 
-  // Dữ liệu và cấu hình cho Bar Chart (Yêu thích theo phòng)
-  const duLieuBieuDoCot = {
-    labels: duLieuBieuDo.yeuThichTheoPhong.map((item) => item.tenPhong || item.maPhong), // Sử dụng tenPhong từ API
+  const taoDuLieuBieuDo = (data, title) => ({
+    labels: data.map((item) => item.tenPhong || item.maPhong),
     datasets: [
       {
         label: "Số lượt yêu thích",
-        data: duLieuBieuDo.yeuThichTheoPhong.map((item) => item.soLuotYeuThich || 0), // Dữ liệu từ API
+        data: data.map((item) => item.soLuotYeuThich || 0),
         backgroundColor: (context) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
           if (!chartArea) return null;
           return createGradient(ctx, chartArea);
         },
-        borderWidth: 0, // Không có viền
+        borderWidth: 0,
       },
     ],
-  };
-
-  const tuyChonBieuDoCot = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false, // Ẩn chú thích
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: title, color: "#ffffff" },
       },
-      title: {
-        display: true,
-        text: "Top 10 Phòng Được Yêu Thích Nhất",
-        color: "#ffffff",
+      scales: {
+        y: { beginAtZero: true, ticks: { color: "#ffffff", stepSize: 1 }, grid: { color: "rgba(255, 255, 255, 0.1)" } },
+        x: { ticks: { color: "#ffffff" }, grid: { display: false } },
       },
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 50, // Giới hạn trục Y điều chỉnh dựa trên dữ liệu thực tế
-        ticks: {
-          color: "#ffffff", // Màu trắng cho nhãn trục Y
-          stepSize: 1, // Bước nhảy 500
-        },
-        grid: {
-          color: "rgba(255, 255, 255, 0.1)", // Đường lưới mờ
-        },
-      },
-      x: {
-        ticks: {
-          color: "#ffffff", // Màu trắng cho nhãn trục X
-        },
-        grid: {
-          display: false, // Ẩn lưới trục X
-        },
-      },
-    },
+  });
+
+  const bieuDoTheoPhong = taoDuLieuBieuDo(duLieuBieuDo.yeuThichTheoPhong, "Top 10 Phòng Được Yêu Thích Nhất");
+  const bieuDoTheoNgay = taoDuLieuBieuDo(
+    duLieuBieuDo.yeuThichTheoNgay,
+    ngayChon ? `Top 5 Phòng Yêu Thích Nhất Ngày ${ngayChon}` : "Top 5 Phòng Yêu Thích Nhất Hôm Nay"
+  );
+  const bieuDoTheoThang = taoDuLieuBieuDo(
+    duLieuBieuDo.yeuThichTheoThang,
+    thangChon ? `Top 5 Phòng Yêu Thích Nhất Tháng ${thangChon}` : `Top 5 Phòng Yêu Thích Nhất Tháng ${new Date().getMonth() + 1}/${new Date().getFullYear()}`
+  );
+  const bieuDoTheoNam = taoDuLieuBieuDo(
+    duLieuBieuDo.yeuThichTheoNam,
+    namChon ? `Top 5 Phòng Yêu Thích Nhất Năm ${namChon}` : `Top 5 Phòng Yêu Thích Nhất Năm ${new Date().getFullYear()}`
+  );
+
+  if (dangTai) return <div>Đang tải dữ liệu...</div>;
+
+  const chonBieuDo = (loai) => {
+    setLoaiBieuDo(loai);
+    if (loai !== "ngay") setNgayChon("");
+    if (loai !== "thang") setThangChon("");
+    if (loai !== "nam") setNamChon("");
   };
 
-  if (dangTai) {
-    return <div>Đang tải dữ liệu...</div>;
-  }
+  const bieuDoHienTai = () => {
+    switch (loaiBieuDo) {
+      case "phong":
+        return <Bar data={bieuDoTheoPhong} options={bieuDoTheoPhong.options} />;
+      case "ngay":
+        return duLieuBieuDo.yeuThichTheoNgay.length ? (
+          <Bar data={bieuDoTheoNgay} options={bieuDoTheoNgay.options} />
+        ) : (
+          <p>Không có dữ liệu cho ngày {ngayChon || "hôm nay"}</p>
+        );
+      case "thang":
+        return duLieuBieuDo.yeuThichTheoThang.length ? (
+          <Bar data={bieuDoTheoThang} options={bieuDoTheoThang.options} />
+        ) : (
+          <p>Không có dữ liệu cho tháng {thangChon || `${new Date().getMonth() + 1}/${new Date().getFullYear()}`}</p>
+        );
+      case "nam":
+        return duLieuBieuDo.yeuThichTheoNam.length ? (
+          <Bar data={bieuDoTheoNam} options={bieuDoTheoNam.options} />
+        ) : (
+          <p>Không có dữ liệu cho năm {namChon || new Date().getFullYear()}</p>
+        );
+      default:
+        return <Bar data={bieuDoTheoPhong} options={bieuDoTheoPhong.options} />;
+    }
+  };
 
   return (
     <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "20px", backgroundColor: "#1a1a2e", color: "#ffffff" }}>
-      <h2>Thống kê theo phòng</h2>
+
+      <h2>Thống kê yêu thích</h2>
+
+      <div style={{ marginBottom: "20px" }}>
+        <button
+          onClick={() => chonBieuDo("phong")}
+          style={{
+            marginRight: "10px",
+            padding: "10px 20px",
+            backgroundColor: loaiBieuDo === "phong" ? "#ff4500" : "#ffffff",
+            color: loaiBieuDo === "phong" ? "#ffffff" : "#000000",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Tổng quan
+        </button>
+        <button
+          onClick={() => chonBieuDo("ngay")}
+          style={{
+            marginRight: "10px",
+            padding: "10px 20px",
+            backgroundColor: loaiBieuDo === "ngay" ? "#ff4500" : "#ffffff",
+            color: loaiBieuDo === "ngay" ? "#ffffff" : "#000000",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Ngày
+        </button>
+        <button
+          onClick={() => chonBieuDo("thang")}
+          style={{
+            marginRight: "10px",
+            padding: "10px 20px",
+            backgroundColor: loaiBieuDo === "thang" ? "#ff4500" : "#ffffff",
+            color: loaiBieuDo === "thang" ? "#ffffff" : "#000000",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Tháng
+        </button>
+        <button
+          onClick={() => chonBieuDo("nam")}
+          style={{
+            marginRight: "10px",
+            padding: "10px 20px",
+            backgroundColor: loaiBieuDo === "nam" ? "#ff4500" : "#ffffff",
+            color: loaiBieuDo === "nam" ? "#ffffff" : "#000000",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Năm
+        </button>
+      </div>
+
+      <div style={{ marginBottom: "20px" }}>
+        {loaiBieuDo === "ngay" && (
+          <input
+            type="date"
+            value={ngayChon}
+            onChange={(e) => setNgayChon(e.target.value)}
+            style={{ padding: "10px", borderRadius: "5px", border: "none" }}
+          />
+        )}
+        {loaiBieuDo === "thang" && (
+          <input
+            type="month"
+            value={thangChon}
+            onChange={(e) => setThangChon(e.target.value)}
+            style={{ padding: "10px", borderRadius: "5px", border: "none" }}
+          />
+        )}
+        {loaiBieuDo === "nam" && (
+          <input
+            type="month"
+            value={namChon}
+            onChange={(e) => setNamChon(e.target.value)}
+            style={{ padding: "10px", borderRadius: "5px", border: "none", width: "150px" }}
+          />
+        )}
+      </div>
+
       <div style={{ height: "400px" }}>
-        <Bar data={duLieuBieuDoCot} options={tuyChonBieuDoCot} />
+        {bieuDoHienTai()}
       </div>
     </div>
   );

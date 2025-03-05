@@ -25,6 +25,8 @@ import schedule from "node-schedule";
 import routerDanhGia from "./routers/danhGia";
 import routerSuaChua from "./routers/SuaChua";
 import routerSearch from "./routers/Search";
+import routerThongKe from "./routers/thongKe";
+
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -66,6 +68,7 @@ app.use("/tin-nhan", routerMess);
 app.use("/danh_gia", routerDanhGia);
 app.use("/sua_chua", routerSuaChua);
 app.use("/api", routerSearch);
+app.use("/thong-ke", routerThongKe);
 
 //hợp đồng
 app.use("/api/contracts", contractRoutes);
