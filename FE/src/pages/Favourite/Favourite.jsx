@@ -9,26 +9,28 @@ function Favourite() {
   const { user } = useSelector((state) => state.auth);
   const [data, setData] = useState([]);
 
-  useEffect(() => {
+  const fetchDataFavourite = async () => {
     try {
-      const fetchDataFavourite = async () => {
-        const res = await axiosInstance.get(`/yeu-thich/getdata/${user.id}`);
-        setData(res.data.data);
-      };
-      fetchDataFavourite();
+      const res = await axiosInstance.get(`/yeu-thich/getdata/${user.id}`);
+      setData(res.data.data);
     } catch (error) {
       console.log(error);
     }
+  };
+  useEffect(() => {
+    fetchDataFavourite();
   }, []);
+
   return (
     <div className="w-full">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
         <h1 className="text-3xl font-bold">Yêu thích</h1>
-        <div className="space-y-5">
+        <div className="space-y-5 min-h-[800px]">
           {data.length > 0 ? (
             data.map((item, index) => (
               <CardFavourite
                 key={index}
+                id={item.ma_phong}
                 price={item.gia_tien}
                 title={item.ten_phong_tro}
                 img={item.anh_phong}
@@ -38,10 +40,11 @@ function Favourite() {
                 diachi={item.dia_chi}
                 trangthai={item.trang_thai}
                 thanhpho={item.ward}
+                reloadData={fetchDataFavourite}
               />
             ))
           ) : (
-            <div className="h-[500px] flex items-center flex-col mt-40">
+            <div className="min-h-[500px] flex items-center flex-col mt-40">
               <p className="text-black text-3xl font-medium text-center ">
                 Bạn chưa có yêu thích phòng trọ nào , hãy trở về trang chủ để
                 lựa phòng yêu thích nhé

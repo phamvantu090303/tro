@@ -6,6 +6,7 @@ import { MdDateRange } from "react-icons/md";
 import { CgMail } from "react-icons/cg";
 import { PiGenderIntersex } from "react-icons/pi";
 import { Link } from "react-router";
+import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
 import { axiosInstance } from "../../../Axios";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -76,6 +77,7 @@ function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    console.log("handleRegister được gọi");
     let newErrors = {};
 
     // Kiểm tra tất cả các trường
@@ -85,6 +87,7 @@ function Register() {
     });
 
     // Nếu có lỗi, cập nhật state và dừng submit
+    console.log("newErrors", newErrors);
     if (Object.values(newErrors).some((err) => err !== "")) {
       setErrors(newErrors);
       return;
@@ -102,6 +105,7 @@ function Register() {
         gioi_tinh: user.gioitinh,
         cccd: user.cccd,
       });
+      console.log("Phản hồi từ server:", res.data);
       if (res.data.message) {
         toast.success(
           res.data.message,
@@ -142,7 +146,7 @@ function Register() {
             </div>
           </div>
           <div className="lg:w-[50%] w-full h-full bg-slate-200 py-3 px-5 md:px-10  2xl:py-10 2xl:px-32 flex flex-col justify-center">
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-800 text-center mb-8">
+            <h2 className="text-xl md:text-2xl 2xl:text-3xl font-semibold text-gray-800 text-center mb-8">
               Đăng ký tài khoản
             </h2>
             <form className="space-y-3 2xl:space-y-8" onSubmit={handleRegister}>
@@ -284,20 +288,64 @@ function Register() {
                   </div>
                 </div>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="relative">
+                  <FaMapLocationDot className="absolute left-3 top-4 text-gray-400 text-lg" />
+                  <input
+                    type="text"
+                    placeholder="Quê quán"
+                    name="quequan"
+                    className="w-full  px-10 py-3 rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                    onChange={handleChange}
+                    value={user.quequan}
+                  />
+                  <div className="xl:h-2">
+                    {errors.quequan && (
+                      <p className="text-red-500 xl:text-sm text-xs xl:mt-1">
+                        {errors.quequan}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="relative">
+                  <FaUser className="absolute left-3 top-4 text-gray-400 text-lg" />
+                  <input
+                    type="text"
+                    name="cccd"
+                    placeholder="Căn cước công dân"
+                    className="w-full px-10 py-3 rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                    onChange={handleChange}
+                    value={user.cccd}
+                  />
+                  <div className="xl:h-2">
+                    {errors.cccd && (
+                      <p className="text-red-500 xl:text-sm text-xs xl:mt-1">
+                        {errors.cccd}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
 
               <div className="flex items-center">
-                <input type="checkbox" className="mr-2 w-[20px] h-[20px]" />
-                <label className="text-lg text-gray-600">
+                <input
+                  type="checkbox"
+                  className="mr-2 2xl:w-[20px] 2xl:h-[20px] h-[15px] w-[15px]"
+                />
+                <label className="2xl:text-lg text-base text-gray-600">
                   Remember Password
                 </label>
               </div>
 
-              <button className="w-full py-3 bg-gray-900 text-white rounded-lg text-lg font-semibold hover:bg-gray-700 transition">
+              <button
+                className="w-full 2xl:py-3 xl:py-2 bg-gray-900 text-white rounded-lg 2xl:text-lg font-semibold hover:bg-gray-700 transition"
+                onClick={handleRegister}
+              >
                 Register →
               </button>
             </form>
 
-            <p className="mt-6 text-lg text-center text-gray-500 flex justify-center gap-5">
+            <p className="2xl:mt-6 mt-3 2xl:text-lg text-base text-center text-gray-500 flex justify-center gap-5">
               You already have an account{" "}
               <Link to="/Login" className="text-gray-700 font-semibold">
                 Login
