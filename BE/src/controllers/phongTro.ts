@@ -54,7 +54,6 @@ const updatePhongTro = async (req: Request, res: Response) => {
 const getData = async (req: Request, res: Response) => {
   try {
     const data = await phongTroService.getAllPhongTro();
-    console.log(data)
     res.status(200).json({
       message: "Lấy danh sách phòng trọ thành công!",
       data: data,
@@ -133,7 +132,7 @@ const getPhongTroByMap = async (req: Request, res: Response) => {
       error: error.message,
     });
   }
-}
+};
 
 export {
   storePhongTro,
@@ -142,5 +141,5 @@ export {
   deleteAll,
   deleteById,
   detailRoom,
-  getPhongTroByMap
+  getPhongTroByMap,
 };
