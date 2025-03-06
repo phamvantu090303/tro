@@ -18,7 +18,6 @@ const transporter = nodemailer.createTransport({
 export const register = async (req: Request, res: Response) => {
   const body = req.body;
   try {
-
     const email_verify_token = await userService.registerUser(body);
     const mailOptions = {
       from: process.env.MAIL_USERNAME,
@@ -40,7 +39,6 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   const { user }: any = req; // Lấy thông tin người dùng từ request
   try {
-
     const token = await userService.loginUser(user._id, user.verify);
 
     res.status(200).json({
@@ -105,8 +103,6 @@ export const verifyEmail = async (req: Request, res: Response) => {
 export const sendPassword = async (req: Request, res: Response) => {
   try {
     const { user } = req as any;
-    console.log(user);
-
     const result = await userService.forgotPassword(user._id, user.verify);
     const mailOptions = {
       from: process.env.MAIL_USERNAME,
@@ -130,7 +126,6 @@ export const verifypassword = async (req: Request, res: Response) => {
     const { User } = req as any;
     const { New_password, confirm_Password } = req.body;
 
-
     if (New_password !== confirm_Password) {
       return res.status(400).json({ message: "Mật khẩu xác nhận không khớp." });
     }
@@ -147,11 +142,7 @@ export const verifypassword = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const { user } = req as any;
-
-    console.log(user);
-
     const data = req.body;
-
     await userService.updateUserService(user._id, data);
 
     res.status(200).json({
@@ -172,7 +163,6 @@ export const getMe = async (req: any, res: any) => {
       return res.status(404).json({ message: "Người dùng không tồn tại." });
     }
 
-
     const data = await userService.getMe(user._id);
 
     res.status(200).json({
@@ -189,7 +179,6 @@ export const getMe = async (req: any, res: any) => {
 
 export const getAllUser = async (req: any, res: any) => {
   try {
-
     const data = await userService.getUserAll();
 
     res.status(200).json({

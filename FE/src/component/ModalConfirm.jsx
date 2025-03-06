@@ -4,26 +4,35 @@ import { axiosInstance } from "../../Axios";
 
 function ModalConFirm({ id, reload }) {
   const dispatch = useDispatch();
-  const { modalType, idModal } = useSelector((state) => state.confirmModal);
+  const { modalType, idModal, isOpen } = useSelector(
+    (state) => state.confirmModal
+  );
+  const handleDelete = async (id) => {
+    await axiosInstance.delete(`/map/deleteMap/${id}`);
+  };
+  const handleDeleteRepair = async (ids) => {
+    await axiosInstance.delete(`/sua_chua/Delete/${ids}`);
+  };
+
   const handleConfirm = async () => {
-    console.log(idModal);
+    console.log("idModal", idModal);
     if (modalType === "delete") {
       await handleDelete(idModal);
+    }
+    if (modalType === "Repair") {
+      await handleDeleteRepair(idModal);
     }
     reload();
     dispatch(closeConfirmModal());
   };
-  const handleDelete = async (id) => {
-    await axiosInstance.delete(`/map/deleteMap/${id}`);
-  };
 
   return (
     <div>
-      {idModal === id && (
+      {isOpen && idModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <p className="text-lg font-medium">
-              {modalType === "delete"
+              {modalType === "delete" || "Repair"
                 ? "Bạn có chắc chắn muốn xóa?"
                 : "Bạn có muốn lưu này?"}
             </p>
@@ -32,7 +41,7 @@ function ModalConFirm({ id, reload }) {
                 className="text-lg text-red-500 rounded-lg px-4 py-2"
                 onClick={handleConfirm}
               >
-                {modalType === "delete" ? "Xóa" : "Lưu"}
+                {modalType === "delete" || "Repair" ? "Xóa" : "Lưu"}
               </button>
               <button
                 className="text-lg border border-gray-500 rounded-lg px-4 py-2 ml-2"
