@@ -17,6 +17,7 @@ import BillPayment from "../pages/BillPayment/BillPayment";
 import VerifySuccess from "../pages/Login/VerifySuccess";
 import RepairRequests from "../pages/RepairRequests/RepairRequests";
 import Favourite from "../pages/Favourite/Favourite";
+import Profile from "../pages/profile/Profile";
 
 const Router = new createBrowserRouter([
   {
@@ -116,6 +117,14 @@ const Router = new createBrowserRouter([
     element: (
       <Layout>
         <Favourite />
+      </Layout>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <Layout>
+        <Profile />
       </Layout>
     ),
   },
