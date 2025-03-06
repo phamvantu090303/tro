@@ -106,7 +106,7 @@ export const sendPasswordAdmin = async (req: Request, res: Response) => {
             from: process.env.MAIL_USERNAME,
             to: admin.email,
             subject: "Xác thực tài khoản của bạn để đổi mật khẩu",
-            text: `Chào ${admin.username}, vui lòng xác thực tài khoản của bạn bằng cách nhấp vào liên kết sau: ${process.env.CLIENT_ORIGIN}/verify-forgot-password?token=${result}`,
+            text: `Chào ${admin.username}, vui lòng xác thực tài khoản của bạn bằng cách nhấp vào liên kết sau: ${process.env.CLIENT_ORIGIN}/admin/reset-password?token=${result}`,
         };
         // Gửi email
         await transporter.sendMail(mailOptions);
