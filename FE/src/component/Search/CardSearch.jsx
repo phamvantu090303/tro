@@ -51,16 +51,12 @@ function CardSearch({
           <FaMapMarkerAlt className="text-[#23274A] text-lg" />
           <p className="text-sm">Khu vực {diachi}</p>
         </div>
-        <div className="flex flex-col md:flex-row justify-between items-center mt-4">
-          <button
-            className="bg-[#23284C] text-white rounded-lg text-lg py-2 px-6 md:px-[56px] mt-2 md:mt-0 w-full md:w-auto"
-            onClick={() => handleCard(ma_phong)}
-          >
-            Xem
-          </button>
-          <p className="text-lg md:text-xl 2xl:text-2xl text-yellow-500 font-medium mt-2 md:mt-0">
-            {price} VND
-          </p>
+
+        <div>
+        <button className="bg-[#23284C] text-white rounded-lg text-lg py-[10px] px-[56px] mt-[18px]" onClick={()=>handleCard(ma_phong)}>
+                  Xem
+        </button>
+
         </div>
       </div>
     </div>
