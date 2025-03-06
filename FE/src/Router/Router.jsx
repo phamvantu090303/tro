@@ -18,6 +18,10 @@ import VerifySuccess from "../pages/Login/VerifySuccess";
 import RepairRequests from "../pages/RepairRequests/RepairRequests";
 import Favourite from "../pages/Favourite/Favourite";
 import Profile from "../pages/profile/Profile";
+import AdminResetPassword from "../pages/admin/LoginAdmin/adminResetPassword";
+import ResendForgotPassword from "../pages/admin/LoginAdmin/resend-forgot-password";
+import UserResendForgot from "../pages/Login/userResendForgot"
+import ResetPassword from "../pages/Login/ResetPassword"
 
 const Router = new createBrowserRouter([
   {
@@ -47,6 +51,14 @@ const Router = new createBrowserRouter([
   {
     path: "/verify-email",
     element: <VerifySuccess />,
+  },
+  {
+    path: "/resend-forgot-password",
+    element: <UserResendForgot />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
   },
   {
     path: "/Search",
@@ -87,9 +99,19 @@ const Router = new createBrowserRouter([
   {
     path: "/admin/login",
     element: (
-      <Layout>
         <LoginAdmin />
-      </Layout>
+    ),
+  },
+  {
+    path: "/admin/resend-forgot-password",
+    element: (
+        <ResendForgotPassword />
+    ),
+  },
+  {
+    path: "/admin/reset-password",
+    element: (
+        <AdminResetPassword />
     ),
   },
   {

@@ -106,6 +106,15 @@ function Login() {
                 </p>
               </Link>
             </p>
+            <p className="mt-6 text-lg text-center text-gray-500 flex justify-center gap-5">
+              Quên mật khẩu?{" "}
+              <Link to="/resend-forgot-password">
+                {" "}
+                <p href="#" className="text-gray-700 font-semibold">
+                  Khôi phục!
+                </p>
+              </Link>
+            </p>
           </div>
         </div>
       </div>

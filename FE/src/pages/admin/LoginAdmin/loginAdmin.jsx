@@ -69,7 +69,7 @@ function LoginAdmin() {
           </button>
         </form>
         <p className="mt-4 text-center text-gray-500">
-          Chưa có tài khoản? <Link to="/Register" className="text-gray-700 font-semibold">Đăng ký ngay</Link>
+          Quên mật Khẩu? <Link to="/admin/resend-forgot-password" className="text-gray-700 font-semibold">Khôi phục</Link>
         </p>
       </div>
     </div>
