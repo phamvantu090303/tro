@@ -9,6 +9,10 @@ export const CreateHoaDon = async (req: Request, res: Response) => {
   try {
     const { user }: any = req;
     const { ma_phong } = req.body;
+    const check = await PhongTroModel.findOne({ id_users: user._id });
+   if(check){
+    return res.status(400).json({ message: "Bạn đã thuê phòng rồi" });
+   }else{
     const data = await PhongTroModel.findOne({ ma_phong: ma_phong });
     if (!data) return res.status(404).json({ message: "Phòng không tồn tại" });
     const hoadon = {
@@ -24,6 +28,8 @@ export const CreateHoaDon = async (req: Request, res: Response) => {
     await newHoaDon.save();
     await sendEmail(user, newHoaDon);
     res.status(201).json(newHoaDon);
+   }
+   
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
