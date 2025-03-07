@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router";
 import { axiosInstance } from "../../../Axios";
