@@ -1,10 +1,9 @@
 import { ObjectId } from "mongodb";
-import { Request, Response } from "express";
 import YeuThich, { YeuThichSevice } from "../services/YeuThichService";
 
 const yeuThichService = new YeuThichSevice();
 
-export const creatYeuThich = async (req: Request, res: Response) => {
+export const creatYeuThich = async (req: any, res: any) => {
   const data = req.body;
   await YeuThich.createYeuThich(data);
   res.status(200).json({
@@ -15,8 +14,7 @@ export const creatYeuThich = async (req: Request, res: Response) => {
 export const deleteYeuThich = async (req: any, res: any) => {
   try {
     const { id_user } = req.params;
-    const yeuThichDelete = new YeuThichSevice();
-    await yeuThichDelete.deleteById(id_user);
+    await yeuThichService.deleteById(id_user);
     res.status(200).json({
       message: "Đã hủy bỏ yêu thích!!",
     });
@@ -59,7 +57,7 @@ export const getALLYeuThich = async (req: any, res: any) => {
   }
 };
 
-export const getThichPhong = async (req: Request, res: Response) => {
+export const getThichPhong = async (req: any, res: any) => {
   try {
     const { ma_phong } = req.query;
     const { id_user } = req.params;

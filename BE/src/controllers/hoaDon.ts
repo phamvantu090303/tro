@@ -9,6 +9,10 @@ export const CreateHoaDon = async (req: Request, res: Response) => {
   try {
     const { user }: any = req;
     const { ma_phong } = req.body;
+    const check = await PhongTroModel.findOne({ id_users: user._id });
+   if(check){
+    return res.status(400).json({ message: "Bạn đã thuê phòng rồi" });
+   }else{
     const data = await PhongTroModel.findOne({ ma_phong: ma_phong });
     if (!data) return res.status(404).json({ message: "Phòng không tồn tại" });
     const hoadon = {
@@ -24,6 +28,8 @@ export const CreateHoaDon = async (req: Request, res: Response) => {
     await newHoaDon.save();
     await sendEmail(user, newHoaDon);
     res.status(201).json(newHoaDon);
+   }
+   
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -42,24 +48,43 @@ const sendEmail = async (user: any, hoadon: any) => {
     from: process.env.MAIL_USERNAME,
     to: user.email,
     subject: "Hóa Đơn Thuê Trọ",
-    text: `Chào ${user.username},\n\nDưới đây là thông tin hóa đơn đặt cọc của bạn:\n
-        - Mã phòng: ${hoadon.ma_phong}
-        - Mã đơn hàng: ${hoadon.ma_don_hang}
-        - Số tiền: ${hoadon.so_tien} VND
-        - Nội dung: ${hoadon.noi_dung}
-        - Trạng thái: ${hoadon.trang_thai}
-    
-        📋 Thông tin tài khoản thanh toán:
-        - Chủ tài khoản: Nguyễn Văn A
-        - Ngân hàng: Vietcombank
-        - Số tài khoản: 1234 5678 9012 3456
-    
-        📄 Xem hợp đồng thuê trọ của bạn tại đây:
-         ${hopdonglink}
+    html: `
+      <div style="max-width:600px;margin:auto;padding:20px;font-family:'Arial',sans-serif;border:1px solid #ddd;border-radius:10px;background-color:#f9f9f9;">
+        <!-- Logo -->
+        <div style="text-align:center;margin-bottom:20px;">
+          <img src="https://your-logo-url.com/logo.png" alt="Logo" style="width:120px;">
+        </div>
 
-        💡 Vui lòng chuyển khoản đúng nội dung và số tiền trên để xác nhận thanh toán.
-    
-        Trân trọng!`,
+        <h2 style="text-align:center;color:#333;">📄 HÓA ĐƠN ĐẶT CỌC</h2>
+        <p>Chào <b>${user.username}</b>, chúng tôi đã nhận được đơn đặt cọc phòng của bạn.</p>
+
+        <!-- Thông tin hóa đơn -->
+        <div style="background:#fff;padding:15px;border-radius:8px;box-shadow:0px 2px 5px rgba(0,0,0,0.1);">
+          <p><strong>🏠 Mã phòng:</strong> ${hoadon.ma_phong}</p>
+          <p><strong>📌 Mã đơn hàng:</strong> ${hoadon.ma_don_hang}</p>
+          <p><strong>💰 Số tiền:</strong> <span style="color:#27ae60;font-weight:bold;">${hoadon.so_tien} VND</span></p>
+          <p><strong>📝 Nội dung:</strong> ${hoadon.noi_dung}</p>
+          <p><strong>⚠️ Trạng thái:</strong> <span style="color:red;font-weight:bold;">${hoadon.trang_thai}</span></p>
+        </div>
+
+        <!-- Thông tin tài khoản thanh toán -->
+        <div style="margin-top:20px;padding:15px;background:#fff;border-radius:8px;box-shadow:0px 2px 5px rgba(0,0,0,0.1);">
+          <h3 style="margin-bottom:10px;color:#2c3e50;">📌 Thông tin tài khoản thanh toán:</h3>
+          <p><strong>👤 Chủ tài khoản:</strong> Nguyễn Văn A</p>
+          <p><strong>🏦 Ngân hàng:</strong> Vietcombank</p>
+          <p><strong>🔢 Số tài khoản:</strong> 1234 5678 9012 3456</p>
+        </div>
+
+        <!-- Link hợp đồng -->
+        <div style="text-align:center;margin-top:20px;">
+          <a href="${hopdonglink}" style="display:inline-block;padding:10px 20px;background:#3498db;color:#fff;text-decoration:none;border-radius:5px;font-weight:bold;">
+            📜 Xem hợp đồng của bạn
+          </a>
+        </div>
+
+        <p style="margin-top:20px;text-align:center;color:#777;font-size:12px;">©DZFullStack | <a href="#" style="color:gray;">Hủy đăng ký</a></p>
+      </div>
+    `,
   };
 
   await transporter.sendMail(mailOptions);
