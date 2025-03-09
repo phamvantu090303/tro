@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ThongKeYeuThich from "../../pages/Chart/thongKeYeuThich";
 import ThongKeDanhGia from "../../pages/Chart/thongKeDanhGia";
+import ThongKeDienNang from "../../pages/Chart/thongKeDienNang";
 
 const ThongKe = () => {
   const [trangHienThi, setTrangHienThi] = useState("yeuThich");
@@ -25,11 +26,12 @@ const ThongKe = () => {
           <option value="">Chọn thống kê</option>
           <option value="yeuThich">Thống Kê Yêu thích</option>
           <option value="danhGia">Thống Kê Đánh giá</option>
+          <option value="dienNang">Thống Kê Điên năng</option>
         </select>
       </div>
 
       <div>
-        {trangHienThi === "yeuThich" ? <ThongKeYeuThich /> : <ThongKeDanhGia />}
+        {trangHienThi === "yeuThich" ? <ThongKeYeuThich /> : trangHienThi === "danhGia" ? <ThongKeDanhGia /> : <ThongKeDienNang />}
       </div>
     </div>
   );

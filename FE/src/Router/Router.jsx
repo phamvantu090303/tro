@@ -22,6 +22,7 @@ import AdminResetPassword from "../pages/admin/LoginAdmin/adminResetPassword";
 import ResendForgotPassword from "../pages/admin/LoginAdmin/resend-forgot-password";
 import UserResendForgot from "../pages/Login/userResendForgot"
 import ResetPassword from "../pages/Login/ResetPassword"
+import HoaDonThangAdmin from "../pages/admin/home/HoaDonThangAdmin"
 
 const Router = new createBrowserRouter([
   {
@@ -148,6 +149,12 @@ const Router = new createBrowserRouter([
       <Layout>
         <Profile />
       </Layout>
+    ),
+  },
+  {
+    path: "/hoa-don-thang",
+    element: (
+        <HoaDonThangAdmin />
     ),
   },
 ]);
