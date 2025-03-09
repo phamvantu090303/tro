@@ -1,5 +1,5 @@
 import DanhGiaService from "../services/DanhGiaService";
-import e, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 
 
 const danhGiaService = new DanhGiaService();

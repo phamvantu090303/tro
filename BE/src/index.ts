@@ -26,6 +26,10 @@ import routerDanhGia from "./routers/danhGia";
 import routerSuaChua from "./routers/SuaChua";
 import routerSearch from "./routers/Search";
 import routerThongKe from "./routers/thongKe";
+import routerThang from "./routers/HoaDonThangRouter";
+import HoaDonTungThangModel from "./models/HoaDonTungThangModel";
+import HoaDonThangService from "./services/HoaDonTungThangService";
+import { autoCreateHoaDon } from "./controllers/HoaDonTungThangController";
 
 dotenv.config();
 
@@ -69,6 +73,7 @@ app.use("/danh_gia", routerDanhGia);
 app.use("/sua_chua", routerSuaChua);
 app.use("/api", routerSearch);
 app.use("/thong-ke", routerThongKe);
+app.use("/hoa-don-thang", routerThang);
 
 //hợp đồng
 app.use("/api/contracts", contractRoutes);
@@ -90,6 +95,11 @@ app.use("/api", router);
 schedule.scheduleJob("59 23 * *", saveEndOfDayData);
 //*:Phút (0 - 59) *:Giờ (0 - 23) *:Ngày trong (tháng (1 - 31)) *:Tháng (1 - 12)    *:Ngày trong tuần (0 - 7) (Chủ nhật có thể là 0 hoặc 7)
 
+// Lập lịch chạy mỗi phút
+schedule.scheduleJob("* * * * *", () => {
+  console.log('Kiểm tra tự động tạo hóa đơn dựa trên hóa đơn tháng trước...');
+  autoCreateHoaDon();
+});
 
 connectDB()
   .then(() => {
