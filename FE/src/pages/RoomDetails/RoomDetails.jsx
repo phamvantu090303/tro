@@ -27,6 +27,7 @@ function RoomDetails() {
   const [anh, setAnh] = useState([]);
   const [toado, setToado] = useState(null);
   const [yeuthich, setYeuthich] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const statusMapping = {
     1: { text: "Còn trống", color: "green" },
     0: { text: "Đã có người thuê", color: "red" },
@@ -68,8 +69,10 @@ function RoomDetails() {
     };
 
     fetchData();
-    fetchYeuthich();
-  }, [id, user.id]);
+    if (user) {
+      fetchYeuthich();
+    }
+  }, [id, user]);
 
   const [nut, setNut] = useState("Tổng quan");
   // Tạo các ref cho từng phần nội dung
@@ -106,6 +109,7 @@ function RoomDetails() {
 
   const tabs = ["Tổng quan", "Tiện nghi", "Phòng trọ cùng khu vực", "Địa chỉ"];
   const handlePile = async (e) => {
+    if (!user) return alert("Vui lòng đăng nhập,đăng ký để được đặt cọc");
     try {
       await axiosInstance.post("/hoadon/Create", {
         ma_phong: e,
@@ -117,6 +121,10 @@ function RoomDetails() {
   };
 
   const handleHeart = async (idUser, maphong) => {
+    if (!user) return alert("Vui lòng đăng nhập, đăng ký để sử dụng");
+    if (isProcessing) return; // Chặn spam khi đang xử lý
+
+    setIsProcessing(true); // Bắt đầu loading
     try {
       await axiosInstance.post("/yeu-thich/create", {
         ma_phong: maphong,
@@ -125,15 +133,23 @@ function RoomDetails() {
       fetchYeuthich();
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsProcessing(false); // Kết thúc loading
     }
   };
 
   const handleDelete = async () => {
+    if (!user) return alert("Vui lòng đăng nhập, đăng ký để sử dụng chức năng");
+    if (isProcessing) return; // Chặn spam khi đang xử lý
+
+    setIsProcessing(true);
     try {
       await axiosInstance.delete(`/yeu-thich/delete/${user.id}`);
       fetchYeuthich();
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsProcessing(false);
     }
   };
   return (
@@ -207,20 +223,36 @@ function RoomDetails() {
                   {data.gia_tien} VND
                 </p>
                 <div className="flex items-center gap-4 mt-4">
-                  <button className="border border-gray-500 p-3">
-                    {yeuthich ? (
-                      <FaHeart
-                        color="red"
-                        className="text-xl"
-                        onClick={handleDelete}
-                      />
-                    ) : (
-                      <CiHeart
-                        className="text-xl "
-                        onClick={() => handleHeart(user.id, id)}
-                      />
-                    )}
-                  </button>
+                  {yeuthich ? (
+                    <button
+                      className="border border-gray-500 p-3"
+                      onClick={handleDelete}
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? (
+                        <span className="loading-spinner"></span>
+                      ) : (
+                        <FaHeart color="red" className="text-xl" />
+                      )}
+                    </button>
+                  ) : (
+                    <button
+                      className="border border-gray-500 p-3"
+                      onClick={() =>
+                        user
+                          ? handleHeart(user.id, id)
+                          : alert("Vui lòng đăng nhập!")
+                      }
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? (
+                        <span className="loading-spinner"></span>
+                      ) : (
+                        <CiHeart className="text-xl" />
+                      )}
+                    </button>
+                  )}
+
                   <button
                     className="bg-[#23284C] font-medium py-3 px-8 text-white rounded-md"
                     onClick={() => handlePile(id)}

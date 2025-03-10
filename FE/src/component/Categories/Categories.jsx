@@ -33,8 +33,8 @@ function Category() {
       <div className="mt-8 min-h-[00px]">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-6">
           {products.length > 0 ? (
-            products.slice(0, 5).map((product) => (
-              <div key={product.id}>
+            products.slice(0, 5).map((product, index) => (
+              <div key={index}>
                 <CardRoom
                   id={product.ma_phong}
                   price={product.gia_tien}

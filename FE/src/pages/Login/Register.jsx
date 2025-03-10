@@ -77,19 +77,15 @@ function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("handleRegister được gọi");
     let newErrors = {};
 
-    // Kiểm tra tất cả các trường
     Object.keys(user).forEach((key) => {
-      validate(key, user[key]); // Gọi validate cho từng trường
-      if (!user[key]) newErrors[key] = "Trường này không được bỏ trống."; // Kiểm tra trống
+      if (!user[key]) newErrors[key] = "Trường này không được bỏ trống.";
     });
 
-    // Nếu có lỗi, cập nhật state và dừng submit
-    console.log("newErrors", newErrors);
-    if (Object.values(newErrors).some((err) => err !== "")) {
+    if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      console.log("Errors found:", newErrors);
       return;
     }
 
@@ -105,7 +101,7 @@ function Register() {
         gioi_tinh: user.gioitinh,
         cccd: user.cccd,
       });
-      console.log("Phản hồi từ server:", res.data);
+      console.log("Server response:", res.data);
       if (res.data.message) {
         toast.success(
           res.data.message,
@@ -114,7 +110,7 @@ function Register() {
         navigate("/login");
       }
     } catch (error) {
-      console.log(error);
+      console.error("Submission error:", error);
     }
   };
 
@@ -333,22 +329,22 @@ function Register() {
                   className="mr-2 2xl:w-[20px] 2xl:h-[20px] h-[15px] w-[15px]"
                 />
                 <label className="2xl:text-lg text-base text-gray-600">
-                  Remember Password
+                  Lưu mật khẩu
                 </label>
               </div>
 
               <button
+                type="submit"
                 className="w-full 2xl:py-3 xl:py-2 bg-gray-900 text-white rounded-lg 2xl:text-lg font-semibold hover:bg-gray-700 transition"
-                onClick={handleRegister}
               >
-                Register →
+                Đăng ký →
               </button>
             </form>
 
             <p className="2xl:mt-6 mt-3 2xl:text-lg text-base text-center text-gray-500 flex justify-center gap-5">
-              You already have an account{" "}
+              Bạn đã có tài khoản{" "}
               <Link to="/Login" className="text-gray-700 font-semibold">
-                Login
+                Đăng nhập tại đây
               </Link>
             </p>
           </div>

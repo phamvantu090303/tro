@@ -8,8 +8,9 @@ import { login } from "../../Store/filterUser";
 import { toast } from "react-toastify";
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const dispath = useDispatch();
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -28,8 +29,14 @@ function Login() {
       navigate("/");
       toast.success("Đăng nhập thành công!");
     } catch (error) {
-      console.log(error);
+      setError(error.response?.data?.message);
     }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name == "email") setEmail(value);
+    if (name == "password") setPassword(value);
   };
   return (
     <div className="relative flex">
@@ -61,16 +68,20 @@ function Login() {
 
           <div className="lg:w-[50%] w-full h-full bg-slate-200 py-5 px-16 lg:py-10 lg:px-32 flex flex-col justify-center">
             <h2 className="text-xl lg:text-3xl  font-semibold text-gray-800 text-center mb-8">
-              Login Here!
+              Đăng nhập
             </h2>
-            <form className="space-y-10">
+            <p className="text-red-500 text-sm h-2 mb-8">{error}</p>
+            <form className="space-y-10" onSubmit={handleLogin}>
               <div className="relative">
                 <FaUser className="absolute left-3 top-4 text-gray-400 text-lg" />
                 <input
-                  type="text"
-                  placeholder="username"
+                  type="email"
+                  name="email"
+                  placeholder="Email"
                   className="w-full px-10 py-3 rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={email}
+                  onChange={handleInputChange}
+                  autoComplete="email"
                 />
               </div>
 
@@ -78,9 +89,12 @@ function Login() {
                 <FaLock className="absolute left-3 top-4 text-gray-400 text-lg" />
                 <input
                   type="password"
+                  name="password"
                   placeholder="password"
                   className="w-full px-10 py-3 rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
+                  onChange={handleInputChange}
+                  autoComplete="password"
                 />
               </div>
               <div className="flex items-center">
@@ -92,27 +106,23 @@ function Login() {
               <button
                 type="submit"
                 className="w-full py-3 bg-gray-900 text-white rounded-lg text-lg font-semibold hover:bg-gray-700 transition"
-                onClick={handleLogin}
               >
-                LOGIN →
+                ĐĂNG NHẬP →
               </button>
             </form>
             <p className="mt-6 text-lg text-center text-gray-500 flex justify-center gap-5">
-              Don't have an account?{" "}
-              <Link to="/Register">
-                {" "}
-                <p href="#" className="text-gray-700 font-semibold">
-                  Create your account here!
-                </p>
+              Bạn chưa có tài khoản?{" "}
+              <Link to="/Register" className="text-gray-700 font-semibold">
+                Tạo tài khoản của bạn tại đây!
               </Link>
             </p>
             <p className="mt-6 text-lg text-center text-gray-500 flex justify-center gap-5">
               Quên mật khẩu?{" "}
-              <Link to="/resend-forgot-password">
-                {" "}
-                <p href="#" className="text-gray-700 font-semibold">
-                  Khôi phục!
-                </p>
+              <Link
+                to="/resend-forgot-password"
+                className="text-gray-700 font-semibold"
+              >
+                Khôi phục!
               </Link>
             </p>
           </div>

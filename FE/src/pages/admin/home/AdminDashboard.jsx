@@ -4,7 +4,7 @@ import DanhMucAdmin from "../../admin/home/DanhMucAdmin";
 import ThietBiAdmin from "../../admin/home/ThietBiAdmin";
 import AnhPhongAdmin from "../../admin/home/AnhPhongAdmin";
 import YeuThichAdmin from "../../admin/home/YeuThichAdmin";
-import UserAdmin from "../../admin/home/UserAdmin";
+import UserAdmin from "../../admin/home/UserAdmin/UserAdmin";
 import MessAdmin from "../../../component/Mess/messAdmin";
 import MapAdmin from "./Map";
 import ThongKe from "../../Chart/ThongKeAll";

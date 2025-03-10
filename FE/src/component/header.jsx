@@ -1,10 +1,11 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import logo from "../assets/logo/logo.svg";
 import { CiHeart } from "react-icons/ci";
 import { FaRegUser } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
+import { logout } from "../Store/filterUser";
 const Item = [
   {
     id: 1,
@@ -29,7 +30,14 @@ const Item = [
 function Header() {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
+  const [modal, setModal] = useState(false);
+
+  const handleLogout = async () => {
+    dispatch(logout());
+  };
+
   return (
     <nav className="w-full bg-[#1c203d] text-white py-5">
       <div className="max-w-[1920px] mx-auto px-6 md:px-[150px] flex items-center justify-between">
@@ -93,7 +101,20 @@ function Header() {
                   className="w-[30px] h-[30px] cursor-pointer"
                   onClick={() => navigate("/yeuthich")}
                 />
-                <FaRegUser className="w-[25px] h-[25px]" />
+                <FaRegUser
+                  className="w-[25px] h-[25px] cursor-pointer relative"
+                  onClick={() => setModal(!modal)}
+                />
+                {modal && (
+                  <div className="bg-customBlue absolute right-20 top-16 rounded-lg w-[100px] h-[100px]">
+                    <p
+                      onClick={handleLogout}
+                      className="text-white cursor-pointer py-3 px-2 text-center text-base hover:bg-slate-800"
+                    >
+                      Đăng xuất
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>

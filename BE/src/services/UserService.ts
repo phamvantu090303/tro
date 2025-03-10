@@ -15,7 +15,7 @@ export class UserService {
     if (user) {
       throw new Error(`Tài khoản đã tồn tại`);
     }
-    
+
     const salt = await bcrypt.genSalt(10);
     const hashpassword = await bcrypt.hash(password, salt);
     body.password = hashpassword;
@@ -51,8 +51,10 @@ export class UserService {
     return forgot_password_token;
   }
 
-
-  async ResetPassWord(user_id: any, password: string):Promise<{ message: string }> {
+  async ResetPassWord(
+    user_id: any,
+    password: string
+  ): Promise<{ message: string }> {
     const user = await UserModel.findById(user_id);
     if (!user) {
       throw new Error(`User không Tồn Tại!!!`);
@@ -63,24 +65,36 @@ export class UserService {
     user.password = hashedPassword;
     await user.save();
 
-    return ({
-      message:"Đổi mật khẩu thành công"
-    });
+    return {
+      message: "Đổi mật khẩu thành công",
+    };
   }
 
   async updateUserService(_id: any, data: any): Promise<void> {
-    const id = new ObjectId(_id)
-    const { id_quyen, email, password, username, ho_va_ten, ngay_sinh, verify, que_quan, so_dien_thoai, gioi_tinh, cccd } = data;
+    const id = new ObjectId(_id);
+    const {
+      id_quyen,
+      email,
+      password,
+      username,
+      ho_va_ten,
+      ngay_sinh,
+      verify,
+      que_quan,
+      so_dien_thoai,
+      gioi_tinh,
+      cccd,
+    } = data;
 
     // Kiểm tra danh mục cần cập nhật có tồn tại không
     const update = await UserModel.findById(id);
     if (!update) {
-        throw new Error('ID admin không tồn tại');
+      throw new Error("ID admin không tồn tại");
     }
 
     if (password) {
-        const salt = await bcrypt.genSalt(10);
-        update.password = await bcrypt.hash(password, salt);
+      const salt = await bcrypt.genSalt(10);
+      update.password = await bcrypt.hash(password, salt);
     }
 
     update.id_quyen = id_quyen ?? update.id_quyen;
@@ -95,17 +109,63 @@ export class UserService {
     update.cccd = cccd ?? update.cccd;
 
     await update.save();
-}
+  }
 
   async getMe(user_id: string) {
-    const user = await UserModel.findOne({ _id: new ObjectId(user_id) })
-    .select(" -createdAt -updatedAt -__v")// Ẩn các trường không cần thiết
+    const user = await UserModel.findOne({ _id: new ObjectId(user_id) }).select(
+      " -createdAt -updatedAt -__v"
+    ); // Ẩn các trường không cần thiết
 
-    return user
+    return user;
   }
 
   async getUserAll() {
-    const user = await UserModel.find().select("-createdAt -updatedAt -__v")// Ẩn các trường không cần thiết
-    return user
+    const user = await UserModel.find().select("-createdAt -updatedAt -__v");
+    return user;
+  }
+
+  async getUserDetail(user_id: string) {
+    const result = await UserModel.aggregate([
+      {
+        $match: { _id: new ObjectId(user_id) },
+      },
+      {
+        $lookup: {
+          from: "phongtros",
+          let: { userId: { $toString: "$_id" } },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$id_users", "$$userId"] },
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                id_users: 0,
+                __v: 0,
+                trang_thai: 0,
+                createdAt: 0,
+                updatedAt: 0,
+              },
+            },
+          ],
+          as: "phongTro",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          id_quyen: 0,
+          password: 0,
+          __v: 0,
+          verify: 0,
+          updatedAt: 0,
+          createdAt: 0,
+        },
+      },
+    ]);
+
+    return result[0] || null;
   }
 }
