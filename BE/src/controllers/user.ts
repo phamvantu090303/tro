@@ -192,3 +192,19 @@ export const getAllUser = async (req: any, res: any) => {
     });
   }
 };
+
+export const getDetailUser = async (req: any, res: any) => {
+  try {
+    const { id } = req.params;
+    const data = await userService.getUserDetail(id);
+    res.status(200).json({
+      status: 200,
+      data: data,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Lỗi khi lấy thông tin người dùng.",
+      error: error.message,
+    });
+  }
+};

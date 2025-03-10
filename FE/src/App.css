@@ -7,10 +7,25 @@ html {
 }
 .slick-slide {
   max-width: 100% !important;
+  flex: 0 0 300px !important; /* Đảm bảo slide không co giãn */
 }
 .slick-slide {
   flex: 1 0 auto !important;
 }
-.slick-slide {
-  flex: 0 0 300px !important; /* Đảm bảo slide không co giãn */
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #000;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
