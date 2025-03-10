@@ -140,6 +140,88 @@ export class UserService {
               },
             },
             {
+              $lookup: {
+                from: "hinh_anh_phongs",
+                let: { ma_phong: "$ma_phong" },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: { $eq: ["$ma_phong", "$$ma_phong"] },
+                    },
+                  },
+                  {
+                    $project: {
+                      ma_phong: 0,
+                      _id: 0,
+                      id: 0,
+                      createdAt: 0,
+                      updatedAt: 0,
+                      __v: 0,
+                    },
+                  },
+                ],
+                as: "anhChiTiet",
+              },
+            },
+            {
+              $lookup: {
+                from: "thiet_bis",
+                let: { ma_phong: "$ma_phong" },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: { $eq: ["$ma_phong", "$$ma_phong"] },
+                    },
+                  },
+                  {
+                    $project: {
+                      ma_phong: 0,
+                      _id: 0,
+                      id: 0,
+                      createdAt: 0,
+                      updatedAt: 0,
+                      __v: 0,
+                    },
+                  },
+                ],
+                as: "thietbi",
+              },
+            },
+            {
+              $lookup: {
+                from: "hopdongs",
+                let: {
+                  ma_phong: "$ma_phong",
+                  id_users: "$id_users",
+                },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [
+                          { $eq: ["$ma_phong", "$$ma_phong"] },
+                          { $eq: ["$id_users", "$$id_users"] },
+                        ],
+                      },
+                    },
+                  },
+                  {
+                    $project: {
+                      ma_phong: 0,
+                      id_users: 0,
+                      createdAt: 0,
+                      updatedAt: 0,
+                      __v: 0,
+                    },
+                  },
+                ],
+                as: "hopdongs",
+              },
+            },
+            {
+              $unwind: { path: "$hopdongs", preserveNullAndEmptyArrays: true },
+            },
+            {
               $project: {
                 _id: 0,
                 id_users: 0,
@@ -152,6 +234,9 @@ export class UserService {
           ],
           as: "phongTro",
         },
+      },
+      {
+        $unwind: { path: "$phongTro", preserveNullAndEmptyArrays: true },
       },
       {
         $project: {

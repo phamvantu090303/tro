@@ -159,7 +159,7 @@ function Homepage() {
           <section className="mt-10 mb-10">
             <h3 className="text-[#23274A] font-bold text-2xl">Đánh giá</h3>
             <Slider {...settings} className="mt-10">
-              {topReview.slice(0, 3).map((item, index) => (
+              {topReview.map((item, index) => (
                 <div key={index}>
                   <div className="w-full md:max-w-[300px]  shadow-xl  p-4 rounded-lg cursor-pointer ">
                     <div className="flex items-center gap-3">

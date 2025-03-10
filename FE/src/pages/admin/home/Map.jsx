@@ -10,7 +10,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import { axiosInstance } from "../../../../Axios";
 import { usePhongTro } from "../../../Context/PhongTroContext";
-import RoomTable from "../../../component/Admin/RoomTable";
+import RoomTable from "../../../component/admin/RoomTable";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
 import ModalMap from "../../../component/admin/ModalMap/ModalMap";
@@ -141,6 +141,15 @@ export default function MapAdmin() {
       setIdModal1(null);
     }
   }, [isOpen]);
+
+  const headers = [
+    { label: "Mã phòng", key: "ma_phong" },
+    { label: "Tên phòng trọ", key: "ten_phong_tro" },
+    { label: "Mã danh mục", key: "ma_danh_muc" },
+    { label: "Số người", key: "so_luong_nguoi" },
+    { label: "Trạng thái", key: "trang_thai" },
+    { label: "Mô tả", key: "mo_ta" },
+  ];
 
   return (
     <div className="p-6 w-full mx-auto">
@@ -289,7 +298,12 @@ export default function MapAdmin() {
         </div>
       </div>
       {listDetailKhuvuc ? (
-        <RoomTable displayedRooms={listDetailKhuvuc} roomsPerPage={5} />
+        <RoomTable
+          displayedRooms={listDetailKhuvuc}
+          roomsPerPage={5}
+          title={"Bản đồ"}
+          headers={headers}
+        />
       ) : (
         <div></div>
       )}

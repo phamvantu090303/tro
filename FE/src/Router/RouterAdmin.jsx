@@ -5,6 +5,7 @@ import HomeAdmin from "../pages/admin/home/homeAdmin";
 import QuyenManagement from "../pages/admin/Quyen";
 import HoaDonThangAdmin from "../pages/admin/home/HoaDonThangAdmin";
 import { Route } from "react-router";
+import UserAdminDetail from "../pages/admin/home/UserAdmin/UserAdminDetail";
 
 const routerAdmin = (
   <Route path="/admin">
@@ -13,7 +14,7 @@ const routerAdmin = (
     <Route path="reset-password" element={<AdminResetPassword />} />
     <Route path="home">
       <Route index element={<HomeAdmin />} />
-      <Route path="detailUser/:id" element={<DetailUser />} />
+      <Route path="detailUser/:id" element={<UserAdminDetail />} />
     </Route>
     <Route path="quyen" element={<QuyenManagement />} />
     <Route path="hoa-don-thang" element={<HoaDonThangAdmin />} />

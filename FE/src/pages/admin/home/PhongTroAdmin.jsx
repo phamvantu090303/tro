@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../../../../Axios";
-import RoomTable from "../../../component/Admin/RoomTable";
+import RoomTable from "../../../component/admin/RoomTable";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useDanhMuc } from "../../../Context/DanhMucContext";
 import { usePhongTro } from "../../../Context/PhongTroContext";
@@ -28,6 +28,15 @@ function PhongTroAdmin() {
     soLuongnguoi: "",
     diachi: "",
   });
+
+  const headers = [
+    { label: "Mã phòng", key: "ma_phong" },
+    { label: "Tên phòng trọ", key: "ten_phong_tro" },
+    { label: "Mã danh mục", key: "ma_danh_muc" },
+    { label: "Số người", key: "so_luong_nguoi" },
+    { label: "Trạng thái", key: "trang_thai" },
+    { label: "Mô tả", key: "mo_ta" },
+  ];
 
   useEffect(() => {
     try {
@@ -180,7 +189,12 @@ function PhongTroAdmin() {
               + Thêm phòng trọ
             </button>
           </div>
-          <RoomTable displayedRooms={filteredRooms} roomsPerPage={10} />
+          <RoomTable
+            displayedRooms={filteredRooms}
+            roomsPerPage={10}
+            title="Tất cả phòng trọ"
+            headers={headers}
+          />
         </div>
       )}
       {page === 2 && (
