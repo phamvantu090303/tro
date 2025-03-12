@@ -6,6 +6,7 @@ import { useDanhMuc } from "../../../Context/DanhMucContext";
 import { usePhongTro } from "../../../Context/PhongTroContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import SearchBar from "./SearchBar";
 
 function PhongTroAdmin() {
   const [chucnang, setChucnang] = useState("Tất cả các phòng");
@@ -182,6 +183,7 @@ function PhongTroAdmin() {
                 Phòng đã được thuê
               </p>
             </div>
+            <SearchBar />
             <button
               className="text-base bg-red-500 text-white rounded-full py-2 px-3"
               onClick={() => setPage(2)}

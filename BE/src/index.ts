@@ -97,7 +97,7 @@ schedule.scheduleJob("59 23 * *", saveEndOfDayData);
 
 // Lập lịch chạy mỗi phút
 schedule.scheduleJob("* * * * *", () => {
-  console.log('Kiểm tra tự động tạo hóa đơn dựa trên hóa đơn tháng trước...');
+  console.log("Kiểm tra tự động tạo hóa đơn dựa trên hóa đơn tháng trước...");
   autoCreateHoaDon();
 });
 

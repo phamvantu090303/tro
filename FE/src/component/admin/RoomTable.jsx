@@ -11,6 +11,7 @@ function RoomTable({
   headers,
   title,
   handleNavigate,
+  renderStatus,
 }) {
   const { currentPage, totalPages, currentItems, handlePageChange } =
     usePagination(displayedRooms, roomsPerPage);
@@ -32,6 +33,18 @@ function RoomTable({
     2: { text: "Đang sửa chữa", bgColor: "bg-yellow-500" },
   };
 
+  //mặc định cho trạng thái nếu không truyền sang
+  const defaultRenderStatus = (status) => (
+    <span
+      className={`px-2 py-1 text-white text-sm rounded-lg ${
+        Availability[status]?.bgColor || "bg-red-500"
+      }`}
+    >
+      {Availability[status]?.text || "Không xác định"}
+    </span>
+  );
+
+  //return ra giao diện khi có key
   const defaultRenderCell = (room, key) => {
     if (key === "so_luong_nguoi") {
       return (
@@ -44,21 +57,25 @@ function RoomTable({
       );
     }
     if (key === "trang_thai") {
-      return (
-        <span
-          className={`px-2 py-1 text-white text-sm rounded-lg ${
-            Availability[room[key]]?.bgColor || "bg-red-500"
-          }`}
-        >
-          {Availability[room[key]]?.text || "Không xác định"}
-        </span>
-      );
+      return renderStatus
+        ? renderStatus(room[key])
+        : defaultRenderStatus(room[key]);
     }
     if (key === "ngay_sinh") return formatDate(room[key]);
     if (key === "email") return maskEmail(room[key]);
+    if (key === "image_url" && room[key]) {
+      return (
+        <img
+          src={room[key]}
+          alt="Hình ảnh"
+          className="w-[50%] h-24 object-cover rounded"
+        />
+      );
+    }
     return room[key] || "N/A";
   };
 
+  const renderCell = (item, key) => defaultRenderCell(item, key);
   return (
     <div className="bg-white shadow-md rounded-lg p-4 w-full border border-gray-500 mt-4">
       <h3 className="text-xl font-medium mb-6">{title}</h3>
@@ -78,7 +95,7 @@ function RoomTable({
             <tr key={index} className="border-b hover:bg-gray-100 py-5">
               {headers.map((header, idx) => (
                 <td key={idx} className="p-3">
-                  {defaultRenderCell(room, header.key)}
+                  {renderCell(room, header.key)}
                 </td>
               ))}
               <td className="p-3 flex gap-3">
