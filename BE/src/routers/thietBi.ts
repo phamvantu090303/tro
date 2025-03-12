@@ -13,7 +13,7 @@ const router = Router();
 
 router.post("/create", accessTokenAdmin, storeThietBi);
 router.post("/update/:id", accessTokenAdmin, updateThietBi);
-router.get("/all", getData);
+router.get("/getAll", getData);
 router.delete("/delete/all", accessTokenAdmin, deleteAll);
 router.delete("/delete/:id", accessTokenAdmin, deleteById);
 

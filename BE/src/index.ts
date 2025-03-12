@@ -96,7 +96,8 @@ schedule.scheduleJob("59 23 * *", saveEndOfDayData);
 //*:Phút (0 - 59) *:Giờ (0 - 23) *:Ngày trong (tháng (1 - 31)) *:Tháng (1 - 12)    *:Ngày trong tuần (0 - 7) (Chủ nhật có thể là 0 hoặc 7)
 
 // Lập lịch chạy mỗi phút
-schedule.scheduleJob("* * * * *", () => {
+
+schedule.scheduleJob("59 23 * * *", () => {
   console.log("Kiểm tra tự động tạo hóa đơn dựa trên hóa đơn tháng trước...");
   autoCreateHoaDon();
 });

@@ -4,7 +4,7 @@ import { CiCircleMore } from "react-icons/ci";
 import Pagination from "../Phantrang/Pagination";
 import usePagination from "../../hook/usePagination";
 import { useNavigate } from "react-router";
-
+import { MdOutlineDelete } from "react-icons/md";
 function RoomTable({
   displayedRooms,
   roomsPerPage,
@@ -12,6 +12,7 @@ function RoomTable({
   title,
   handleNavigate,
   renderStatus,
+  handleDelete,
 }) {
   const { currentPage, totalPages, currentItems, handlePageChange } =
     usePagination(displayedRooms, roomsPerPage);
@@ -25,7 +26,13 @@ function RoomTable({
     const [name, domain] = email.split("@");
     return `${name[0]}***@${domain}`;
   };
-
+  //format ID quyen thanh dinh dang 12b453***23cb
+  const maskID = (idquyen) => {
+    if (idquyen.length > 9) {
+      return `${idquyen.slice(0, 3)}**********${idquyen.slice(-6)}`;
+    }
+    return idquyen; // Trường hợp mã phòng quá ngắn thì giữ nguyên
+  };
   //format định dạng trạng thái
   const Availability = {
     0: { text: "Đã cho thuê", bgColor: "bg-red-500" },
@@ -58,11 +65,17 @@ function RoomTable({
     }
     if (key === "trang_thai") {
       return renderStatus
-        ? renderStatus(room[key])
-        : defaultRenderStatus(room[key]);
+        ? renderStatus(room)
+        : defaultRenderStatus(room.trang_thai);
+    }
+    if (key === "is_block") {
+      return renderStatus
+        ? renderStatus(room)
+        : defaultRenderStatus(room.is_block);
     }
     if (key === "ngay_sinh") return formatDate(room[key]);
     if (key === "email") return maskEmail(room[key]);
+    if (key === "id_quyen") return maskID(room[key]);
     if (key === "image_url" && room[key]) {
       return (
         <img
@@ -108,7 +121,10 @@ function RoomTable({
                   👁️
                 </button>
                 <button className="text-gray-600 hover:text-gray-800 text-center">
-                  <CiCircleMore size={30} />
+                  <MdOutlineDelete
+                    size={30}
+                    onClick={() => handleDelete(room)}
+                  />
                 </button>
               </td>
             </tr>

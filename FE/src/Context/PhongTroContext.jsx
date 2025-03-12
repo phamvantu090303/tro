@@ -9,7 +9,7 @@ export const PhongTroProvider = ({ children, isAdmin = false }) => {
   useEffect(() => {
     const fetchPhongTro = async () => {
       try {
-        const { data } = await axiosInstance.get("/phongTro/get");
+        const { data } = await axiosInstance.get("/phongTro/getAll");
         setPhongTro(
           isAdmin ? data.data : data.data.filter((dm) => dm.trang_thai === 1)
         );

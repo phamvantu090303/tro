@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
 import SearchBar from "../../admin/home/SearchBar";
 import { axiosInstance } from "../../../../Axios";
-import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
-import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import RoomTable from "../../../component/admin/RoomTable";
+import { usePhongTro } from "../../../Context/PhongTroContext";
+import { toast } from "react-toastify";
+import useApiManagerAdmin from "../../../hook/useApiManagerAdmin";
 
 function AnhPhongAdmin() {
-  const [data, setData] = useState([]);
+  const { phongTro } = usePhongTro();
   const [modal, setModal] = useState(false);
-  const fetchData = async () => {
-    try {
-      const res = await axiosInstance.get("/Image-phong/getAll");
-      setData(res.data.data || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [maphong, setMaphong] = useState("");
+  const [img, setImg] = useState("");
+  const {
+    data: anhphong,
+    createData,
+    DeleteData,
+    DeleteAllData,
+    UpdateData,
+    fetchData,
+  } = useApiManagerAdmin("/Image-phong");
 
   useEffect(() => {
     fetchData();
@@ -25,6 +28,27 @@ function AnhPhongAdmin() {
     { label: "Mã phòng", key: "ma_phong" },
     { label: "Ảnh phòng", key: "image_url" },
   ];
+
+  const handleCreate = async () => {
+    const success = await createData({
+      ma_phong: maphong,
+      image_url: img,
+    });
+    if (success) {
+      setModal(false);
+      setMaphong("");
+      setImg("");
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    await DeleteAllData();
+  };
+
+  // Xóa một danh mục sử dụng DeleteData từ hook
+  const handleDelete = async (room) => {
+    await DeleteData(room._id);
+  };
 
   return (
     <div className="flex h-screen gap-3">
@@ -38,11 +62,19 @@ function AnhPhongAdmin() {
             >
               Thêm ảnh phòng
             </button>
-            <button className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600">
+            <button
+              className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
+              onClick={handleDeleteAll}
+            >
               Xóa tất cả
             </button>
           </div>
-          <RoomTable headers={headers} displayedRooms={data} roomsPerPage={5} />
+          <RoomTable
+            headers={headers}
+            displayedRooms={anhphong}
+            roomsPerPage={5}
+            handleDelete={handleDelete}
+          />
         </div>
 
         {modal && (
@@ -61,29 +93,32 @@ function AnhPhongAdmin() {
               </div>
               <div className="space-y-4 mt-4">
                 <div className="flex gap-5">
+                  <select
+                    className="border py-3 px-5 rounded-md w-full border-gray-500"
+                    onChange={(e) => setMaphong(e.target.value)}
+                    name="maMap"
+                  >
+                    <option value="">Chọn mã phòng</option>
+                    {phongTro.map((dm) => (
+                      <option key={dm.ma_phong} value={dm.ma_phong}>
+                        {dm.ma_phong}
+                      </option>
+                    ))}
+                  </select>
                   <input
                     type="text"
-                    placeholder="Mã danh mục"
-                    onChange={(e) => setMadanhmuc(e.target.value)}
-                    className="py-3 px-5 border border-gray-500 rounded-lg"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Mo ta"
-                    onChange={(e) => setMota(e.target.value)}
+                    placeholder="img url"
+                    onChange={(e) => setImg(e.target.value)}
                     className="py-3 px-5 border border-gray-500 rounded-lg"
                   />
                 </div>
-                <select
-                  onChange={(e) => setTrangthai(e.target.value)}
-                  className="border bg-white border-gray-300 px-3 py-3 rounded-lg w-[60%]"
-                >
-                  <option value="">Chọn trạng thái</option>
-                  <option value={1}>Hoạt động</option>
-                  <option value={0}>Không hoạt động</option>
-                </select>
               </div>
-              <button onClick={handleCreate}>Tao</button>
+              <button
+                onClick={handleCreate}
+                className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
+              >
+                Tạo
+              </button>
             </div>
           </div>
         )}

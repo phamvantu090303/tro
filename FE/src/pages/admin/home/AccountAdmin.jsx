@@ -1,182 +1,261 @@
-import { useEffect, useState, useCallback } from 'react';
-import SearchBar from '../../admin/home/SearchBar';
-import { axiosInstance } from '../../../../Axios';
-import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
+import { useEffect, useState } from "react";
+import RoomTable from "../../../component/admin/RoomTable";
+import useApiManagerAdmin from "../../../hook/useApiManagerAdmin";
+import SearchBar from "./SearchBar";
 
-const defaultAdmin = {
-  id_quyen: '',
-  username: '',
-  password: '',
-  email: '',
-  ho_va_ten: '',
-  ngay_sinh: '',
-  que_quan: '',
-  so_dien_thoai: '',
-  gioi_tinh: 'Nam', 
-  cccd: '', 
-};
+function AccountAdmin() {
+  const [modal, setModal] = useState(false);
+  const {
+    data: admin,
+    createData,
+    DeleteData,
+    UpdateData,
+    fetchData,
+  } = useApiManagerAdmin("/admin");
+  const generateRandomId = () => Math.floor(Math.random() * 1000000).toString();
+  const [adminData, setAdminData] = useState({
+    id_quyen: "",
+    email: "",
+    password: "",
+    username: "",
+    ho_va_ten: "",
+    ngay_sinh: "",
+    que_quan: "",
+    so_dien_thoai: "",
+    gioi_tinh: "",
+    cccd: "",
+    verify: 1,
+    is_block: false,
+  });
 
-export default function AccountAdmin() {
-  const [user, setUser] = useState([]);
-  const [filteredUser, setFilteredUser] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [modalType, setModalType] = useState(null);
-  const [adminData, setAdminData] = useState(defaultAdmin);
-  
-  const itemsPerPage = 5;
-  const totalPages = Math.ceil(filteredUser.length / itemsPerPage);
-  const currentData = filteredUser.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const headers = [
+    { label: "ID quyền", key: "id_quyen" },
+    { label: "UserName", key: "username" },
+    { label: "Email", key: "email" },
+    { label: "Họ và tên", key: "ho_va_ten" },
+    { label: "Quê quán", key: "que_quan" },
+    { label: "Số điện thoại", key: "so_dien_thoai" },
+    { label: "Giới tính", key: "gioi_tinh" },
+    { label: "Căn cước công dân", key: "cccd" },
+    { label: "Tài khoản bị khóa", key: "is_block" },
+  ];
 
-  const fetchAccount = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get('admin/AllAdmin');
-      const users = response.data.data || [];
-      setUser(users);
-      setFilteredUser(users);
-    } catch {
-      setError('Không tải được admins');
-    } finally {
-      setLoading(false);
-    }
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  useEffect(() => { fetchAccount(); }, [fetchAccount]);
+  useEffect(() => {
+    if (modal) {
+      setAdminData((prev) => ({ ...prev, id_quyen: generateRandomId() }));
+    }
+  }, [modal]);
 
-  const handleSubmit = async () => {
-    try {
-      if (modalType === 'edit') {
-        await axiosInstance.post(`/admin/update/${adminData._id}`, adminData);
-        alert('Admin đã cập nhật thành công!');
-      } else {
-        await axiosInstance.post(`/admin/create`, adminData);
-        alert('Admin tạo ra thành công!');
-      }
-      fetchAccount();
-      closeModal();
-    } catch {
-      setError('Không xử lý được yêu cầu');
+  const handleCreate = async () => {
+    const success = await createData({ ...adminData });
+
+    if (success) {
+      setModal(false);
+      setMaphong("");
+      setImg("");
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa?')) {
-      try {
-        await axiosInstance.delete(`/admin/delete/${id}`);
-        alert('Admin đã xóa thành công!');
-        fetchAccount();
-      } catch {
-        setError('Không xóa được admin user.');
-      }
-    }
+  const handleDelete = async (room) => {
+    await DeleteData(room._id);
   };
 
-  const toggleBlock = async (admin) => {
-    try {
-      const updatedStatus = !admin.is_block;
-      await axiosInstance.post(`/admin/update/${admin._id}`, { ...admin, is_block: updatedStatus });
-      
-      alert(`Admin ${updatedStatus ? 'blocked' : 'unblocked'} successfully!`);
-      
-      // Cập nhật danh sách user mà không cần gọi lại API
-      setUser((prevUsers) =>
-        prevUsers.map((u) => (u._id === admin._id ? { ...u, is_block: updatedStatus } : u))
-      );
-      setFilteredUser((prevUsers) =>
-        prevUsers.map((u) => (u._id === admin._id ? { ...u, is_block: updatedStatus } : u))
-      );
-    } catch {
-      setError('Failed to update block status.');
-    }
+  const handleUpdateBlock = async (id, value) => {
+    const newValue = !value;
+    await UpdateData(id, { is_block: newValue });
   };
 
-
-  const openModal = (type, admin = defaultAdmin) => {
-    setModalType(type);
-    setAdminData(admin);
-  };
-  
-  const closeModal = () => {
-    setModalType(null);
-    setAdminData(defaultAdmin);
-  };
+  const renderStatus = (status) => (
+    <p
+      className={`p-1 border rounded text-white cursor-pointer ${
+        status.is_block ? "bg-red-500" : "bg-green-500"
+      }`}
+      onClick={() => handleUpdateBlock(status._id, status.is_block)}
+    >
+      {status.is_block ? "Bị khóa" : "Hoạt động"}
+    </p>
+  );
 
   return (
-    <div className='flex h-screen gap-3'>
-      <div className='w-full bg-gray-100 p-6 rounded-lg shadow-lg text-black'>
-        <h1 className='text-3xl font-bold mb-6'>Acc Admin</h1>
-
-        {modalType && (
-          <Modal title={modalType === 'edit' ? 'Edit Admin' : 'Create Admin'} onClose={closeModal}>
-            {Object.keys(defaultAdmin).map((key) => (
-              <input
-                key={key}
-                type={key === 'password' ? 'password' : 'text'}
-                placeholder={key.replace('_', ' ')}
-                value={adminData[key] || ''}
-                onChange={(e) => setAdminData({ ...adminData, [key]: e.target.value })}
-                className='border bg-white border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500'
-              />
-            ))}
-            <button onClick={handleSubmit} className='bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition'>
-              {modalType === 'edit' ? 'Update Admin' : 'Create Admin'}
+    <div className="flex h-screen gap-3">
+      <div className="w-full bg-gray-100 p-6 rounded-lg shadow-lg text-black">
+        <div className="space-y-10">
+          <div className="flex gap-5 ">
+            <SearchBar />
+            <button
+              className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
+              onClick={() => setModal(true)}
+            >
+              Thêm tài khoản admin
             </button>
-            {error && <p className='text-red-500 mt-2'>{error}</p>}
-          </Modal>
+          </div>
+          <RoomTable
+            displayedRooms={admin}
+            headers={headers}
+            roomsPerPage={5}
+            title={"Account Admin"}
+            renderStatus={renderStatus}
+            handleDelete={handleDelete}
+            updateTrangthai={handleUpdateBlock}
+          />
+        </div>
+        {modal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
+            <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] w-[500px]">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold mb-4">
+                  Thêm tài khoản admin
+                </h2>
+                <button
+                  className="bg-red-500 text-white p-2 rounded-lg"
+                  onClick={() => setModal(false)}
+                >
+                  Close
+                </button>
+              </div>
+              <div className="space-y-4 mt-4">
+                <div>
+                  <label className="block font-medium">Email</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập email"
+                    value={adminData.email}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, email: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">Mật khẩu</label>
+                  <input
+                    type="password"
+                    placeholder="Nhập mật khẩu"
+                    value={adminData.password}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, password: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">UserName</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập tên đăng nhập"
+                    value={adminData.username}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, username: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">Họ và tên</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập họ và tên"
+                    value={adminData.ho_va_ten}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, ho_va_ten: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">Ngày sinh</label>
+                  <input
+                    type="date"
+                    value={adminData.ngay_sinh}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, ngay_sinh: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">Quê quán</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập quê quán"
+                    value={adminData.que_quan}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, que_quan: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">Số điện thoại</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập số điện thoại"
+                    value={adminData.so_dien_thoai}
+                    onChange={(e) =>
+                      setAdminData({
+                        ...adminData,
+                        so_dien_thoai: e.target.value,
+                      })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">CCCD</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập số CCCD"
+                    value={adminData.cccd}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, cccd: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">Giới tính</label>
+                  <select
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                    value={adminData.gioi_tinh}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, gioi_tinh: e.target.value })
+                    }
+                  >
+                    <option value="">Chọn giới tính</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-medium">Khoá tài khoản</label>
+                  <input
+                    type="checkbox"
+                    checked={adminData.is_block}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, is_block: e.target.checked })
+                    }
+                    className="mr-2"
+                  />
+                  <span>Tài khoản bị khoá</span>
+                </div>
+              </div>
+              <button
+                onClick={handleCreate}
+                className="mt-6 py-2 px-10 bg-customBlue rounded-lg text-white w-full"
+              >
+                Tạo
+              </button>
+            </div>
+          </div>
         )}
-
-        <div className='flex gap-5'>
-          <SearchBar onSearch={(query) => setFilteredUser(user.filter(({ username }) => username.toLowerCase().includes(query.toLowerCase().trim())))} />
-          <button className='bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600' onClick={() => openModal('create')}>New Admin</button>
-        </div>
-
-        <div className='overflow-x-auto mt-8'>
-          <table className='min-w-full bg-white text-left'>
-            <thead>
-              <tr className='bg-gray-800 text-gray-300'>
-                {Object.keys(defaultAdmin).map((key) => <th key={key} className='py-2 pl-3'>{key.replace('_', ' ')}</th>)}
-                <th className='py-2 pl-3'>Blocked</th>
-                <th className='py-2 pl-3'>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentData.length ? (
-                currentData.map((user) => (
-                  <tr key={user._id}>
-                    {Object.keys(defaultAdmin).map((key) => <td key={key} className='py-2 pl-3'>{user[key] || '-'}</td>)}
-                    <td className='py-2 pl-3'>
-                      <button
-                        className={`p-2 rounded-lg ${user.is_block ? 'bg-red-500' : 'bg-green-500'} text-white`}
-                        onClick={() => toggleBlock(user)}
-                      >
-                        {user.is_block ? 'Unblock' : 'Block'}
-                      </button>
-                    </td>
-                    <td className='py-2 pl-3 flex gap-2'>
-                      <button onClick={() => openModal('edit', user)} className='bg-green-500 text-white p-2 rounded-lg hover:bg-green-600'><AiOutlineEdit /></button>
-                      <button onClick={() => handleDelete(user._id)} className='bg-red-500 text-white p-2 rounded-lg hover:bg-red-600'><AiOutlineDelete /></button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr><td colSpan={Object.keys(defaultAdmin).length + 2} className='text-center py-2'>No users available.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   );
 }
 
-const Modal = ({ title, children, onClose }) => (
-  <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'>
-    <div className='bg-white rounded-lg shadow-lg p-6 w-1/4'>
-      <h2 className='text-xl font-semibold mb-4'>{title}</h2>
-      <button className='bg-red-500 text-white p-2 rounded-lg' onClick={onClose}>Close</button>
-      <div className='flex flex-col gap-4'>{children}</div>
-    </div>
-  </div>
-);
+export default AccountAdmin;

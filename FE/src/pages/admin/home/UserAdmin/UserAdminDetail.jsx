@@ -45,8 +45,8 @@ const UserAdminDetail = () => {
 
   return (
     <div className="w-full bg-gray-300 p-6 rounded-lg shadow-lg text-black">
-      {dataDetail && (
-        <div>
+      <div>
+        {dataDetail && (
           <div className="flex flex-col md:flex-row gap-6 md:gap-32 mb-6">
             <div className="w-full md:w-1/3 bg-white flex flex-col items-center px-6 py-4">
               <div className="relative w-full h-32">
@@ -74,63 +74,74 @@ const UserAdminDetail = () => {
                 </div>
               </div>
             </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md w-full">
-              <h3 className="text-lg font-semibold mb-4">Phòng trọ hiện tại</h3>
-              <div className="flex flex-col md:flex-row gap-4 justify-between">
-                <div>
-                  <p className="text-lg">
-                    Mã phòng:{" "}
-                    <span className="font-medium">
-                      {dataDetail.phongTro?.ma_phong}
-                    </span>
-                  </p>
-                  <p className="text-lg">
-                    Tên phòng:{" "}
-                    <span className="font-medium">
-                      {dataDetail.phongTro?.ten_phong_tro}
-                    </span>
-                  </p>
-                  <p className="text-lg">
-                    Số lượng người:{" "}
-                    <span className="font-medium">
-                      {dataDetail.phongTro?.so_luong_nguoi}
-                    </span>
-                  </p>
-                  <p className="text-lg">
-                    Mô tả:{" "}
-                    <span className="font-medium">
-                      {dataDetail.phongTro?.mo_ta}
-                    </span>
-                  </p>
+            {dataDetail.phongTro &&
+            Object.keys(dataDetail.phongTro).length > 0 ? (
+              <div className="bg-white p-6 rounded-lg shadow-md w-full">
+                <h3 className="text-lg font-semibold mb-4">
+                  Phòng trọ hiện tại
+                </h3>
+                <div className="flex flex-col md:flex-row gap-4 justify-between">
+                  <div>
+                    <p className="text-lg">
+                      Mã phòng:{" "}
+                      <span className="font-medium">
+                        {dataDetail.phongTro?.ma_phong}
+                      </span>
+                    </p>
+                    <p className="text-lg">
+                      Tên phòng:{" "}
+                      <span className="font-medium">
+                        {dataDetail.phongTro?.ten_phong_tro}
+                      </span>
+                    </p>
+                    <p className="text-lg">
+                      Số lượng người:{" "}
+                      <span className="font-medium">
+                        {dataDetail.phongTro?.so_luong_nguoi}
+                      </span>
+                    </p>
+                    <p className="text-lg">
+                      Mô tả:{" "}
+                      <span className="font-medium">
+                        {dataDetail.phongTro?.mo_ta}
+                      </span>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-xl">Thiết bị phòng:</p>
+                    <ul className="list-disc pl-6">
+                      {dataDetail.phongTro?.thietbi.map((item, index) => (
+                        <li key={index} className="text-gray-700">
+                          {item.ten_thiet_bi}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-xl">Thiết bị phòng:</p>
-                  <ul className="list-disc pl-6">
-                    {dataDetail.phongTro?.thietbi.map((item, index) => (
-                      <li key={index} className="text-gray-700">
-                        {item.ten_thiet_bi}
-                      </li>
-                    ))}
-                  </ul>
+                <div className="flex gap-5 overflow-auto mt-10">
+                  {dataDetail.phongTro?.anhChiTiet.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image.image_url}
+                      alt={`Room ${index + 1}`}
+                      className="w-full h-52 object-cover rounded-lg"
+                    />
+                  ))}
                 </div>
               </div>
-              <div className="flex gap-5 overflow-auto mt-10">
-                {dataDetail.phongTro?.anhChiTiet.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image.image_url}
-                    alt={`Room ${index + 1}`}
-                    className="w-full h-52 object-cover rounded-lg"
-                  />
-                ))}
+            ) : (
+              <div className="bg-white p-6 rounded-lg shadow-md w-full">
+                <p className="text-3xl font-medium">
+                  Khách hàng chưa có phòng trọ nào
+                </p>
               </div>
-            </div>
+            )}
           </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-4">Hợp đồng phòng trọ</h3>
-            <div className="hidden md:block">
+        )}
+        <div className="bg-white p-6 rounded-lg shadow-md min-h-[300px]">
+          <h3 className="text-lg font-semibold mb-4">Hợp đồng phòng trọ</h3>
+          <div className="hidden md:block">
+            {dataHopdong && Object.keys(dataHopdong).length > 0 ? (
               <table className="w-full text-left">
                 <thead>
                   <tr className="bg-gray-100">
@@ -142,43 +153,47 @@ const UserAdminDetail = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dataHopdong && (
-                    <tr key={dataHopdong._id} className="border-t">
-                      <td className="p-2">{dataHopdong._id}</td>
-                      <td className="p-2">{dataHopdong.ten_hop_dong}</td>
-                      <td className="p-2">{dataHopdong.start_date}</td>
-                      <td className="p-2">{dataHopdong.end_date}</td>
-                      <td className={`p-2 ${statusColor}`}>{trangthai}</td>
-                    </tr>
-                  )}
+                  <tr key={dataHopdong._id} className="border-t">
+                    <td className="p-2">{dataHopdong._id}</td>
+                    <td className="p-2">{dataHopdong.ten_hop_dong}</td>
+                    <td className="p-2">{dataHopdong.start_date}</td>
+                    <td className="p-2">{dataHopdong.end_date}</td>
+                    <td className={`p-2 ${statusColor}`}>{trangthai}</td>
+                  </tr>
                 </tbody>
               </table>
-            </div>
-            <div className="md:hidden">
-              {dataHopdong && (
-                <div key={dataHopdong._id} className="border-b pb-4 mb-4">
-                  <p className="py-3">
-                    <strong>Mã Hợp Đồng:</strong> {dataHopdong._id}
-                  </p>
-                  <p className="py-3">
-                    <strong>Tên Phòng:</strong> {dataHopdong.ten_hop_dong}
-                  </p>
-                  <p className="py-3">
-                    <strong>Ngày Bắt Đầu:</strong> {dataHopdong.start_date}
-                  </p>
-                  <p className="py-3">
-                    <strong>Thời Hạn:</strong> {dataHopdong.end_date}
-                  </p>
-                  <p className="py-3" style={{ color: statusColor }}>
-                    <strong>Trạng Thái:</strong>
-                    {trangthai}
-                  </p>
-                </div>
-              )}
-            </div>
+            ) : (
+              <div className="">
+                <p className="text-3xl font-medium text-center min-h-[300px]">
+                  Khách hàng chưa có ký hợp đồng
+                </p>
+              </div>
+            )}
+          </div>
+          <div className="md:hidden">
+            {dataHopdong && (
+              <div key={dataHopdong._id} className="border-b pb-4 mb-4">
+                <p className="py-3">
+                  <strong>Mã Hợp Đồng:</strong> {dataHopdong._id}
+                </p>
+                <p className="py-3">
+                  <strong>Tên Phòng:</strong> {dataHopdong.ten_hop_dong}
+                </p>
+                <p className="py-3">
+                  <strong>Ngày Bắt Đầu:</strong> {dataHopdong.start_date}
+                </p>
+                <p className="py-3">
+                  <strong>Thời Hạn:</strong> {dataHopdong.end_date}
+                </p>
+                <p className="py-3" style={{ color: statusColor }}>
+                  <strong>Trạng Thái:</strong>
+                  {trangthai}
+                </p>
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

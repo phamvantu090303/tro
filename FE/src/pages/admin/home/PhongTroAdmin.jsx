@@ -7,6 +7,7 @@ import { usePhongTro } from "../../../Context/PhongTroContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import SearchBar from "./SearchBar";
+import useApiManagerAdmin from "../../../hook/useApiManagerAdmin";
 
 function PhongTroAdmin() {
   const [chucnang, setChucnang] = useState("Tất cả các phòng");
@@ -29,7 +30,8 @@ function PhongTroAdmin() {
     soLuongnguoi: "",
     diachi: "",
   });
-
+  const { createData, DeleteData, DeleteAllData, UpdateData, fetchData } =
+    useApiManagerAdmin("/phongTro");
   const headers = [
     { label: "Mã phòng", key: "ma_phong" },
     { label: "Tên phòng trọ", key: "ten_phong_tro" },
@@ -109,11 +111,12 @@ function PhongTroAdmin() {
   const handleCreateRoom = async () => {
     try {
       const urlsImg = await upload(images);
-      console.log("urlsImg", urlsImg);
-      if (!urlsImg) {
-        return "Khong co anh de tao phong";
+      if (!urlsImg.length) {
+        toast.error("Không có ảnh để tạo phòng!");
+        return;
       }
-      await axiosInstance.post("/phongTro/create", {
+
+      await createData({
         ma_phong: phongTroMoi.maPhong,
         ma_map: phongTroMoi.maMap,
         anh_phong: urlsImg.join(", "),
@@ -126,15 +129,14 @@ function PhongTroAdmin() {
         trang_thai: Number(phongTroMoi.trangthai),
         so_luong_nguoi: Number(phongTroMoi.soLuongnguoi),
       });
-      setTimeout(() => {
-        toast.success("Đã tạo thêm phòng trọ thành công");
-        setPage(1);
-      }, 3000);
+      setPage(1);
     } catch (error) {
-      console.log(error);
+      console.error("Lỗi khi tạo phòng trọ:", error);
     }
   };
-
+  const handleDelete = async (room) => {
+    await DeleteData(room.ma_phong);
+  };
   const filteredRooms = dataPhongtro.filter((room) => {
     if (chucnang === "Phòng đã được thuê") return room.trang_thai === 0;
     if (chucnang === "Phòng trống") return room.trang_thai === 1;
@@ -196,6 +198,7 @@ function PhongTroAdmin() {
             roomsPerPage={10}
             title="Tất cả phòng trọ"
             headers={headers}
+            handleDelete={handleDelete}
           />
         </div>
       )}

@@ -1,12 +1,10 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { axiosInstance } from "../../../../Axios";
 import SearchBar from "./SearchBar";
 import RoomTable from "../../../component/admin/RoomTable";
 import { usePhongTro } from "../../../Context/PhongTroContext";
+import useApiManagerAdmin from "../../../hook/useApiManagerAdmin";
 
 function ThietBiAdmin() {
-  const [data, setData] = useState([]);
   const [modal, setModal] = useState(false);
   const [maphong, setMaphong] = useState("");
   const [thietbi, setThietbi] = useState("");
@@ -14,14 +12,14 @@ function ThietBiAdmin() {
   const [trangThai, setTrangthai] = useState(0);
   const { phongTro } = usePhongTro();
 
-  const fetchData = async () => {
-    try {
-      const res = await axiosInstance.get("/thiet-bi/all");
-      setData(res.data.data);
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
+  const {
+    data: thietBi,
+    createData,
+    DeleteData,
+    DeleteAllData,
+    UpdateData,
+    fetchData,
+  } = useApiManagerAdmin("/thiet-bi");
 
   useEffect(() => {
     fetchData();
@@ -48,9 +46,9 @@ function ThietBiAdmin() {
 
   const renderStatus = (status) => (
     <select
-      value={status}
+      value={status.trang_thai}
       className="p-1 border rounded"
-      onChange={(e) => console.log("Thay đổi trạng thái:", e.target.value)}
+      onChange={(e) => handleUpdateTrangThai(status._id, e.target.value)}
     >
       <option value={1}>Hoạt động</option>
       <option value={0}>Không hoạt động</option>
@@ -58,21 +56,35 @@ function ThietBiAdmin() {
   );
 
   const handleCreate = async () => {
-    try {
-      await axiosInstance.post("/thiet-bi/create", {
-        ma_phong: maphong,
-        ten_thiet_bi: thietbi,
-        so_luong_thiet_bi: soluong,
-        trang_thai: trangThai,
-      });
-      fetchData();
+    const success = await createData({
+      ma_phong: maphong,
+      ten_thiet_bi: thietbi,
+      so_luong_thiet_bi: soluong,
+      trang_thai: trangThai,
+    });
+    if (success) {
       setModal(false);
-    } catch (error) {
-      console.log(error);
+      setMaphong("");
+      setThietbi("");
+      setSoluong("");
+      setTrangthai("");
     }
   };
-  const handleDeleteAll = async () => {};
-  const handleUpdateTrangthai = async () => {};
+
+  const handleDeleteAll = async () => {
+    await DeleteAllData();
+  };
+
+  // Xóa một danh mục sử dụng DeleteData từ hook
+  const handleDelete = async (room) => {
+    await DeleteData(room._id);
+  };
+
+  //update sử dụng updaatData từ hook
+  const handleUpdateTrangThai = async (id, value) => {
+    await UpdateData(id, { trang_thai: value });
+  };
+
   return (
     <div className="flex h-screen gap-3">
       <div className="w-full bg-gray-100 p-6 rounded-lg shadow-lg text-black">
@@ -95,9 +107,11 @@ function ThietBiAdmin() {
           <RoomTable
             headers={headers}
             title={"Thiết bị"}
-            displayedRooms={data}
+            displayedRooms={thietBi}
             roomsPerPage={10}
             renderStatus={renderStatus}
+            handleDelete={handleDelete}
+            updateTrangthai={handleUpdateTrangThai}
           />
         </div>
 
