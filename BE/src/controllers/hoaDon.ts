@@ -82,7 +82,7 @@ const sendEmail = async (user: any, hoadon: any) => {
           </a>
         </div>
 
-        <p style="margin-top:20px;text-align:center;color:#777;font-size:12px;">©DZFullStack | <a href="#" style="color:gray;">Hủy đăng ký</a></p>
+        <p style="margin-top:20px;text-align:center;color:#777;font-size:12px;">Trân Trọng</p>
       </div>
     `,
   };
