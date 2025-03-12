@@ -1,141 +1,86 @@
-import { useEffect, useState } from 'react';
-import SearchBar from '../../admin/home/SearchBar';
-import { axiosInstance } from '../../../../Axios';
-import { GrLinkNext, GrLinkPrevious } from 'react-icons/gr';
-import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
+import { useEffect, useState } from "react";
+import SearchBar from "../../admin/home/SearchBar";
+import { axiosInstance } from "../../../../Axios";
+import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
+import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
+import RoomTable from "../../../component/admin/RoomTable";
 
-const defaultAdmin = {
-    ma_phong: '',
-    id_user: '',
-};
+function YeuThichAdmin() {
+  const [data, setData] = useState([]);
+  const [modal, setModal] = useState(false);
 
-const useAdminData = () => {
-    const [user, setUser] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+  const headers = [
+    { label: "Mã phòng", key: "ma_phong" },
+    { label: "ID user", key: "id_user" },
+  ];
+  const fetchData = async () => {
+    try {
+      const res = await axiosInstance.get("/yeu-thich/getAll");
+      setData(res.data.data || []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    const fetchAccounts = async () => {
-        setLoading(true);
-        try {
-            const res = await axiosInstance.get('/yeu-thich/getAll');
-            setUser(res.data.data || []);
-        } catch {
-            setError('Failed to load admins');
-        } finally {
-            setLoading(false);
-        }
-    };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-    useEffect(() => {
-        fetchAccounts();
-    }, []);
-
-    return { user, setUser, searchTerm, setSearchTerm, fetchAccounts, loading, error };
-};
-
-export default function DanhMucAdmin() {
-    const { user, setUser, searchTerm, setSearchTerm, fetchAccounts, loading, error } = useAdminData();
-    const [modal, setModal] = useState(null);
-    const [selectedAdmin, setSelectedAdmin] = useState(defaultAdmin);
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setSelectedAdmin((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleSaveAnhPhong = async () => {
-        try {
-                await axiosInstance.post('/yeu-thich/create', selectedAdmin);
-                alert('Created successfully!');
-            setModal(null);
-            fetchAccounts();
-        } catch {
-            setError('Failed to save admin user.');
-        }
-    };
-
-    const handleDeleteAnhPhong = async (_id) => {
-        if (window.confirm('Are you sure?')) {
-            try {
-                await axiosInstance.delete(`/yeu-thich/delete/${_id}`);
-                alert('Deleted successfully!');
-                fetchAccounts();
-            } catch {
-                setError('Failed to delete admin user.');
-            }
-        }
-    };
-
-    const filteredUsers = user.filter((item) =>
-        item.ma_phong.toLowerCase().includes(searchTerm.toLowerCase().trim())
-    );
-
-    return (
-        <div className='flex h-screen gap-3'>
-            <div className='w-full bg-gray-100 p-6 rounded-lg shadow-lg text-black'>
-                <h1 className='text-3xl font-bold mb-6'>Yêu Thích</h1>
-
-                {modal && (
-                    <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'>
-                        <div className='bg-white rounded-lg shadow-lg p-6 w-1/4'>
-                            <h2 className='text-xl font-semibold mb-4'>{modal === 'edit' ? 'Edit Admin' : 'Create Admin'}</h2>
-                            <button className='bg-red-500 text-white p-2 rounded-lg' onClick={() => setModal(null)}>Close</button>
-                            <div className='flex flex-col gap-4'>
-                                {Object.keys(defaultAdmin).map((key) => (
-                                    <input
-                                        key={key}
-                                        type='text'
-                                        name={key}
-                                        placeholder={key.replace('_', ' ')}
-                                        value={selectedAdmin[key] || ''}
-                                        onChange={handleInputChange}
-                                        className='border bg-white border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500'
-                                    />
-                                ))}
-                                <button onClick={handleSaveAnhPhong} className='bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition'>
-                                    {modal === 'edit' ? 'Update' : 'Create'}
-                                </button>
-                                {error && <p className='text-red-500 mt-2'>{error}</p>}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                <div className='flex gap-5'>
-                    <SearchBar onSearch={setSearchTerm} />
-                    <button className='bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600' onClick={() => { setSelectedAdmin(defaultAdmin); setModal('create'); }}>
-                        New User
-                    </button>
-                </div>
-
-                <div className='overflow-x-auto'>
-                    <table className='min-w-full bg-white mt-8 text-left'>
-                        <thead>
-                            <tr className='bg-gray-800 text-gray-300'>
-                                {Object.keys(defaultAdmin).map((key) => <th key={key} className='py-2 pl-3'>{key.replace('_', ' ')}</th>)}
-                                <th className='py-2 pl-3'>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredUsers.length > 0 ? (
-                                filteredUsers.map((admin) => (
-                                    <tr key={admin.ma_phong}>
-                                        {Object.keys(defaultAdmin).map((key) => <td key={key} className='py-2 pl-3'>{admin[key] || '-'}</td>)}
-                                        <td className='py-2 pl-3 flex gap-2'>
-                                            <button onClick={() => handleDeleteAnhPhong(admin._id)} className='bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition'>
-                                                <AiOutlineDelete />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr><td colSpan={Object.keys(defaultAdmin).length + 1} className='text-center py-2'>No users available.</td></tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  return (
+    <div className="flex h-screen gap-3">
+      <div className="w-full bg-gray-100 p-6 rounded-lg shadow-lg text-black">
+        <div className="space-y-10">
+          <div className="flex gap-5 ">
+            <SearchBar />
+          </div>
+          <RoomTable headers={headers} displayedRooms={data} roomsPerPage={5} />
         </div>
-    );
+
+        {modal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
+            <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px]">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold mb-4">
+                  {modal === "edit" ? "Edit Admin" : "Create Admin"}
+                </h2>
+                <button
+                  className="bg-red-500 text-white p-2 rounded-lg"
+                  onClick={() => setModal(null)}
+                >
+                  Close
+                </button>
+              </div>
+              <div className="space-y-4 mt-4">
+                <div className="flex gap-5">
+                  <input
+                    type="text"
+                    placeholder="Mã danh mục"
+                    onChange={(e) => setMadanhmuc(e.target.value)}
+                    className="py-3 px-5 border border-gray-500 rounded-lg"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Mo ta"
+                    onChange={(e) => setMota(e.target.value)}
+                    className="py-3 px-5 border border-gray-500 rounded-lg"
+                  />
+                </div>
+                <select
+                  onChange={(e) => setTrangthai(e.target.value)}
+                  className="border bg-white border-gray-300 px-3 py-3 rounded-lg w-[60%]"
+                >
+                  <option value="">Chọn trạng thái</option>
+                  <option value={1}>Hoạt động</option>
+                  <option value={0}>Không hoạt động</option>
+                </select>
+              </div>
+              <button onClick={handleCreate}>Tao</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
+
+export default YeuThichAdmin;

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  token: localStorage.getItem("token") || null, // Lấy token từ localStorage
+  token: localStorage.getItem("authorization") || null, // Lấy token từ localStorage
   admin: JSON.parse(localStorage.getItem("admin")) || null,
 };
 
@@ -13,7 +13,7 @@ const authSlice = createSlice({
       state.admin = action.payload.admin;
       state.token = action.payload.token;
       state.isAuthenticated = true;
-      localStorage.setItem("token", state.token);
+      localStorage.setItem("authorization", state.token);
       localStorage.setItem("admin", JSON.stringify(state.admin));
     },
     logoutAdmin: (state) => {

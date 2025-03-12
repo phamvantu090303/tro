@@ -2,16 +2,16 @@ import bcrypt from "bcryptjs";
 import { Request, Response, NextFunction } from "express";
 import AdminModel from "../models/AdminModel";
 import { verifyToken } from "../utils/getAccesstoken";
-
+import { config } from "dotenv";
+config();
 export const accessTokenAdmin = async (req: any, res: any, next: any) => {
   try {
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(401).json({ message: "Token không hợp lệ." });
     }
-    const accessToken = authHeader.split(" ")[1];
     const decoded = await verifyToken(
-      accessToken,
+      authHeader,
       process.env.JWT_SECRET_ACCESS_TOKEN_ADMIN as string
     );
     const admin = await AdminModel.findById(decoded._id);

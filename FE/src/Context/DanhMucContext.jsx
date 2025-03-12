@@ -9,7 +9,7 @@ export const DanhMucProvider = ({ children }) => {
   useEffect(() => {
     const fetchDanhMuc = async () => {
       try {
-        const { data } = await axiosInstance.get("/danh-muc/");
+        const { data } = await axiosInstance.get("/danh-muc/getAll");
         setDanhMuc(data.data.filter((dm) => dm.trang_thai === 1));
       } catch (error) {
         console.error("Lỗi khi tải danh mục:", error);

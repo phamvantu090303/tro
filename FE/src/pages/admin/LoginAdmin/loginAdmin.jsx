@@ -6,13 +6,12 @@ import { axiosInstance } from "../../../../Axios";
 import { toast } from "react-toastify";
 import { loginAdmin } from "../../../Store/filterAdmin";
 
-
 function LoginAdmin() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-  
+
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
@@ -26,10 +25,7 @@ function LoginAdmin() {
           token: res.data.data.token,
         })
       );
-      navigate("/admin/home")
-      console.log('ress',res.data.data)
-      console.log("admin:", res.data.data.admin);
-      console.log("token:", res.data.data.token);
+      navigate("/admin/home");
       toast.success("Đăng nhập thành công!");
     } catch (error) {
       console.log(error);
@@ -40,7 +36,9 @@ function LoginAdmin() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Đăng nhập</h2>
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
+          Đăng nhập
+        </h2>
         <form className="space-y-4">
           <div className="relative">
             <FaUser className="absolute left-3 top-3 text-gray-400" />
@@ -69,7 +67,13 @@ function LoginAdmin() {
           </button>
         </form>
         <p className="mt-4 text-center text-gray-500">
-          Quên mật Khẩu? <Link to="/admin/resend-forgot-password" className="text-gray-700 font-semibold">Khôi phục</Link>
+          Quên mật Khẩu?{" "}
+          <Link
+            to="/admin/resend-forgot-password"
+            className="text-gray-700 font-semibold"
+          >
+            Khôi phục
+          </Link>
         </p>
       </div>
     </div>

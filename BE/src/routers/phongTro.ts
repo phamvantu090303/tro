@@ -13,7 +13,7 @@ const routerPhong = Router();
 
 routerPhong.post("/create", storePhongTro);
 routerPhong.post("/update/:ma_phong", updatePhongTro);
-routerPhong.get("/get", getData);
+routerPhong.get("/getAll", getData);
 routerPhong.delete("/delete/all", deleteAll);
 routerPhong.delete("/delete/:ma_phong", deleteById);
 
