@@ -143,3 +143,34 @@ export const customer = async (req: Request, res: Response) => {
   const phong = await PhongtroModel.findOne({ ma_phong: maphong });
   res.json({ user, phong });
 };
+
+
+export const extendContract = async (req: Request, res: Response) => {
+  try {
+    const { user }: any = req;
+    const { ma_phong } = req.query;
+
+    const hopDong = await HopDongModel.findOne({ ma_phong, id_users: user._id });
+
+    if (!hopDong) {
+      return res.status(404).json({ message: "Không tìm thấy hợp đồng!" });
+    }
+
+    const today = new Date();
+    const contractEndDate = new Date(hopDong.end_date);
+
+    if (contractEndDate >= today) {
+      return res.status(400).json({ message: "Hợp đồng vẫn còn hiệu lực!" });
+    }
+
+    // Cộng thêm 1 năm vào ngày kết thúc hợp đồng
+    hopDong.end_date = new Date(contractEndDate.setFullYear(contractEndDate.getFullYear() + 1));
+
+    await hopDong.save();
+
+    res.json({ message: "Hợp đồng đã được gia hạn thêm 1 năm!", updatedContract: hopDong });
+  } catch (error) {
+    console.error("Lỗi khi gia hạn hợp đồng:", error);
+    res.status(500).json({ message: "Lỗi xử lý gia hạn hợp đồng." });
+  }
+};
