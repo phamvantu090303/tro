@@ -1,8 +1,8 @@
 import { Outlet } from "react-router";
-import { PhongTroProvider } from "../Context/PhongTroContext";
+import { PhongTroProvider } from "../../Context/PhongTroContext";
 import Footer from "./footer";
 import Header from "./header";
-import ScrollToTop from "./ScrollToTop";
+import ScrollToTop from "../../component/ScrollToTop";
 
 function Layout() {
   return (
