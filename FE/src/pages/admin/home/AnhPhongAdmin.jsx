@@ -51,78 +51,73 @@ function AnhPhongAdmin() {
   };
 
   return (
-    <div className="flex h-screen gap-3">
-      <div className="w-full bg-gray-100 p-6 rounded-lg shadow-lg text-black">
-        <div className="space-y-10">
-          <div className="flex gap-5 ">
-            <SearchBar />
-            <button
-              className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
-              onClick={() => setModal(true)}
-            >
-              Thêm ảnh phòng
-            </button>
-            <button
-              className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
-              onClick={handleDeleteAll}
-            >
-              Xóa tất cả
-            </button>
-          </div>
-          <RoomTable
-            headers={headers}
-            displayedRooms={anhphong}
-            roomsPerPage={5}
-            handleDelete={handleDelete}
-          />
-        </div>
-
-        {modal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
-            <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px]">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold mb-4">
-                  {modal === "edit" ? "Edit Admin" : "Create Admin"}
-                </h2>
-                <button
-                  className="bg-red-500 text-white p-2 rounded-lg"
-                  onClick={() => setModal(null)}
-                >
-                  Close
-                </button>
-              </div>
-              <div className="space-y-4 mt-4">
-                <div className="flex gap-5">
-                  <select
-                    className="border py-3 px-5 rounded-md w-full border-gray-500"
-                    onChange={(e) => setMaphong(e.target.value)}
-                    name="maMap"
-                  >
-                    <option value="">Chọn mã phòng</option>
-                    {phongTro.map((dm) => (
-                      <option key={dm.ma_phong} value={dm.ma_phong}>
-                        {dm.ma_phong}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="text"
-                    placeholder="img url"
-                    onChange={(e) => setImg(e.target.value)}
-                    className="py-3 px-5 border border-gray-500 rounded-lg"
-                  />
-                </div>
-              </div>
+    <div className="space-y-10">
+      <div className="flex gap-5 ">
+        <SearchBar />
+        <button
+          className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
+          onClick={() => setModal(true)}
+        >
+          Thêm ảnh phòng
+        </button>
+        <button
+          className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
+          onClick={handleDeleteAll}
+        >
+          Xóa tất cả
+        </button>
+      </div>
+      <RoomTable
+        headers={headers}
+        displayedRooms={anhphong}
+        roomsPerPage={5}
+        handleDelete={handleDelete}
+      />
+      {modal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
+          <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px]">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold mb-4">
+                Thêm ảnh phòng chi tiết
+              </h2>
               <button
-                onClick={handleCreate}
-                className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
+                className="bg-red-500 text-white p-2 rounded-lg"
+                onClick={() => setModal(null)}
               >
-                Tạo
+                Close
               </button>
             </div>
+            <div className="space-y-4 mt-4">
+              <div className="flex gap-5">
+                <select
+                  className="border py-3 px-5 rounded-md w-full border-gray-500"
+                  onChange={(e) => setMaphong(e.target.value)}
+                  name="maMap"
+                >
+                  <option value="">Chọn mã phòng</option>
+                  {phongTro.map((dm) => (
+                    <option key={dm.ma_phong} value={dm.ma_phong}>
+                      {dm.ma_phong}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  placeholder="img url"
+                  onChange={(e) => setImg(e.target.value)}
+                  className="py-3 px-5 border border-gray-500 rounded-lg"
+                />
+              </div>
+            </div>
+            <button
+              onClick={handleCreate}
+              className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
+            >
+              Tạo
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

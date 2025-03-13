@@ -10,7 +10,10 @@ const useApiManagerAdmin = (endpoint) => {
   const fetchData = async () => {
     try {
       const res = await axiosInstance.get(`${endpoint}/getAll`);
-      setData(res.data.data || []);
+      const sortedBooks = [...res.data.data].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setData(sortedBooks);
     } catch (error) {
       console.log(error);
     }

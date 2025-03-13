@@ -1,8 +1,8 @@
 import LoginAdmin from "../pages/admin/LoginAdmin/loginAdmin";
 import ResendForgotPassword from "../pages/admin/LoginAdmin/resend-forgot-password";
 import AdminResetPassword from "../pages/admin/LoginAdmin/adminResetPassword";
-import HomeAdmin from "../pages/admin/home/homeAdmin";
 import QuyenManagement from "../pages/admin/Quyen";
+import HomeAdmin from "../layout/Admin/homeAdmin";
 import HoaDonThangAdmin from "../pages/admin/home/HoaDonThangAdmin";
 import { Route } from "react-router";
 import UserAdminDetail from "../pages/admin/home/UserAdmin/UserAdminDetail";
