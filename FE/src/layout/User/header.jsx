@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import logo from "../assets/logo/logo.svg";
+import logo from "../../assets/logo/logo.svg";
 import { CiHeart } from "react-icons/ci";
 import { FaRegUser } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import { logout } from "../Store/filterUser";
+import { logout } from "../../Store/filterUser";
 const Item = [
   {
     id: 1,

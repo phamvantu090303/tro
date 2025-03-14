@@ -1,6 +1,6 @@
-import logo from "../assets/logo/logo.svg";
-import twitter from "../assets/icon/twitter.png";
-import linker from "../assets/icon/linker.png";
+import logo from "../../assets/logo/logo.svg";
+import twitter from "../../assets/icon/twitter.png";
+import linker from "../../assets/icon/linker.png";
 
 function Footer() {
   return (

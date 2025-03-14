@@ -77,85 +77,80 @@ function DanhMucAdmin() {
   };
 
   return (
-    <div className="flex h-screen gap-3">
-      <div className="w-full bg-gray-100 p-6 rounded-lg shadow-lg text-black">
-        <div className="space-y-10">
-          <div className="flex gap-5">
-            <SearchBar />
-            <button
-              className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
-              onClick={() => setModal(true)}
-            >
-              Thêm danh mục
-            </button>
-            <button
-              className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
-              onClick={handleDeleteAll}
-            >
-              Xóa tất cả
-            </button>
-          </div>
-          <RoomTable
-            headers={headers}
-            title={"Danh mục"}
-            displayedRooms={danhMuc}
-            roomsPerPage={10}
-            renderStatus={renderStatus}
-            handleDelete={handleDelete}
-            updateTrangthai={handleUpdateTrangThai}
-          />
-        </div>
-
-        {modal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
-            <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px]">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold mb-4">Thêm danh mục</h2>
-                <button
-                  className="bg-red-500 text-white p-2 rounded-lg"
-                  onClick={() => setModal(false)} // Sửa null thành false
-                >
-                  Đóng
-                </button>
-              </div>
-              <div className="space-y-4 mt-4">
-                <div className="flex gap-5">
-                  <input
-                    type="text"
-                    placeholder="Mã danh mục"
-                    value={maDanhMuc}
-                    onChange={(e) => setMaDanhMuc(e.target.value)}
-                    className="py-3 px-5 border border-gray-500 rounded-lg"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Mô tả"
-                    value={moTa}
-                    onChange={(e) => setMoTa(e.target.value)}
-                    className="py-3 px-5 border border-gray-500 rounded-lg"
-                  />
-                </div>
-                <select
-                  value={trangThai}
-                  onChange={(e) => setTrangThai(e.target.value)}
-                  className="border bg-white border-gray-300 px-3 py-3 rounded-lg w-[60%]"
-                >
-                  <option value="">Chọn trạng thái</option>
-                  <option value={1}>Hoạt động</option>
-                  <option value={0}>Không hoạt động</option>
-                </select>
-                <OptionDanhMuc setTenDanhMuc={setTenDanhMuc} />
-              </div>
+    <div className="space-y-10">
+      <div className="flex gap-5">
+        <SearchBar />
+        <button
+          className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
+          onClick={() => setModal(true)}
+        >
+          Thêm danh mục
+        </button>
+        <button
+          className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
+          onClick={handleDeleteAll}
+        >
+          Xóa tất cả
+        </button>
+      </div>
+      <RoomTable
+        headers={headers}
+        title={"Danh mục"}
+        displayedRooms={danhMuc}
+        roomsPerPage={10}
+        renderStatus={renderStatus}
+        handleDelete={handleDelete}
+        updateTrangthai={handleUpdateTrangThai}
+      />
+      {modal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
+          <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px]">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold mb-4">Thêm danh mục</h2>
               <button
-                onClick={handleCreate}
-                className="py-2 px-7 text-white bg-customBlue rounded-lg mt-4"
+                className="bg-red-500 text-white p-2 rounded-lg"
+                onClick={() => setModal(false)} // Sửa null thành false
               >
-                Tạo
+                Đóng
               </button>
             </div>
+            <div className="space-y-4 mt-4">
+              <div className="flex gap-5">
+                <input
+                  type="text"
+                  placeholder="Mã danh mục"
+                  value={maDanhMuc}
+                  onChange={(e) => setMaDanhMuc(e.target.value)}
+                  className="py-3 px-5 border border-gray-500 rounded-lg"
+                />
+                <input
+                  type="text"
+                  placeholder="Mô tả"
+                  value={moTa}
+                  onChange={(e) => setMoTa(e.target.value)}
+                  className="py-3 px-5 border border-gray-500 rounded-lg"
+                />
+              </div>
+              <select
+                value={trangThai}
+                onChange={(e) => setTrangThai(e.target.value)}
+                className="border bg-white border-gray-300 px-3 py-3 rounded-lg w-[60%]"
+              >
+                <option value="">Chọn trạng thái</option>
+                <option value={1}>Hoạt động</option>
+                <option value={0}>Không hoạt động</option>
+              </select>
+              <OptionDanhMuc setTenDanhMuc={setTenDanhMuc} />
+            </div>
+            <button
+              onClick={handleCreate}
+              className="py-2 px-7 text-white bg-customBlue rounded-lg mt-4"
+            >
+              Tạo
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

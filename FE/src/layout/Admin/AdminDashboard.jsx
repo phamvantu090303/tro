@@ -1,13 +1,13 @@
-import AccountAdmin from "../../admin/home/AccountAdmin";
-import PhongTroAdmin from "../../admin/home/PhongTroAdmin";
-import DanhMucAdmin from "../../admin/home/DanhMucAdmin";
-import ThietBiAdmin from "../../admin/home/ThietBiAdmin";
-import AnhPhongAdmin from "../../admin/home/AnhPhongAdmin";
-import YeuThichAdmin from "../../admin/home/YeuThichAdmin";
-import UserAdmin from "../../admin/home/UserAdmin/UserAdmin";
-import MessAdmin from "../../../component/Mess/messAdmin";
-import MapAdmin from "./Map";
-import ThongKe from "../../Chart/ThongKeAll";
+import AccountAdmin from "../../pages/admin/home/AccountAdmin";
+import PhongTroAdmin from "../../pages/admin/home/PhongTroAdmin";
+import DanhMucAdmin from "../../pages/admin/home/DanhMucAdmin";
+import ThietBiAdmin from "../../pages/admin/home/ThietBiAdmin";
+import AnhPhongAdmin from "../../pages/admin/home/AnhPhongAdmin";
+import YeuThichAdmin from "../../pages/admin/home/YeuThichAdmin";
+import UserAdmin from "../../pages/admin/home/UserAdmin/UserAdmin";
+import MessAdmin from "../../component/Mess/messAdmin";
+import MapAdmin from "../../pages/admin/home/Map";
+import ThongKe from "../../pages/Chart/ThongKeAll";
 
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
@@ -36,7 +36,7 @@ function AdminDashboard({ activeComponent }) {
   };
 
   return (
-    <div className="">
+    <div className="w-full h-full bg-gray-100 p-6 rounded-lg shadow-lg text-black">
       <div>{renderComponent()}</div>
     </div>
   );
