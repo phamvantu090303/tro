@@ -1,12 +1,16 @@
 import UserModel from "../models/UserModel";
 import bcrypt from "bcryptjs";
+import axios from "axios";
 import {
   getAccesstoken,
   SignTokenRestPassWord,
   signverifyEmailToken,
+  verifyToken,
 } from "../utils/getAccesstoken";
 import { UserVerifyStatus } from "../constants/enum";
 import { ObjectId } from "mongodb";
+import jwt from "jsonwebtoken";
+import jwkToPemModule from 'jwk-to-pem';
 
 export class UserService {
   async registerUser(body: any): Promise<string> {
@@ -253,4 +257,59 @@ export class UserService {
 
     return result[0] || null;
   }
+
+  async googleLogin(token: string): Promise<{ user: any; authToken: string }> {
+
+      const response = await axios.get("https://www.googleapis.com/oauth2/v3/certs");
+  
+      let payload: any;
+      for (const key of response.data.keys) {
+        try {
+          const pemKey = jwkToPemModule(key);
+
+          payload = await verifyToken(token, pemKey);
+
+          break;
+        } catch (error) {
+          if (error instanceof Error) {
+            console.log("Key failed:", key.kid, error.message);
+          } else {
+            console.log("Key failed:", key.kid, String(error));
+          }
+          continue;
+        }
+      }
+  
+      if (!payload) {
+        throw new Error("Invalid or unverifiable token");
+      }
+  
+      if (payload.aud !== process.env.GG_CLIENT_ID) {
+        throw new Error("Invalid token: Audience mismatch");
+      }
+  
+      const { email, name, given_name } = payload;
+      let user = await UserModel.findOne({ email });
+      if (!user) {
+        user = new UserModel({ 
+          email: email, 
+          username: name, 
+          password: null, 
+          ho_va_ten: given_name, 
+          verify: UserVerifyStatus.Verified 
+        });
+        await user.save();
+      }
+      const authToken = this.generateAuthToken(user);
+      return { user, authToken };
+    }
+
+  private generateAuthToken(user: any): string {
+    return jwt.sign(
+      { id: user._id, email: user.email, username: user.name },
+      process.env.JWT_SECRET_ACCESS_TOKEN as string,
+      { expiresIn: "1h" }
+    );
+  }
 }
+

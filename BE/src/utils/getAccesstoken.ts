@@ -24,15 +24,16 @@ export const getAccesstokenAdmin = async (payload: {
   _id: Types.ObjectId;
   verify: UserVerifyStatus;
 }) => {
-  const token = jwt.sign(
+  const authorization = jwt.sign(
     payload,
     process.env.JWT_SECRET_ACCESS_TOKEN_ADMIN as string,
     {
       // expiresIn: '10m',
     }
   );
-  return token;
+  return authorization;
 };
+
 export const signverifyEmailToken = async (payload: {
   _id: Types.ObjectId;
   verify: UserVerifyStatus;

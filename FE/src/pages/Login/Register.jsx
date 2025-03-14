@@ -6,8 +6,7 @@ import { MdDateRange } from "react-icons/md";
 import { CgMail } from "react-icons/cg";
 import { PiGenderIntersex } from "react-icons/pi";
 import { Link } from "react-router";
-import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
-import { axiosInstance } from "../../../Axios";
+import { FaMapLocationDot } from "react-icons/fa6";
 import axios from "axios";
 import { toast } from "react-toastify";
 function Register() {

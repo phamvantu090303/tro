@@ -3,59 +3,173 @@ import { Server as HttpServer } from "http";
 import { verifyToken } from "./getAccesstoken";
 import MessagerModel from "../models/MessagerModel";
 
-const initSocket = (httpServer: HttpServer) => {
-    const io = new Server(httpServer, {
-        cors: { origin: "http://localhost:3000" },
-    });
+// Định nghĩa interface cho payload tin nhắn
+interface MessagePayload {
+    nguoi_gui: string;
+    nguoi_nhan: string;
+    noi_dung: string;
+}
 
-    const users: Record<string, string> = {};
+// Định nghĩa interface cho dữ liệu socket
+interface SocketData {
+    admin_id?: string;
+    user_id?: string;
+}
 
-    io.use(async (socket, next) => {
-        try {
-            const token = socket.handshake.auth.Authorization?.split(" ")[1];
-            if (!token) return next(new Error("Không có accessToken"));
+class SocketManager {
+    private io: Server;
+    private users: Record<string, string> = {};
+    private admins: Record<string, string> = {};
 
-            const decoded = await verifyToken(token, process.env.JWT_SECRET_ACCESS_TOKEN as string);
-            if (!decoded?._id) return next(new Error("Token không hợp lệ!"));
+    // Khởi tạo SocketManager với server HTTP
+    constructor(httpServer: HttpServer) {
+        this.io = new Server(httpServer, {
+            cors: {
+                origin: "http://localhost:3000",
+                methods: ["GET", "POST"],
+                credentials: true,
+            },
+        });
+        this.setupMiddleware();
+        this.setupEvents();
+    }
 
-            socket.data.user_id = decoded._id;
-            users[decoded._id] = socket.id;
+    // Hàm xác thực token từ client
+    private async verifyAuthToken(socket: Socket): Promise<void> {
+        const authHeader = socket.handshake.auth.Authorization;
+        if (!authHeader) throw new Error("Không có accessToken");
 
-            console.log("Người dùng kết nối:", decoded._id);
-            next();
-        } catch (error) {
-            next(new Error("Token không hợp lệ!"));
+        let token: string;
+        let isAdminToken = false;
+
+        // Xử lý token từ header Authorization
+        if (authHeader.startsWith("Bearer ")) {
+            token = authHeader.split(" ")[1];
+        } else {
+            token = authHeader;
+            isAdminToken = true; // Giả định không có "Bearer" là token admin
         }
-    });
 
-    io.on("connection", (socket: Socket) => {
-        const user_id = socket.data.user_id;
+        if (!token) throw new Error("Token không hợp lệ!");
 
-        socket.on("gui_tin_nhan", async ({ payload }) => {
+        let decodedAdmin, decodedUser; // Biến lưu thông tin giải mã token
+
+        try {
+            if (isAdminToken) {
+                // Xác thực token admin
+                decodedAdmin = await verifyToken(token, process.env.JWT_SECRET_ACCESS_TOKEN_ADMIN as string);
+            } else {
+                // Xác thực token user
+                decodedUser = await verifyToken(token, process.env.JWT_SECRET_ACCESS_TOKEN as string);
+            }
+        } catch (error) {
+            throw new Error("Token không hợp lệ!");
+        }
+
+        // Gán dữ liệu vào socket.data
+        socket.data = {
+            admin_id: decodedAdmin?._id,
+            user_id: decodedUser?._id,
+        };
+
+        // Lưu socket ID vào danh sách tương ứng
+        if (decodedAdmin?._id) {
+            this.admins[decodedAdmin._id] = socket.id;
+            console.log("Admin kết nối:", decodedAdmin._id);
+        }
+        if (decodedUser?._id) {
+            this.users[decodedUser._id] = socket.id;
+            console.log("Người dùng kết nối:", decodedUser._id);
+        }
+
+        // Nếu không có ID nào được giải mã, token không hợp lệ
+        if (!decodedAdmin?._id && !decodedUser?._id) {
+            throw new Error("Token không hợp lệ!");
+        }
+    }
+
+    // Thiết lập middleware để xác thực tất cả kết nối
+    private setupMiddleware(): void {
+        this.io.use(async (socket: Socket, next) => {
             try {
-                const { nguoi_gui, nguoi_nhan, noi_dung } = payload;
-
-                if (!nguoi_gui || !nguoi_nhan || !noi_dung.trim()) {
-                    return console.error("Dữ liệu tin nhắn không hợp lệ");
-                }
-
-                const message = await new MessagerModel({ nguoi_gui, nguoi_nhan, noi_dung }).save();
-                console.log("Tin nhắn đã lưu:", message);
-
-                const receiverSocketId = users[nguoi_nhan];
-                if (receiverSocketId) {
-                    io.to(receiverSocketId).emit("nhan_tin_nhan", { payload: message });
-                }
+                await this.verifyAuthToken(socket);
+                next();
             } catch (error) {
-                console.error("Lỗi khi gửi tin nhắn:", error);
+                console.error("Lỗi xác thực socket");
+                next(error instanceof Error ? error : new Error("Lỗi xác thực"));
             }
         });
+    }
 
-        socket.on("disconnect", () => {
+    // Xử lý tin nhắn từ client
+    private async handleMessage(socket: Socket, payload: MessagePayload): Promise<void> {
+        const { nguoi_gui, nguoi_nhan, noi_dung } = payload;
+
+        // Kiểm tra dữ liệu đầu vào
+        if (!nguoi_gui || !nguoi_nhan || !noi_dung?.trim()) {
+            console.error("Dữ liệu tin nhắn không hợp lệ:", payload);
+            return;
+        }
+
+        try {
+            // Lưu tin nhắn vào database
+            const message = await new MessagerModel({
+                nguoi_gui,
+                nguoi_nhan,
+                noi_dung,
+            }).save();
+
+            // Gửi tin nhắn đến người nhận
+            const adminSocketId = this.admins[nguoi_nhan];
+            if (adminSocketId) {
+                this.io.to(adminSocketId).emit("nhan_tin_nhan", { payload: message });
+            }
+
+            const userSocketId = this.users[nguoi_nhan];
+            if (userSocketId && userSocketId !== adminSocketId) {
+                this.io.to(userSocketId).emit("nhan_tin_nhan", { payload: message });
+            }
+        } catch (error) {
+            console.error("Lỗi khi xử lý tin nhắn:", error);
+        }
+    }
+
+    // Xử lý khi client ngắt kết nối
+    private handleDisconnect(socket: Socket): void {
+        const { admin_id, user_id } = socket.data as SocketData;
+
+        // Xóa socket ID khỏi danh sách nếu ngắt kết nối
+        if (admin_id) {
+            console.log(`Admin ${admin_id} đã ngắt kết nối`);
+            delete this.admins[admin_id];
+        }
+        if (user_id) {
             console.log(`Người dùng ${user_id} đã ngắt kết nối`);
-            delete users[user_id];
+            delete this.users[user_id];
+        }
+    }
+
+    // Thiết lập các sự kiện socket
+    private setupEvents(): void {
+        this.io.on("connection", (socket: Socket) => {
+            console.log("Client đã kết nối:", socket.id);
+
+            // Lắng nghe sự kiện gửi tin nhắn từ client
+            socket.on("gui_tin_nhan", (data: { payload: MessagePayload }) => {
+                this.handleMessage(socket, data.payload);
+            });
+
+            // Lắng nghe sự kiện ngắt kết nối
+            socket.on("disconnect", () => {
+                this.handleDisconnect(socket);
+            });
         });
-    });
+    }
+}
+
+// Hàm khởi tạo SocketManager
+const initSocket = (httpServer: HttpServer): SocketManager => {
+    return new SocketManager(httpServer);
 };
 
 export default initSocket;

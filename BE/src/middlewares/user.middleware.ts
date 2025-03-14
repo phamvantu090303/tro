@@ -31,6 +31,9 @@ export const LoginValidator = async (req: any, res: any, next: any) => {
             return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác.' });
         }
 
+        if (!user.password) {
+            return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác.' });
+        }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác.' });

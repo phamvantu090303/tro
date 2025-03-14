@@ -10,8 +10,9 @@ import {
   getAllUser,
   updateUser,
   getDetailUser,
+  loginGoogle,
 } from "../controllers/user";
-import { UserLoginRequest, userRegisterRequest } from "../request/user.requet";
+import { userRegisterRequest } from "../request/user.requet";
 import {
   accessTokenValidatetor,
   forgotPasswordValidator,
@@ -31,5 +32,7 @@ router.get("/Detail/:id", getDetailUser);
 router.post("/update/:id", accessTokenValidatetor, updateUser);
 router.get("/me", accessTokenValidatetor, getMe);
 router.get("/AllUser", getAllUser);
+
+router.post("/login-google", loginGoogle);
 
 export default router;
