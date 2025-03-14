@@ -30,6 +30,7 @@ import routerThang from "./routers/HoaDonThangRouter";
 import HoaDonTungThangModel from "./models/HoaDonTungThangModel";
 import HoaDonThangService from "./services/HoaDonTungThangService";
 import { autoCreateHoaDon } from "./controllers/HoaDonTungThangController";
+import OtpRouter from "./routers/otp";
 
 dotenv.config();
 
@@ -74,7 +75,7 @@ app.use("/sua_chua", routerSuaChua);
 app.use("/api", routerSearch);
 app.use("/thong-ke", routerThongKe);
 app.use("/hoa-don-thang", routerThang);
-
+app.use("/Otp", OtpRouter);
 //hợp đồng
 app.use("/api/contracts", contractRoutes);
 const connectDB = async () => {
