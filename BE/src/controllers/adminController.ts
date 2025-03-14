@@ -143,7 +143,7 @@ export const getAdmin = async (req: any, res: any) => {
     const admin = req.admin;
 
     if (!admin) {
-      return res.status(404).json({ message: "Người dùng không tồn tại." });
+      return res.status(404).json({ message: "admin không tồn tại." });
     }
     const data = await adminService.getAdmin(admin._id);
 
@@ -153,7 +153,7 @@ export const getAdmin = async (req: any, res: any) => {
     });
   } catch (error: any) {
     res.status(500).json({
-      message: "Lỗi khi lấy thông tin người dùng.",
+      message: "Lỗi khi lấy thông tin admin.",
       error: error.message,
     });
   }

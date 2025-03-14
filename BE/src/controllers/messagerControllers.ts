@@ -8,11 +8,7 @@ export const getAllMess = async (req: Request, res: Response) => {
         const { user } = req as any;  
         const { id_nguoi_nhan } = req.params;
 
-
         const data = await messService.messAll(user._id, id_nguoi_nhan);  
-
-        console.log(user);
-        console.log(user._id, id_nguoi_nhan);
 
         res.status(200).json({
         message: "GetAll successfully!!!",
@@ -32,9 +28,6 @@ export const getAllMessAdmin = async (req: Request, res: Response) => {
 
 
         const data = await messService.messAllAdmin(admin._id, id_nguoi_nhan);  
-
-        console.log(admin);
-        console.log(admin._id, id_nguoi_nhan);
 
         res.status(200).json({
         message: "GetAll successfully!!!",

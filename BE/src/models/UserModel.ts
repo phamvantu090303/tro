@@ -7,51 +7,55 @@ const UserScheme = new Schema(
 	{
 		username: {
 			type: String,
-			required: true,
-		},
-		email: {
+			required: false, // Không bắt buộc, sẽ lấy từ Google nếu có
+		  },
+		  email: {
 			type: String,
-			required: true,
-		},
-		ho_va_ten: {
+			required: true, // Bắt buộc, lấy từ Google
+			unique: true, // Đảm bảo email là duy nhất
+		  },
+		  ho_va_ten: {
 			type: String,
-			required: true,
-		},
-		password: {
+			required: false, // Không bắt buộc
+		  },
+		  password: {
 			type: String,
-			required: true,
-		},
-		ngay_sinh: {
+			required: false, // Không bắt buộc, để null khi dùng Google
+		  },
+		  ngay_sinh: {
 			type: Date,
-			required: true,
-		},
-		id_quyen: {
+			required: false, // Không bắt buộc
+		  },
+		  id_quyen: {
 			type: String,
 			default: 'khachhang',
 			required: false,
-		},
-		verify: {
-			type: String, // Kiểu dữ liệu là String
-			enum: Object.values(UserVerifyStatus), // Giới hạn giá trị thuộc enum UserVerifyStatus
-			default: UserVerifyStatus.Unverified, // Giá trị mặc định là "Unverified"
+		  },
+		  verify: {
+			type: String,
+			enum: Object.values(UserVerifyStatus),
+			default: UserVerifyStatus.Unverified,
 			required: false,
-		},
-		que_quan: {
+		  },
+		  que_quan: {
 			type: String,
-			default: 1,
-		},
-		so_dien_thoai: {
+			default: null, // Đổi thành null thay vì 1 để tránh lỗi kiểu dữ liệu
+			required: false,
+		  },
+		  so_dien_thoai: {
 			type: Number,
-			default: 1,
-		},
-		gioi_tinh: {
+			default: null, // Đổi thành null
+			required: false,
+		  },
+		  gioi_tinh: {
 			type: String,
-			default: 1,
-		},
-		cccd: {
+			default: null, // Đổi thành null
+			required: false,
+		  },
+		  cccd: {
 			type: Number,
-            require:true
-		},
+			required: false, // Không bắt buộc
+		  },
 	
 	},
 	{ timestamps: true }

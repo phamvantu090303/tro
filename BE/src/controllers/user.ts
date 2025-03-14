@@ -208,3 +208,27 @@ export const getDetailUser = async (req: any, res: any) => {
     });
   }
 };
+
+export const loginGoogle = async (req: any, res: any) => {
+  const { token } = req.body;
+
+  try {
+    const result = await userService.googleLogin(token);
+    
+    return res.status(200).json({
+      message: "Đăng nhập Google thành công!",
+      data: {
+        user: {
+          id: result.user._id,
+          email: result.user.email,
+          username: result.user.username,
+        },
+        token: result.authToken,
+      },
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: error instanceof Error ? error.message : "Đăng nhập Google thất bại!",
+    });
+  }
+};
