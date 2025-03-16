@@ -22,23 +22,24 @@ export const accessTokenValidatetor = async (req: any, res: any, next: any) => {
 }
 export const LoginValidator = async (req: any, res: any, next: any) => {
     try {
-        const {email, password } = req.body;
+        const { email, password } = req.body;
         if (!email || !password) {
             return res.status(400).json({ message: 'Vui lòng nhập email và mật khẩu.' });
         }
         const user = await UserModel.findOne({ email });
         if (!user) {
+            return res.status(401).json({ message: 'Người dùng không tồn tại.' });
+        } else if (!user.password) {
             return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác.' });
+        } else if (user.verify == 0) {
+            return res.status(401).json({ message: 'Email chưa được xác thực. Vui lòng xác thực email' });
         }
 
-        if (!user.password) {
-            return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác.' });
-        }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Email hoặc mật khẩu không chính xác.' });
         }
-        req.user =user
+        req.user = user;
         next();
     } catch (error: any) {
         return res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình xác thực.', error: error.message });
