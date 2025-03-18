@@ -5,14 +5,16 @@ export class ImageService {
     async createImage(body: any): Promise<void> {
         const { ma_phong, image_url } = body;
 
-        // Tạo mới hình ảnh
-        const newImage = new HinhAnhPhongModel({
-            ma_phong,
-            image_url,
+        const luuAnh = image_url.map((url: string) => {
+            const newImage = new HinhAnhPhongModel({
+                ma_phong,
+                image_url: url,
+            });
+            return newImage.save();
         });
-
-        // Lưu hình ảnh vào cơ sở dữ liệu
-        await newImage.save();
+    
+        // Chờ tất cả các ảnh được lưu
+        await Promise.all(luuAnh);
     }
 
     // Cập nhật thông tin hình ảnh

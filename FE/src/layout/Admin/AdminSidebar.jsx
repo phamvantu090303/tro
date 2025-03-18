@@ -289,7 +289,7 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
               </div>
             </div>
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/admin/login")}
               className="text-xl bg-gray-700 p-2 rounded transition-all duration-300 hover:bg-red-600 hover:scale-110"
             >
               <IoIosLogOut className="text-xl" />

@@ -12,7 +12,7 @@ const router = Router();
 
 router.post("/create", accessTokenAdmin,authorize("67b1dfa48631e4849450bbb4"), storeDanhMuc);
 router.post("/update/:id", accessTokenAdmin,authorize("67b1dfa48631e4849450bbb5"), updateDanhMuc);
-router.get("/getAll",accessTokenAdmin,authorize("67b1dfa48631e4849450bbb3"), getData);
+router.get("/getAll", getData);
 router.delete("/delete/all", accessTokenAdmin,authorize("67b1dfa48631e4849450bbb7"), deleteAll);
 router.delete("/delete/:id", accessTokenAdmin,authorize("67b1dfa48631e4849450bbb6"), deleteById);
 

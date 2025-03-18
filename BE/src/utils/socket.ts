@@ -3,25 +3,12 @@ import { Server as HttpServer } from "http";
 import { verifyToken } from "./getAccesstoken";
 import MessagerModel from "../models/MessagerModel";
 
-// Định nghĩa interface cho payload tin nhắn
-interface MessagePayload {
-    nguoi_gui: string;
-    nguoi_nhan: string;
-    noi_dung: string;
-}
-
-// Định nghĩa interface cho dữ liệu socket
-interface SocketData {
-    admin_id?: string;
-    user_id?: string;
-}
-
-class SocketManager {
+class SocketMessager {
     private io: Server;
     private users: Record<string, string> = {};
     private admins: Record<string, string> = {};
 
-    // Khởi tạo SocketManager với server HTTP
+    // Khởi tạo SocketMessager với server HTTP
     constructor(httpServer: HttpServer) {
         this.io = new Server(httpServer, {
             cors: {
@@ -79,7 +66,7 @@ class SocketManager {
         }
         if (decodedUser?._id) {
             this.users[decodedUser._id] = socket.id;
-            console.log("Người dùng kết nối:", decodedUser._id);
+            console.log("Client kết nối:", decodedUser._id);
         }
 
         // Nếu không có ID nào được giải mã, token không hợp lệ
@@ -102,7 +89,11 @@ class SocketManager {
     }
 
     // Xử lý tin nhắn từ client
-    private async handleMessage(socket: Socket, payload: MessagePayload): Promise<void> {
+    private async handleMessage(socket: Socket, payload: {
+        nguoi_gui: string;
+        nguoi_nhan: string;
+        noi_dung: string;
+    }): Promise<void> {
         const { nguoi_gui, nguoi_nhan, noi_dung } = payload;
 
         // Kiểm tra dữ liệu đầu vào
@@ -136,8 +127,7 @@ class SocketManager {
 
     // Xử lý khi client ngắt kết nối
     private handleDisconnect(socket: Socket): void {
-        const { admin_id, user_id } = socket.data as SocketData;
-
+        const { admin_id, user_id } = socket.data;
         // Xóa socket ID khỏi danh sách nếu ngắt kết nối
         if (admin_id) {
             console.log(`Admin ${admin_id} đã ngắt kết nối`);
@@ -152,10 +142,12 @@ class SocketManager {
     // Thiết lập các sự kiện socket
     private setupEvents(): void {
         this.io.on("connection", (socket: Socket) => {
-            console.log("Client đã kết nối:", socket.id);
-
             // Lắng nghe sự kiện gửi tin nhắn từ client
-            socket.on("gui_tin_nhan", (data: { payload: MessagePayload }) => {
+            socket.on("gui_tin_nhan", (data: { payload: {
+                nguoi_gui: string;
+                nguoi_nhan: string;
+                noi_dung: string;
+            }}) => {
                 this.handleMessage(socket, data.payload);
             });
 
@@ -167,9 +159,8 @@ class SocketManager {
     }
 }
 
-// Hàm khởi tạo SocketManager
-const initSocket = (httpServer: HttpServer): SocketManager => {
-    return new SocketManager(httpServer);
+const initSocket = (httpServer: HttpServer): SocketMessager => {
+    return new SocketMessager(httpServer);
 };
 
 export default initSocket;
