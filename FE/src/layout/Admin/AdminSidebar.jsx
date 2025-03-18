@@ -1,4 +1,3 @@
-// src/admin/home/AdminSidebar.jsx
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { useState } from "react";
@@ -7,15 +6,27 @@ import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
 import { FaMap } from "react-icons/fa";
 import { FaBars } from "react-icons/fa"; // Icon hamburger
+import { IoChevronDown, IoChevronUp } from "react-icons/io5"; // Icon mũi tên
 
 export default function AdminSidebar({ setActiveComponent, activeComponent }) {
   const { admin } = useSelector((state) => state.authAdmin);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false); // Trạng thái toggle sidebar trên mobile
+  const [dropdowns, setDropdowns] = useState({
+    thongke: false,
+    quanly: false,
+  });
 
   const isActive = (component) => activeComponent === component;
 
   const toggleSidebar = () => setIsOpen(!isOpen);
+
+  const toggleDropdown = (key) => {
+    setDropdowns((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
 
   return (
     <>
@@ -40,7 +51,6 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
                 alt="Logo"
                 className="object-contain py-3 px-5 hidden md:block"
               />
-              {/* Nút đóng trên mobile */}
               <button
                 className="md:hidden text-white p-2"
                 onClick={toggleSidebar}
@@ -60,96 +70,113 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
                   }`}
                   onClick={() => {
                     setActiveComponent("admin");
-                    setIsOpen(false); // Đóng sidebar trên mobile sau khi chọn
+                    setIsOpen(false);
                   }}
                 >
                   <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
                   Acc Admin
                 </li>
-                <li
-                  className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
-                    isActive("phongtro")
-                      ? "bg-blue-900 text-white scale-105"
-                      : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
-                  }`}
-                  onClick={() => {
-                    setActiveComponent("phongtro");
-                    setIsOpen(false);
-                  }}
-                >
-                  <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  Quản lý phòng
+
+                {/* Quản Lý Dropdown */}
+                <li>
+                  <div
+                    className={`font-medium cursor-pointer p-3 rounded flex items-center justify-between transition-all duration-300 transform ${
+                      dropdowns.quanly
+                        ? "bg-blue-900 text-white scale-105"
+                        : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                    }`}
+                    onClick={() => toggleDropdown("quanly")}
+                  >
+                    <div className="flex items-center gap-3">
+                      <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
+                      Quản Lý
+                    </div>
+                    {dropdowns.quanly ? <IoChevronUp /> : <IoChevronDown />}
+                  </div>
+                  {dropdowns.quanly && (
+                    <ul className="ml-6 flex flex-col gap-2 mt-2">
+                      <li
+                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
+                          isActive("phongtro")
+                            ? "bg-blue-900 text-white scale-105"
+                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                        }`}
+                        onClick={() => {
+                          setActiveComponent("phongtro");
+                          setIsOpen(false);
+                        }}
+                      >
+                        Quản lý phòng
+                      </li>
+                      <li
+                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
+                          isActive("danhmuc")
+                            ? "bg-blue-900 text-white scale-105"
+                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                        }`}
+                        onClick={() => {
+                          setActiveComponent("danhmuc");
+                          setIsOpen(false);
+                        }}
+                      >
+                        Quản lý Danh Mục
+                      </li>
+                      <li
+                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
+                          isActive("thietbi")
+                            ? "bg-blue-900 text-white scale-105"
+                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                        }`}
+                        onClick={() => {
+                          setActiveComponent("thietbi");
+                          setIsOpen(false);
+                        }}
+                      >
+                        Quản lý Thiết Bị
+                      </li>
+                      <li
+                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
+                          isActive("anhphong")
+                            ? "bg-blue-900 text-white scale-105"
+                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                        }`}
+                        onClick={() => {
+                          setActiveComponent("anhphong");
+                          setIsOpen(false);
+                        }}
+                      >
+                        Quản lý Ảnh Phòng
+                      </li>
+                      <li
+                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
+                          isActive("yeuthich")
+                            ? "bg-blue-900 text-white scale-105"
+                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                        }`}
+                        onClick={() => {
+                          setActiveComponent("yeuthich");
+                          setIsOpen(false);
+                        }}
+                      >
+                        Quản lý Yêu Thích
+                      </li>
+                      <li
+                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
+                          isActive("adminuser")
+                            ? "bg-blue-900 text-white scale-105"
+                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                        }`}
+                        onClick={() => {
+                          setActiveComponent("adminuser");
+                          setIsOpen(false);
+                        }}
+                      >
+                        Quản lý User
+                      </li>
+                    </ul>
+                  )}
                 </li>
-                <li
-                  className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
-                    isActive("danhmuc")
-                      ? "bg-blue-900 text-white scale-105"
-                      : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
-                  }`}
-                  onClick={() => {
-                    setActiveComponent("danhmuc");
-                    setIsOpen(false);
-                  }}
-                >
-                  <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  Quản lý Danh Mục
-                </li>
-                <li
-                  className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
-                    isActive("thietbi")
-                      ? "bg-blue-900 text-white scale-105"
-                      : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
-                  }`}
-                  onClick={() => {
-                    setActiveComponent("thietbi");
-                    setIsOpen(false);
-                  }}
-                >
-                  <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  Quản lý Thiết Bị
-                </li>
-                <li
-                  className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
-                    isActive("anhphong")
-                      ? "bg-blue-900 text-white scale-105"
-                      : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
-                  }`}
-                  onClick={() => {
-                    setActiveComponent("anhphong");
-                    setIsOpen(false);
-                  }}
-                >
-                  <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  Quản lý Ảnh Phòng
-                </li>
-                <li
-                  className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
-                    isActive("yeuthich")
-                      ? "bg-blue-900 text-white scale-105"
-                      : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
-                  }`}
-                  onClick={() => {
-                    setActiveComponent("yeuthich");
-                    setIsOpen(false);
-                  }}
-                >
-                  <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  Quản lý Yêu Thích
-                </li>
-                <li
-                  className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
-                    isActive("adminuser")
-                      ? "bg-blue-900 text-white scale-105"
-                      : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
-                  }`}
-                  onClick={() => {
-                    setActiveComponent("adminuser");
-                    setIsOpen(false);
-                  }}
-                >
-                  <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  Quản lý User
-                </li>
+
                 <li
                   className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
                     isActive("mess")
@@ -164,6 +191,7 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
                   <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
                   Mess
                 </li>
+
                 <li
                   className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
                     isActive("map")
@@ -176,21 +204,68 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
                   }}
                 >
                   <FaMap className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  map
+                  Map
                 </li>
-                <li
-                  className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
-                    isActive("thongke")
-                      ? "bg-blue-900 text-white scale-105"
-                      : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
-                  }`}
-                  onClick={() => {
-                    setActiveComponent("thongke");
-                    setIsOpen(false);
-                  }}
-                >
-                  <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  Thống Kê
+
+                {/* Thống Kê Dropdown */}
+                <li>
+                  <div
+                    className={`font-medium cursor-pointer p-3 rounded flex items-center justify-between transition-all duration-300 transform ${
+                      dropdowns.thongke
+                        ? "bg-blue-900 text-white scale-105"
+                        : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                    }`}
+                    onClick={() => toggleDropdown("thongke")}
+                  >
+                    <div className="flex items-center gap-3">
+                      <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
+                      Thống Kê
+                    </div>
+                    {dropdowns.thongke ? <IoChevronUp /> : <IoChevronDown />}
+                  </div>
+                  {dropdowns.thongke && (
+                    <ul className="ml-6 flex flex-col gap-2 mt-2">
+                      <li
+                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
+                          isActive("thongke")
+                            ? "bg-blue-900 text-white scale-105"
+                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                        }`}
+                        onClick={() => {
+                          setActiveComponent("thongkeDanhgia");
+                          setIsOpen(false);
+                        }}
+                      >
+                        Thống kê đánh giá
+                      </li>
+                      <li
+                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
+                          isActive("thongke_dien")
+                            ? "bg-blue-900 text-white scale-105"
+                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                        }`}
+                        onClick={() => {
+                          setActiveComponent("thongkeYeuthich");
+                          setIsOpen(false);
+                        }}
+                      >
+                        Thống kê yêu thích
+                      </li>
+                      <li
+                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
+                          isActive("thongke_dien")
+                            ? "bg-blue-900 text-white scale-105"
+                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
+                        }`}
+                        onClick={() => {
+                          setActiveComponent("thongkeDien");
+                          setIsOpen(false);
+                        }}
+                      >
+                        Thống kê Điện tiêu thụ
+                      </li>
+                    </ul>
+                  )}
                 </li>
               </ul>
             </nav>
