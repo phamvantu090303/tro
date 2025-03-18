@@ -91,7 +91,7 @@ function AccountAdmin() {
           Thêm tài khoản admin
         </button>
       </div>
-      {/* <RoomTable
+      <RoomTable
         displayedRooms={admin}
         headers={headers}
         roomsPerPage={5}
@@ -249,7 +249,7 @@ function AccountAdmin() {
             </button>
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 }
