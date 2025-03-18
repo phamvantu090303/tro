@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import nodemailer from "nodemailer";
 import { UserVerifyStatus } from "../constants/enum";
 import UserModel from "../models/UserModel";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 const userService = new UserService();
@@ -213,22 +214,29 @@ export const loginGoogle = async (req: any, res: any) => {
   const { token } = req.body;
 
   try {
-    const result = await userService.googleLogin(token);
+    const authToken = await userService.googleLogin(token);
     
+    const decoded = jwt.verify(authToken, process.env.JWT_SECRET_ACCESS_TOKEN as string) as { _id: string; verify: string };
+    const user = await UserModel.findById(decoded._id);
+
+    if (!user) {
+      throw new Error("Không tìm thấy người dùng!");
+    }
+
     return res.status(200).json({
       message: "Đăng nhập Google thành công!",
       data: {
         user: {
-          id: result.user._id,
-          email: result.user.email,
-          username: result.user.username,
+          id: user._id,
+          email: user.email,
+          username: user.username,
         },
-        token: result.authToken,
+        token: authToken,
       },
     });
   } catch (error) {
     return res.status(400).json({
-      message: error instanceof Error ? error.message : "Đăng nhập Google thất bại!",
+      message: "Đăng nhập Google thất bại!",
     });
   }
 };
