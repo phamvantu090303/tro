@@ -1,249 +1,594 @@
-import { ObjectId } from 'mongodb';
-import yeuthichModel from '../models/YeuThichModel';
-import DanhGiaModel from '../models/DanhGiaModel';
-import Electricity from '../models/Electricity';
+import { ObjectId } from "mongodb";
+import yeuthichModel from "../models/YeuThichModel";
+import DanhGiaModel from "../models/DanhGiaModel";
+import Electricity from "../models/Electricity";
 
 export class ThongKeSevice {
-    async getChartData({ ngay, thang, nam }: { ngay?: string; thang?: string; nam?: string }): Promise<any> {
-        const filterByDate = (startDate: Date, endDate: Date) => ({
-            $match: { createdAt: { $gte: startDate, $lte: endDate } },
-        });
+  async getChartData({
+    ngay,
+    thang,
+    nam,
+  }: {
+    ngay?: string;
+    thang?: string;
+    nam?: string;
+  }): Promise<any> {
+    // Hàm lọc theo khoảng thời gian
+    const filterByDate = (startDate: Date, endDate: Date) => ({
+      createdAt: { $gte: startDate, $lte: endDate },
+    });
 
-        const yeuThichTheoPhong = await yeuthichModel.aggregate([
-            { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-            { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-            { $unwind: "$thongTinPhong" },
-            { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotYeuThich: "$soLuong" } },
-            { $sort: { soLuotYeuThich: -1 } },
-            { $limit: 10 },
-        ]);
+    // Lấy năm, tháng, ngày hiện tại làm mặc định nếu thiếu tham số
+    const currentDate = new Date();
+    const defaultYear = nam || currentDate.getFullYear().toString();
+    const defaultMonth =
+      thang || String(currentDate.getMonth() + 1).padStart(2, "0");
+    const defaultDay = ngay || String(currentDate.getDate()).padStart(2, "0");
 
-        const yeuThichTheoNgay = ngay
-            ? await yeuthichModel.aggregate([
-                filterByDate(new Date(ngay + "T00:00:00.000Z"), new Date(ngay + "T23:59:59.999Z")),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotYeuThich: "$soLuong" } },
-            ])
-            : await yeuthichModel.aggregate([
-                filterByDate(new Date(new Date().setHours(0, 0, 0, 0)), new Date(new Date().setHours(23, 59, 59, 999))),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotYeuThich: "$soLuong" } },
-            ]);
-
-        const yeuThichTheoThang = thang
-            ? await yeuthichModel.aggregate([
-                filterByDate(
-                    new Date(`${thang}-01T00:00:00.000Z`),
-                    new Date(new Date(`${thang}-01`).getFullYear(), new Date(`${thang}-01`).getMonth() + 1, 0, 23, 59, 59, 999)
-                ),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotYeuThich: "$soLuong" } },
-            ])
-            : await yeuthichModel.aggregate([
-                filterByDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1), new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotYeuThich: "$soLuong" } },
-            ]);
-
-        const yeuThichTheoNam = nam
-            ? await yeuthichModel.aggregate([
-                filterByDate(new Date(`${nam}-01-01T00:00:00.000Z`), new Date(`${nam}-12-31T23:59:59.999Z`)),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotYeuThich: "$soLuong" } },
-            ])
-            : await yeuthichModel.aggregate([
-                filterByDate(new Date(new Date().getFullYear(), 0, 1), new Date(new Date().getFullYear(), 11, 31)),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotYeuThich: "$soLuong" } },
-            ]);
-
-        return {
-            yeuThichTheoPhong,
-            yeuThichTheoNgay,
-            yeuThichTheoThang,
-            yeuThichTheoNam,
-        };
+    // Xác định khoảng thời gian dựa trên params
+    let matchCondition = {};
+    if (ngay) {
+      // Lọc theo ngày cụ thể
+      matchCondition = filterByDate(
+        new Date(
+          `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+            2,
+            "0"
+          )}T00:00:00.000Z`
+        ),
+        new Date(
+          `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+            2,
+            "0"
+          )}T23:59:59.999Z`
+        )
+      );
+    } else if (thang) {
+      // Lọc theo tháng
+      matchCondition = filterByDate(
+        new Date(
+          `${defaultYear}-${String(thang).padStart(2, "0")}-01T00:00:00.000Z`
+        ),
+        new Date(
+          parseInt(defaultYear),
+          parseInt(thang) - 1 + 1,
+          0,
+          23,
+          59,
+          59,
+          999
+        )
+      );
+    } else if (nam) {
+      // Lọc theo năm
+      matchCondition = filterByDate(
+        new Date(`${defaultYear}-01-01T00:00:00.000Z`),
+        new Date(`${defaultYear}-12-31T23:59:59.999Z`)
+      );
+    } else {
+      // Mặc định lấy ngày hiện tại nếu không có tham số
+      matchCondition = filterByDate(
+        new Date(currentDate.setHours(0, 0, 0, 0)),
+        new Date(currentDate.setHours(23, 59, 59, 999))
+      );
     }
 
-    async getChartDanhGia({ ngay, thang, nam }: { ngay?: string; thang?: string; nam?: string }): Promise<any> {
-        const filterByDate = (startDate: Date, endDate: Date) => ({
-            $match: { createdAt: { $gte: startDate, $lte: endDate } },
-        });
+    // Aggregation pipeline để tổng hợp dữ liệu theo ma_phong
+    const aggregateByPhong = (matchCondition: any) =>
+      yeuthichModel.aggregate([
+        { $match: matchCondition },
+        {
+          $group: {
+            _id: "$ma_phong",
+            soLuotYeuThich: { $sum: 1 },
+          },
+        },
+        {
+          $lookup: {
+            from: "phongtros",
+            localField: "_id",
+            foreignField: "ma_phong",
+            as: "thongTinPhong",
+          },
+        },
+        { $unwind: "$thongTinPhong" },
+        {
+          $project: {
+            maPhong: "$_id",
+            tenPhong: "$thongTinPhong.ten_phong_tro",
+            soLuotYeuThich: "$soLuotYeuThich",
+            _id: 0,
+          },
+        },
+        { $sort: { soLuotYeuThich: -1 } },
+      ]);
 
-        const danhGiaTheoPhong = await DanhGiaModel.aggregate([
-            { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-            { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-            { $unwind: "$thongTinPhong" },
-            { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotDanhGia: "$soLuong" } },
-            { $sort: { soLuotDanhGia: -1 } },
-            { $limit: 10 },
-        ]);
+    // 1. Yêu thích theo phòng (tổng hợp tất cả, không lọc thời gian)
+    const yeuThichTheoPhong = await yeuthichModel.aggregate([
+      {
+        $group: {
+          _id: "$ma_phong",
+          soLuotYeuThich: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "phongtros",
+          localField: "_id",
+          foreignField: "ma_phong",
+          as: "thongTinPhong",
+        },
+      },
+      { $unwind: "$thongTinPhong" },
+      {
+        $project: {
+          maPhong: "$_id",
+          tenPhong: "$thongTinPhong.ten_phong_tro",
+          soLuotYeuThich: "$soLuotYeuThich",
+          _id: 0,
+        },
+      },
+      { $sort: { soLuotYeuThich: -1 } },
+      { $limit: 10 },
+    ]);
 
-        const danhGiaTheoNgay = ngay
-            ? await DanhGiaModel.aggregate([
-                filterByDate(new Date(ngay + "T00:00:00.000Z"), new Date(ngay + "T23:59:59.999Z")),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotDanhGia: "$soLuong" } },
-            ])
-            : await DanhGiaModel.aggregate([
-                filterByDate(new Date(new Date().setHours(0, 0, 0, 0)), new Date(new Date().setHours(23, 59, 59, 999))),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotDanhGia: "$soLuong" } },
-            ]);
+    // 2. Yêu thích theo ngày (tổng hợp theo ngày)
+    const yeuThichTheoNgay = ngay
+      ? await aggregateByPhong(
+          filterByDate(
+            new Date(
+              `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+                2,
+                "0"
+              )}T00:00:00.000Z`
+            ),
+            new Date(
+              `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+                2,
+                "0"
+              )}T23:59:59.999Z`
+            )
+          )
+        )
+      : await aggregateByPhong(
+          filterByDate(
+            new Date(currentDate.setHours(0, 0, 0, 0)),
+            new Date(currentDate.setHours(23, 59, 59, 999))
+          )
+        );
 
-        const danhGiaTheoThang = thang
-            ? await DanhGiaModel.aggregate([
-                filterByDate(
-                    new Date(`${thang}-01T00:00:00.000Z`),
-                    new Date(new Date(`${thang}-01`).getFullYear(), new Date(`${thang}-01`).getMonth() + 1, 0, 23, 59, 59, 999)
-                ),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotDanhGia: "$soLuong" } },
-            ])
-            : await DanhGiaModel.aggregate([
-                filterByDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1), new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotDanhGia: "$soLuong" } },
-            ]);
+    // 3. Yêu thích theo tháng (tổng hợp theo tháng)
+    const yeuThichTheoThang = thang
+      ? await aggregateByPhong(
+          filterByDate(
+            new Date(
+              `${defaultYear}-${String(thang).padStart(
+                2,
+                "0"
+              )}-01T00:00:00.000Z`
+            ),
+            new Date(
+              parseInt(defaultYear),
+              parseInt(thang) - 1 + 1,
+              0,
+              23,
+              59,
+              59,
+              999
+            )
+          )
+        )
+      : await aggregateByPhong(
+          filterByDate(
+            new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+            new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+          )
+        );
 
-        const danhGiaTheoNam = nam
-            ? await DanhGiaModel.aggregate([
-                filterByDate(new Date(`${nam}-01-01T00:00:00.000Z`), new Date(`${nam}-12-31T23:59:59.999Z`)),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotDanhGia: "$soLuong" } },
-            ])
-            : await DanhGiaModel.aggregate([
-                filterByDate(new Date(new Date().getFullYear(), 0, 1), new Date(new Date().getFullYear(), 11, 31)),
-                { $group: { _id: "$ma_phong", soLuong: { $sum: 1 } } },
-                { $sort: { soLuong: -1 } },
-                { $limit: 5 },
-                { $lookup: { from: "phongtros", localField: "_id", foreignField: "ma_phong", as: "thongTinPhong" } },
-                { $unwind: "$thongTinPhong" },
-                { $project: { maPhong: "$_id", tenPhong: "$thongTinPhong.ten_phong", soLuotDanhGia: "$soLuong" } },
-            ]);
+    // 4. Yêu thích theo năm (tổng hợp theo năm)
+    const yeuThichTheoNam = nam
+      ? await aggregateByPhong(
+          filterByDate(
+            new Date(`${defaultYear}-01-01T00:00:00.000Z`),
+            new Date(`${defaultYear}-12-31T23:59:59.999Z`)
+          )
+        )
+      : await aggregateByPhong(
+          filterByDate(
+            new Date(currentDate.getFullYear(), 0, 1),
+            new Date(currentDate.getFullYear(), 11, 31)
+          )
+        );
 
-        return {
-            danhGiaTheoPhong,
-            danhGiaTheoNgay,
-            danhGiaTheoThang,
-            danhGiaTheoNam,
-        };
+    // Trả về dữ liệu tổng hợp
+    return {
+      yeuThichTheoPhong,
+      yeuThichTheoNgay,
+      yeuThichTheoThang,
+      yeuThichTheoNam,
+    };
+  }
+
+  async getChartDanhGia({
+    ngay,
+    thang,
+    nam,
+  }: {
+    ngay?: string;
+    thang?: string;
+    nam?: string;
+  }): Promise<any> {
+    const filterByDate = (startDate: Date, endDate: Date) => ({
+      createdAt: { $gte: startDate, $lte: endDate },
+    });
+
+    const currentDate = new Date();
+    const defaultYear = nam || currentDate.getFullYear().toString();
+    const defaultMonth =
+      thang || String(currentDate.getMonth() + 1).padStart(2, "0");
+    const defaultDay = ngay || String(currentDate.getDate()).padStart(2, "0");
+
+    let matchCondition = {};
+    if (ngay) {
+      matchCondition = filterByDate(
+        new Date(
+          `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+            2,
+            "0"
+          )}T00:00:00.000Z`
+        ),
+        new Date(
+          `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+            2,
+            "0"
+          )}T23:59:59.999Z`
+        )
+      );
+    } else if (thang) {
+      matchCondition = filterByDate(
+        new Date(
+          `${defaultYear}-${String(thang).padStart(2, "0")}-01T00:00:00.000Z`
+        ),
+        new Date(
+          parseInt(defaultYear),
+          parseInt(thang) - 1 + 1,
+          0,
+          23,
+          59,
+          59,
+          999
+        )
+      );
+    } else if (nam) {
+      matchCondition = filterByDate(
+        new Date(`${defaultYear}-01-01T00:00:00.000Z`),
+        new Date(`${defaultYear}-12-31T23:59:59.999Z`)
+      );
+    } else {
+      matchCondition = filterByDate(
+        new Date(currentDate.setHours(0, 0, 0, 0)),
+        new Date(currentDate.setHours(23, 59, 59, 999))
+      );
     }
 
-      async getChartDienNang({ ngay, thang, nam }: { ngay?: string; thang?: string; nam?: string }): Promise<any> {
-        // Hàm lọc theo khoảng thời gian
-        const filterByDate = (startDate: Date, endDate: Date) => ({
-          timestamp: { $gte: startDate, $lte: endDate },
-        });
-    
-        // 1. Điện năng theo phòng (dữ liệu thời gian thực, không tổng hợp)
-        const dienNangTheoPhong = await Electricity.find({})
-          .select("room_id energy total_cost timestamp") // Lấy energy và total_cost trực tiếp
-          .sort({ timestamp: -1 }) // Sắp xếp theo thời gian giảm dần
-    
-        // 2. Điện năng theo ngày
-        const dienNangTheoNgay = ngay
-          ? await Electricity.find(
-              filterByDate(new Date(`${ngay}T00:00:00.000Z`), new Date(`${ngay}T23:59:59.999Z`))
+    const getFullReviews = (matchCondition: any) =>
+      DanhGiaModel.aggregate([
+        { $match: matchCondition },
+        {
+          $lookup: {
+            from: "phongtros",
+            localField: "ma_phong",
+            foreignField: "ma_phong",
+            as: "thongTinPhong",
+          },
+        },
+        { $unwind: "$thongTinPhong" },
+        {
+          $project: {
+            maPhong: "$ma_phong",
+            time: {
+              $dateToString: {
+                format: "%Y-%m-%d %H:%M:%S",
+                date: "$createdAt",
+              },
+            },
+            tenPhong: "$thongTinPhong.ten_phong",
+            noiDung: "$noi_dung",
+          },
+        },
+        { $sort: { time: 1 } },
+      ]);
+
+    // 1. Đánh giá theo từng ngày (chi tiết từng đánh giá trong ngày đó)
+    const danhGiaTheoTungNgay = await getFullReviews(matchCondition);
+
+    // 2. Đánh giá theo ngày (chi tiết từng đánh giá trong ngày)
+    const danhGiaTheoNgay = ngay
+      ? await getFullReviews(
+          filterByDate(
+            new Date(
+              `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+                2,
+                "0"
+              )}T00:00:00.000Z`
+            ),
+            new Date(
+              `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+                2,
+                "0"
+              )}T23:59:59.999Z`
             )
-              .select("room_id energy total_cost timestamp") // Lấy energy và total_cost trực tiếp
-              .sort({ timestamp: -1 })
-              .limit(5)
-          : await Electricity.find(
-              filterByDate(
-                new Date(new Date().setHours(0, 0, 0, 0)),
-                new Date(new Date().setHours(23, 59, 59, 999))
-              )
+          )
+        )
+      : await getFullReviews(
+          filterByDate(
+            new Date(currentDate.setHours(0, 0, 0, 0)),
+            new Date(currentDate.setHours(23, 59, 59, 999))
+          )
+        );
+
+    // 3. Đánh giá theo tháng (chi tiết từng đánh giá trong tháng)
+    const danhGiaTheoThang = thang
+      ? await getFullReviews(
+          filterByDate(
+            new Date(
+              `${defaultYear}-${String(thang).padStart(
+                2,
+                "0"
+              )}-01T00:00:00.000Z`
+            ),
+            new Date(
+              parseInt(defaultYear),
+              parseInt(thang) - 1 + 1,
+              0,
+              23,
+              59,
+              59,
+              999
             )
-              .select("room_id energy total_cost timestamp") // Lấy energy và total_cost trực tiếp
-              .sort({ timestamp: -1 })
-    
-        // 3. Điện năng theo tháng
-        const dienNangTheoThang = thang
-          ? await Electricity.find(
-              filterByDate(
-                new Date(`${thang}-01T00:00:00.000Z`),
-                new Date(new Date(`${thang}-01`).getFullYear(), new Date(`${thang}-01`).getMonth() + 1, 0, 23, 59, 59, 999)
-              )
+          )
+        )
+      : await getFullReviews(
+          filterByDate(
+            new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+            new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth() + 1,
+              0,
+              23,
+              59,
+              59,
+              999
             )
-              .select("room_id energy total_cost timestamp") // Lấy energy và total_cost trực tiếp
-              .sort({ timestamp: -1 })
-              .limit(5)
-          : await Electricity.find(
-              filterByDate(
-                new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-                new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 59, 999)
-              )
+          )
+        );
+
+    // 4. Đánh giá theo năm (chi tiết từng đánh giá trong năm)
+    const danhGiaTheoNam = nam
+      ? await getFullReviews(
+          filterByDate(
+            new Date(`${defaultYear}-01-01T00:00:00.000Z`),
+            new Date(`${defaultYear}-12-31T23:59:59.999Z`)
+          )
+        )
+      : await getFullReviews(
+          filterByDate(
+            new Date(currentDate.getFullYear(), 0, 1),
+            new Date(currentDate.getFullYear(), 11, 31, 23, 59, 59, 999)
+          )
+        );
+
+    return {
+      danhGiaTheoTungNgay,
+      danhGiaTheoNgay,
+      danhGiaTheoThang,
+      danhGiaTheoNam,
+    };
+  }
+  async getChartDienNang({
+    ngay,
+    thang,
+    nam,
+  }: {
+    ngay?: string;
+    thang?: string;
+    nam?: string;
+  }): Promise<any> {
+    // Hàm lọc theo khoảng thời gian
+    const filterByDate = (startDate: Date, endDate: Date) => ({
+      timestamp: { $gte: startDate, $lte: endDate },
+    });
+
+    // Lấy năm và tháng hiện tại làm mặc định nếu thiếu tham số
+    const currentDate = new Date();
+    const defaultYear = nam || currentDate.getFullYear().toString();
+    const defaultMonth =
+      thang || String(currentDate.getMonth() + 1).padStart(2, "0");
+    const defaultDay = ngay || String(currentDate.getDate()).padStart(2, "0");
+
+    // Xác định khoảng thời gian cho dienNangTheoTungNgay dựa trên params
+    let matchCondition = {};
+    if (ngay) {
+      // Lọc theo ngày cụ thể
+      matchCondition = filterByDate(
+        new Date(
+          `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+            2,
+            "0"
+          )}T00:00:00.000Z`
+        ),
+        new Date(
+          `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+            2,
+            "0"
+          )}T23:59:59.999Z`
+        )
+      );
+    } else if (thang) {
+      // Lọc theo tháng
+      matchCondition = filterByDate(
+        new Date(
+          `${defaultYear}-${String(thang).padStart(2, "0")}-01T00:00:00.000Z`
+        ),
+        new Date(
+          parseInt(defaultYear),
+          parseInt(thang) - 1 + 1,
+          0,
+          23,
+          59,
+          59,
+          999
+        )
+      );
+    } else if (nam) {
+      // Lọc theo năm
+      matchCondition = filterByDate(
+        new Date(`${defaultYear}-01-01T00:00:00.000Z`),
+        new Date(`${defaultYear}-12-31T23:59:59.999Z`)
+      );
+    } else {
+      // Mặc định lấy ngày hiện tại nếu không có tham số
+      matchCondition = filterByDate(
+        new Date(currentDate.setHours(0, 0, 0, 0)),
+        new Date(currentDate.setHours(23, 59, 59, 999))
+      );
+    }
+
+    // 1. Điện năng theo từng ngày (tổng hợp theo ngày và phòng, lọc theo params)
+    const dienNangTheoTungNgay = await Electricity.aggregate([
+      { $match: matchCondition }, // Lọc theo ngày/tháng/năm
+      {
+        $group: {
+          _id: {
+            room_id: "$room_id",
+            date: {
+              $dateToString: { format: "%Y-%m-%d", date: "$timestamp" }, // Tổng hợp theo ngày
+            },
+          },
+          totalEnergy: { $sum: "$energy" },
+          totalCost: { $sum: "$total_cost" },
+          latestTimestamp: { $max: "$timestamp" },
+        },
+      },
+      {
+        $project: {
+          room_id: "$_id.room_id",
+          date: "$_id.date",
+          energy: "$totalEnergy",
+          total_cost: "$totalCost",
+          timestamp: "$latestTimestamp",
+          _id: 0,
+        },
+      },
+      { $sort: { timestamp: -1 } },
+    ]);
+
+    // Aggregation pipeline để tổng hợp dữ liệu theo room_id
+    const aggregateByRoom = (matchCondition: any) =>
+      Electricity.aggregate([
+        { $match: matchCondition },
+        {
+          $group: {
+            _id: "$room_id",
+            totalEnergy: { $sum: "$energy" },
+            totalCost: { $sum: "$total_cost" },
+            latestTimestamp: { $max: "$timestamp" },
+          },
+        },
+        {
+          $project: {
+            room_id: "$_id",
+            energy: "$totalEnergy",
+            total_cost: "$totalCost",
+            timestamp: "$latestTimestamp",
+            _id: 0,
+          },
+        },
+        { $sort: { timestamp: -1 } },
+      ]);
+
+    // 2. Điện năng theo ngày (tổng hợp theo ngày cho mỗi phòng)
+    const dienNangTheoNgay = ngay
+      ? await aggregateByRoom(
+          filterByDate(
+            new Date(
+              `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+                2,
+                "0"
+              )}T00:00:00.000Z`
+            ),
+            new Date(
+              `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+                2,
+                "0"
+              )}T23:59:59.999Z`
             )
-              .select("room_id energy total_cost timestamp") // Lấy energy và total_cost trực tiếp
-              .sort({ timestamp: -1 })
-    
-        // 4. Điện năng theo năm
-        const dienNangTheoNam = nam
-          ? await Electricity.find(
-              filterByDate(new Date(`${nam}-01-01T00:00:00.000Z`), new Date(`${nam}-12-31T23:59:59.999Z`))
+          )
+        )
+      : await aggregateByRoom(
+          filterByDate(
+            new Date(currentDate.setHours(0, 0, 0, 0)),
+            new Date(currentDate.setHours(23, 59, 59, 999))
+          )
+        );
+
+    // 3. Điện năng theo tháng (tổng hợp theo tháng cho mỗi phòng)
+    const dienNangTheoThang = thang
+      ? await aggregateByRoom(
+          filterByDate(
+            new Date(
+              `${defaultYear}-${String(thang).padStart(
+                2,
+                "0"
+              )}-01T00:00:00.000Z`
+            ),
+            new Date(
+              parseInt(defaultYear),
+              parseInt(thang) - 1 + 1,
+              0,
+              23,
+              59,
+              59,
+              999
             )
-              .select("room_id energy total_cost timestamp") // Lấy energy và total_cost trực tiếp
-              .sort({ timestamp: -1 })
-              .limit(5)
-          : await Electricity.find(
-              filterByDate(
-                new Date(new Date().getFullYear(), 0, 1),
-                new Date(new Date().getFullYear(), 11, 31, 23, 59, 59, 999)
-              )
+          )
+        )
+      : await aggregateByRoom(
+          filterByDate(
+            new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+            new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth() + 1,
+              0,
+              23,
+              59,
+              59,
+              999
             )
-              .select("room_id energy total_cost timestamp") // Lấy energy và total_cost trực tiếp
-              .sort({ timestamp: -1 })
-        // Trả về dữ liệu tổng hợp
-        return {
-          dienNangTheoPhong,
-          dienNangTheoNgay,
-          dienNangTheoThang,
-          dienNangTheoNam,
-        };
-      }
+          )
+        );
+
+    // 4. Điện năng theo năm (tổng hợp theo năm cho mỗi phòng)
+    const dienNangTheoNam = nam
+      ? await aggregateByRoom(
+          filterByDate(
+            new Date(`${defaultYear}-01-01T00:00:00.000Z`),
+            new Date(`${defaultYear}-12-31T23:59:59.999Z`)
+          )
+        )
+      : await aggregateByRoom(
+          filterByDate(
+            new Date(currentDate.getFullYear(), 0, 1),
+            new Date(currentDate.getFullYear(), 11, 31, 23, 59, 59, 999)
+          )
+        );
+
+    // Trả về dữ liệu tổng hợp
+    return {
+      dienNangTheoTungNgay,
+      dienNangTheoNgay,
+      dienNangTheoThang,
+      dienNangTheoNam,
+    };
+  }
 }

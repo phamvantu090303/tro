@@ -7,8 +7,9 @@ import YeuThichAdmin from "../../pages/admin/home/YeuThichAdmin";
 import UserAdmin from "../../pages/admin/home/UserAdmin/UserAdmin";
 import MessAdmin from "../../component/Mess/messAdmin";
 import MapAdmin from "../../pages/admin/home/Map";
-import ThongKe from "../../pages/Chart/ThongKeAll";
-
+import ChartAdmin from "../../pages/admin/home/Chart/thongKeDienNang";
+import ThongKeYeuThich from "../../pages/admin/home/Chart/thongKeYeuThich";
+import ThongKeDanhGia from "../../pages/admin/home/Chart/thongKeDanhGia";
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
     switch (activeComponent) {
@@ -30,8 +31,12 @@ function AdminDashboard({ activeComponent }) {
         return <MessAdmin />;
       case "map":
         return <MapAdmin />;
-      case "thongke":
-        return <ThongKe />;
+      case "thongkeYeuthich":
+        return <ThongKeYeuThich />;
+      case "thongkeDien":
+        return <ChartAdmin />;
+      case "thongkeDanhgia":
+        return <ThongKeDanhGia />;
     }
   };
 

@@ -14,7 +14,7 @@ function Admin() {
           setActiveComponent={setActiveComponent}
           activeComponent={activeComponent}
         />
-        <div className="flex-1 h-screen">
+        <div className="flex-1">
           <AdminDashboard activeComponent={activeComponent} />
         </div>
       </div>

@@ -75,9 +75,17 @@ function RoomTable({
         ? renderStatus(room)
         : defaultRenderStatus(room.is_block);
     }
-    if (key === "ngay_sinh") return formatDate(room[key]);
+    if (key === "ngay_sinh" || key === "timestamp")
+      return formatDate(room[key]);
     if (key === "email") return maskEmail(room[key]);
     if (key === "id_quyen") return maskID(room[key]);
+    if (key === "total_cost")
+      return (
+        <div className="flex items-center">
+          <span className="mr-1 text-lg">{room[key]} VND</span>
+        </div>
+      );
+
     if (key === "image_url" && room[key]) {
       return (
         <img
