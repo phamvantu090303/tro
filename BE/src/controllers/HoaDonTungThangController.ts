@@ -77,7 +77,7 @@ export const updateHoaDon = async (req: any, res: any) => {
     await hoaDonThangService.updateData(_id, data);
 
     res.status(200).json({
-      message: "Danh mục đã được cập nhật thành công",
+      message: "Hóa đơn đã được cập nhật thành công",
     });
   } catch (error: any) {
     res.status(404).json({
