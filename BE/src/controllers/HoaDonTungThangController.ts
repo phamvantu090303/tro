@@ -104,7 +104,7 @@ export const deleteHoaDonByID = async (req: any, res: any) => {
   }
 };
 
-// Hàm tự động tạo hóa đơn mới cho tháng hiện tại dựa trên tháng trước đó
+// Hàm tự động tạo hóa đơn mới cho tháng tiếp theo
 export const tuDongTaoHoaDonThang = async () => {
   try {
     // Lấy danh sách hóa đơn mới nhất cho từng phòng
@@ -125,10 +125,11 @@ export const tuDongTaoHoaDonThang = async () => {
 
     const ngayHienTai = new Date();
     const thangHienTai = ngayHienTai.toISOString().slice(0, 7); // Ví dụ: "2025-03"
+    const ngayCuoiThang = new Date(ngayHienTai.getFullYear(), ngayHienTai.getMonth() + 1, 0, 23, 59, 59, 999);
 
     // Duyệt qua từng hóa đơn mới nhất của mỗi phòng
     for (const { hoaDonMoiNhat } of danhSachHoaDonMoiNhat) {
-      const { ma_phong, id_users } = hoaDonMoiNhat;
+      const { ma_phong, id_users, trang_thai, ngay_tao_hoa_don } = hoaDonMoiNhat;
 
       if (!ma_phong || !id_users) {
         console.log(`Hóa đơn của phòng ${ma_phong} thiếu mã phòng hoặc ID người dùng, bỏ qua.`);
@@ -136,7 +137,7 @@ export const tuDongTaoHoaDonThang = async () => {
       }
 
       // Xác định tháng của hóa đơn mới nhất
-      const ngayTaoCuoi = new Date(hoaDonMoiNhat.ngay_tao_hoa_don);
+      const ngayTaoCuoi = new Date(ngay_tao_hoa_don);
       const thangTruoc = new Date(ngayTaoCuoi.getFullYear(), ngayTaoCuoi.getMonth(), 1)
         .toISOString()
         .slice(0, 7);
@@ -146,19 +147,25 @@ export const tuDongTaoHoaDonThang = async () => {
         ma_phong,
         ngay_tao_hoa_don: {
           $gte: new Date(`${thangHienTai}-01T00:00:00Z`),
-          $lte: new Date(ngayHienTai.getFullYear(), ngayHienTai.getMonth() + 1, 0, 23, 59, 59, 999),
+          $lte: ngayCuoiThang,
         },
       });
 
+      // Kiểm tra trạng thái thanh toán và xử lý
+      if (trang_thai === "chưa thanh toán") {
+        console.log(`Phòng ${ma_phong} có hóa đơn tháng ${thangTruoc} chưa thanh toán. Yêu cầu thanh toán!`);
+        continue; // Bỏ qua nếu chưa thanh toán
+      }
+
       // So sánh và tạo hóa đơn nếu cần
-      if (thangTruoc < thangHienTai && !hoaDonDaTonTai) {
-        console.log(`Tự động tạo hóa đơn tháng ${thangHienTai} cho phòng ${ma_phong}`);
+      if (trang_thai === "đã thanh toán" && thangTruoc < thangHienTai && !hoaDonDaTonTai) {
+        console.log(`Tự động tạo hóa đơn tháng tiến theo: ${thangHienTai} cho phòng ${ma_phong}`);
         await hoaDonThangService.taoHoaDon(ma_phong, id_users, thangHienTai);
         console.log(`Hóa đơn tháng tiến theo: ${thangHienTai} cho phòng ${ma_phong} đã được tạo!`);
       } else if (hoaDonDaTonTai) {
         console.log(`Phòng ${ma_phong} đã có hóa đơn tháng ${thangHienTai}!`);
       } else {
-        console.log(`Hóa đơn mới nhất của phòng ${ma_phong} là tháng ${thangTruoc}, không cần tạo thêm.`);
+        console.log(`Đã có hóa đơn mới nhất của phòng ${ma_phong} là tháng ${thangTruoc}`);
       }
     }
   } catch (error) {
@@ -166,6 +173,7 @@ export const tuDongTaoHoaDonThang = async () => {
   }
 };
 
+// Hàm tự động tạo hóa đơn tháng đầu tiên cho phòng được thuê
 export const tuDongTaoHoaDon = async () => {
   try {
     const danhSachHoaDonMoiNhat = await HoaDonThanhToanModel.aggregate([
@@ -185,16 +193,17 @@ export const tuDongTaoHoaDon = async () => {
 
     const ngayHienTai = new Date();
     const thangHienTai = ngayHienTai.toISOString().slice(0, 7);
+    const ngayCuoiThang = new Date(ngayHienTai.getFullYear(), ngayHienTai.getMonth() + 1, 0, 23, 59, 59, 999);
 
     for (const { hoaDonMoiNhat } of danhSachHoaDonMoiNhat) {
-      const { ma_phong, id_users } = hoaDonMoiNhat;
+      const { ma_phong, id_users, trang_thai, ngay_chuyen_khoan } = hoaDonMoiNhat;
 
       if (!ma_phong || !id_users) {
         console.log(`Hóa đơn của phòng ${ma_phong} thiếu mã phòng hoặc ID người dùng, bỏ qua.`);
         continue;
       }
 
-      const ngayChuyenKhoanCuoi = new Date(hoaDonMoiNhat.ngay_chuyen_khoan);
+      const ngayChuyenKhoanCuoi = new Date(ngay_chuyen_khoan);
       const thangTruoc = new Date(ngayChuyenKhoanCuoi.getFullYear(), ngayChuyenKhoanCuoi.getMonth(), 1)
         .toISOString()
         .slice(0, 7);
@@ -203,18 +212,23 @@ export const tuDongTaoHoaDon = async () => {
         ma_phong,
         ngay_tao_hoa_don: {
           $gte: new Date(`${thangHienTai}-01T00:00:00Z`),
-          $lte: new Date(ngayHienTai.getFullYear(), ngayHienTai.getMonth() + 1, 0, 23, 59, 59, 999),
+          $lte: ngayCuoiThang,
         },
       });
 
-      if (thangTruoc < thangHienTai && !hoaDonDaTonTai) {
-        console.log(`Tự động tạo hóa đơn tháng ${thangHienTai} cho phòng ${ma_phong}`);
+      if (trang_thai === "chưa thanh toán") {
+        console.log(`Phòng ${ma_phong} có hóa đơn thuê trọ chưa thanh toán. Yêu cầu thanh toán!.`);
+        continue;
+      }
+
+      if (trang_thai === "đã thanh toán" && thangTruoc < thangHienTai && !hoaDonDaTonTai) {
+        console.log(`Tự động tạo hóa đơn tháng đầu tiên: ${thangHienTai} cho phòng ${ma_phong}`);
         await hoaDonThangService.taoHoaDon(ma_phong, id_users, thangHienTai);
         console.log(`Hóa đơn tháng đầu tiên: ${thangHienTai} cho phòng ${ma_phong} đã được tạo thành công!`);
       } else if (hoaDonDaTonTai) {
         console.log(`Phòng ${ma_phong} đã có hóa đơn tháng đầu tiên.`);
       } else {
-        console.log(`Hóa đơn mới nhất của phòng ${ma_phong} là tháng ${thangTruoc}, không cần tạo thêm.`);
+        console.log(`Đã có hóa đơn của phòng ${ma_phong} là tháng ${thangTruoc}.`);
       }
     }
   } catch (error) {
