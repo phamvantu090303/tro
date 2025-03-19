@@ -16,13 +16,13 @@ const NganHangSchema = new Schema(
 
         //credit Amount
         soTienGhi: {
-            type: Date,
+            type: Number,
             required: true,
         },
 
-        //currency
+        //currency (VND, USD, EUR, ...)
         tienTe: {
-            type: Number,
+            type: String,
             required: true,
         },
 
