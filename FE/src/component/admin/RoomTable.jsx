@@ -4,6 +4,11 @@ import { FaUserFriends } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import Pagination from "../Phantrang/Pagination";
 import usePagination from "../../hook/usePagination";
+import { motion } from "framer-motion";
+const itemVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1 } },
+};
 
 function RoomTable({
   displayedRooms,
@@ -101,7 +106,12 @@ function RoomTable({
   const renderCell = (item, key) => defaultRenderCell(item, key);
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 w-full border border-gray-500 mt-4 h-full">
+    <motion.div
+      variants={itemVariants}
+      initial="hidden"
+      animate="visible"
+      className="bg-white shadow-md rounded-lg p-4 w-full border border-gray-500 mt-4 h-full"
+    >
       <h3 className="text-xl font-medium mb-6">{title}</h3>
       {/* Bảng cho desktop */}
       <div className="hidden md:block">
@@ -189,7 +199,7 @@ function RoomTable({
           onPageChange={handlePageChange}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }
 

@@ -6,6 +6,7 @@ import {
   FaUserFriends,
   FaHeart,
 } from "react-icons/fa";
+import { motion } from "framer-motion";
 import { useParams } from "react-router";
 import { axiosInstance } from "../../../Axios";
 import { CiHeart } from "react-icons/ci";
@@ -15,6 +16,12 @@ import MapDetail from "../../component/RoomDetailsComponent/MapDetail";
 import { useSelector } from "react-redux";
 import { usePhongTro } from "../../Context/PhongTroContext";
 import RoomReview from "../../component/RoomDetailsComponent/Review";
+import { toast } from "react-toastify";
+import DeviceSelector from "../../component/thietbi/device";
+const slideUpVariants = {
+  hidden: { opacity: 0, y: 70 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" } },
+};
 
 function RoomDetails() {
   const { user } = useSelector((state) => state.auth);
@@ -28,6 +35,7 @@ function RoomDetails() {
   const [toado, setToado] = useState(null);
   const [yeuthich, setYeuthich] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [thietbi, setThietbi] = useState([]);
   const statusMapping = {
     1: { text: "Còn trống", color: "green" },
     0: { text: "Đã có người thuê", color: "red" },
@@ -50,6 +58,7 @@ function RoomDetails() {
         const res = await axiosInstance.post(`/phongTro/detail/${id}`);
         setData(res.data.data);
         setAnh(res.data.data.anh);
+        setThietbi(res.data.data?.thietBi);
         const result = res.data.data.mapDetail;
         setToado([result.latitude, result.longitude]);
         const status = res.data.data.trang_thai;
@@ -114,7 +123,7 @@ function RoomDetails() {
       await axiosInstance.post("/hoadon/Create", {
         ma_phong: e,
       });
-      fetchYeuthich();
+      toast.success("Đã gửi hợp đồng đặt cọc hãy kiểm tra email của bạn");
     } catch (error) {
       console.log(error);
     }
@@ -158,7 +167,13 @@ function RoomDetails() {
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
           <div className="space-y-[33px]">
             {/*ảnh chi tiết phòng */}
-            <div className="flex flex-col lg:flex-row gap-[26px]">
+            <motion.section
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={slideUpVariants}
+              className="flex flex-col lg:flex-row gap-[26px]"
+            >
               <img
                 src={anh[0]?.image_url}
                 alt=""
@@ -176,10 +191,16 @@ function RoomDetails() {
                   className="w-[210px] md:w-[420px] lg:w-[523px] h-auto lg:h-[215px] "
                 />
               </div>
-            </div>
+            </motion.section>
 
             {/* Tabs */}
-            <ul className="flex my-[34px] border-b-2 border-gray-500 w-full">
+            <motion.ul
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={slideUpVariants}
+              className="flex my-[34px] border-b-2 border-gray-500 w-full"
+            >
               {tabs.map((tab) => (
                 <li
                   key={tab}
@@ -193,10 +214,16 @@ function RoomDetails() {
                   {tab}
                 </li>
               ))}
-            </ul>
+            </motion.ul>
 
             {/*thông tin chi tiết phòng */}
-            <div className="flex flex-col lg:flex-row justify-between">
+            <motion.section
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={slideUpVariants}
+              className="flex flex-col lg:flex-row justify-between"
+            >
               <div>
                 <h1 className="font-bold text-3xl sm:text-4xl">
                   {data.ten_phong_tro}
@@ -261,10 +288,16 @@ function RoomDetails() {
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.section>
 
             {/* Địa chỉ */}
-            <div className="flex gap-[10px] items-center ">
+            <motion.section
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={slideUpVariants}
+              className="flex gap-[10px] items-center "
+            >
               <div className="flex gap-[10px] items-center ">
                 <FaMapMarkerAlt className="text-[#23274A] text-lg" />
                 <p className="text-xl font-medium">
@@ -274,10 +307,16 @@ function RoomDetails() {
               <span className="text-xl font-medium text-[#2F80ED] cursor-pointer">
                 Hiển thị bản đồ
               </span>
-            </div>
+            </motion.section>
 
             {/* Nội dung chi tiết */}
-            <div className=" flex flex-col lg:flex-row justify-between gap-5">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={slideUpVariants}
+              className=" flex flex-col lg:flex-row justify-between gap-5"
+            >
               <div className="w-full lg:w-[60%]">
                 <h2 ref={overviewRef} className="text-3xl font-semibold">
                   Tổng quan
@@ -310,37 +349,58 @@ function RoomDetails() {
                   </li>
                 </ul>
               </div>
-            </div>
+            </motion.div>
 
             {/*tiện nghi phòng */}
-            <div>
+            <motion.section
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={slideUpVariants}
+            >
               <h2 ref={amenitiesRef} className="text-3xl font-semibold">
                 Tiện nghi
               </h2>
-            </div>
+              <DeviceSelector data={thietbi} />
+            </motion.section>
 
             {/*phòng trọ khu vực */}
-            <div>
+            <motion.section
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={slideUpVariants}
+            >
               <ProductShowcase
                 data={roomSame}
                 limit={5}
                 desc={"Phòng trọ cùng khu vực"}
               />
-            </div>
+            </motion.section>
 
             {/*Bản đồ */}
-            <div>
+            <motion.section
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={slideUpVariants}
+            >
               <h2 ref={addressRef} className="text-3xl font-semibold mb-4">
                 Địa chỉ
               </h2>
               {toado ? <MapDetail toado={toado} /> : <p>Đang tải vị trí...</p>}
-            </div>
-            <div>
+            </motion.section>
+            <motion.section
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={slideUpVariants}
+            >
               <h2 ref={reviewRef} className="text-3xl font-semibold mb-4">
                 Đánh giá
               </h2>
               <RoomReview id={id} />
-            </div>
+            </motion.section>
           </div>
         </div>
       ) : (

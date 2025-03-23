@@ -106,14 +106,20 @@ function Header() {
                   onClick={() => setModal(!modal)}
                 />
                 {modal && (
-                  <div className="bg-customBlue absolute right-20 top-16 rounded-lg w-[100px] h-[100px]">
-                    <p
+                  <ul className="bg-customBlue absolute right-20 top-16 rounded-lg w-[150px] h-[100px]">
+                    <li
+                      onClick={() => navigate("/profile")}
+                      className="text-white cursor-pointer py-3 px-5 rounded-t-lg text-base hover:bg-blue-900"
+                    >
+                      Trang cá nhân
+                    </li>
+                    <li
                       onClick={handleLogout}
-                      className="text-white cursor-pointer py-3 px-2 text-center text-base hover:bg-slate-800"
+                      className="text-white cursor-pointer py-3 px-5 text-base hover:bg-blue-900"
                     >
                       Đăng xuất
-                    </p>
-                  </div>
+                    </li>
+                  </ul>
                 )}
               </div>
             )}
