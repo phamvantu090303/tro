@@ -10,9 +10,12 @@ import MapAdmin from "../../pages/admin/home/Map";
 import ChartAdmin from "../../pages/admin/home/Chart/thongKeDienNang";
 import ThongKeYeuThich from "../../pages/admin/home/Chart/thongKeYeuThich";
 import ThongKeDanhGia from "../../pages/admin/home/Chart/thongKeDanhGia";
+import QuyenManagement from "../../pages/admin/home/Quyen";
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
     switch (activeComponent) {
+      case "quyen":
+        return <QuyenManagement />;
       case "admin":
         return <AccountAdmin />;
       case "phongtro":

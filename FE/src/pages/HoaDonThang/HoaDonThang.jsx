@@ -10,14 +10,9 @@ import {
 import "leaflet/dist/leaflet.css";
 import { axiosInstance } from "../../../Axios";
 import { usePhongTro } from "../../Context/PhongTroContext";
-//import RoomTable from "../../../component/Admin/RoomTable";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
-//import ModalMap from "../../../component/admin/ModalMap/ModalMap";
-//import { OpenModalForm } from "../../../Store/filterModalForm";
-//import { openConfirmModal } from "../../../Store/filterConfirmModal";
 import { useDispatch, useSelector } from "react-redux";
-//import ModalConFirm from "../../../component/ModalConfirm";
 
 export default function HoaDonThang() {
   const dispatch = useDispatch();
@@ -133,9 +128,7 @@ export default function HoaDonThang() {
     <div className="p-6 w-full mx-auto">
       <div className="flex justify-between gap-10">
         <div className="w-1/2">
-          <h2 className="text-3xl font-bold mb-4">
-            Quản lý hóa đơn phòng trọ
-          </h2>
+          <h2 className="text-3xl font-bold mb-4">Quản lý hóa đơn phòng trọ</h2>
           <div className="flex space-x-2 mb-4 gap-10">
             <div className="flex gap-5 items-center">
               <p className="text-xl">Phòng</p>

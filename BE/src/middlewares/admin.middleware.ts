@@ -7,6 +7,7 @@ config();
 export const accessTokenAdmin = async (req: any, res: any, next: any) => {
   try {
     const authHeader = req.headers["authorization"];
+
     if (!authHeader) {
       return res.status(401).json({ message: "Token không hợp lệ." });
     }

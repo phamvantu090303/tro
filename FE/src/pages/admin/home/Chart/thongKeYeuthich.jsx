@@ -12,8 +12,7 @@ import {
 import { Bar } from "react-chartjs-2";
 import { axiosInstance } from "../../../../../Axios";
 import Calendar from "react-calendar";
-
-// Đăng ký các thành phần cần thiết cho ChartJS
+import { motion } from "framer-motion";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -22,8 +21,15 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+const itemVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1 } },
+};
 
-// Cấu hình axiosInstance
+const slideUpVariants = {
+  hidden: { opacity: 0, y: 70 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" } },
+};
 
 export default function ThongKeYeuThich() {
   const [date, setDate] = useState(new Date());
@@ -159,7 +165,12 @@ export default function ThongKeYeuThich() {
   };
 
   return (
-    <div className="space-y-10">
+    <motion.div
+      variants={itemVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-10"
+    >
       <header className="">
         <h1 className="text-4xl font-extrabold text-gray-800 text-center tracking-tight">
           Thống Kê Yêu Thích
@@ -208,7 +219,13 @@ export default function ThongKeYeuThich() {
         </div>
 
         {/* Danh sách tất cả phòng */}
-        <div className="grid grid-cols-1 xl:grid-cols-2  mt-10 gap-5">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={slideUpVariants}
+          className="grid grid-cols-1 xl:grid-cols-2  mt-10 gap-5"
+        >
           <div className="overflow-y-auto max-h-[400px]">
             <table className="w-full text-left">
               <thead className="sticky top-0 bg-gray-100">
@@ -256,8 +273,8 @@ export default function ThongKeYeuThich() {
               <option value="yeuThichTheoNam">Theo năm</option>
             </select>
           </div>
-        </div>
+        </motion.div>
       </main>
-    </div>
+    </motion.div>
   );
 }

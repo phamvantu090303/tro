@@ -7,6 +7,7 @@ import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import ModalConFirm from "../../component/ModalConfirm";
 import { openConfirmModal } from "../../Store/filterConfirmModal";
+import ElectricityInvoice from "./test";
 
 function Profile() {
   const { user } = useSelector((state) => state.auth);
@@ -311,7 +312,7 @@ function Profile() {
 
               {chucnang === "Hóa đơn" && (
                 <div>
-                  <div className="overflow-x-auto rounded-lg border border-gray-200">
+                  {/* <div className="overflow-x-auto rounded-lg border border-gray-200">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
                         <tr>
@@ -368,7 +369,8 @@ function Profile() {
                         </tr>
                       </tbody>
                     </table>
-                  </div>
+                  </div> */}
+                  <ElectricityInvoice />
                 </div>
               )}
 

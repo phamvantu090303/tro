@@ -5,17 +5,14 @@ import logo from "../../assets/logo/Logo.svg";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
 import { FaMap } from "react-icons/fa";
-import { FaBars } from "react-icons/fa"; // Icon hamburger
-import { IoChevronDown, IoChevronUp } from "react-icons/io5"; // Icon mũi tên
+import { FaBars } from "react-icons/fa";
+import { IoChevronDown, IoChevronUp } from "react-icons/io5";
 
 export default function AdminSidebar({ setActiveComponent, activeComponent }) {
   const { admin } = useSelector((state) => state.authAdmin);
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false); // Trạng thái toggle sidebar trên mobile
-  const [dropdowns, setDropdowns] = useState({
-    thongke: false,
-    quanly: false,
-  });
+  const [isOpen, setIsOpen] = useState(false);
+  const [dropdowns, setDropdowns] = useState({});
 
   const isActive = (component) => activeComponent === component;
 
@@ -28,6 +25,65 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
     }));
   };
 
+  // Danh sách items menu
+  const menuItems = [
+    {
+      key: "quyen",
+      label: "Phân quyền",
+      icon: (
+        <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
+      ),
+    },
+    {
+      key: "admin",
+      label: "Acc Admin",
+      icon: (
+        <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
+      ),
+    },
+    {
+      key: "quanly",
+      label: "Quản Lý",
+      icon: (
+        <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
+      ),
+      children: [
+        { key: "phongtro", label: "Quản lý phòng" },
+        { key: "danhmuc", label: "Quản lý Danh Mục" },
+        { key: "thietbi", label: "Quản lý Thiết Bị" },
+        { key: "anhphong", label: "Quản lý Ảnh Phòng" },
+        { key: "yeuthich", label: "Quản lý Yêu Thích" },
+        { key: "adminuser", label: "Quản lý User" },
+      ],
+    },
+    {
+      key: "mess",
+      label: "Mess",
+      icon: (
+        <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
+      ),
+    },
+    {
+      key: "map",
+      label: "Map",
+      icon: (
+        <FaMap className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
+      ),
+    },
+    {
+      key: "thongke",
+      label: "Thống Kê",
+      icon: (
+        <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
+      ),
+      children: [
+        { key: "thongkeDanhgia", label: "Thống kê đánh giá" },
+        { key: "thongkeYeuthich", label: "Thống kê yêu thích" },
+        { key: "thongkeDien", label: "Thống kê Điện tiêu thụ" },
+      ],
+    },
+  ];
+
   return (
     <>
       <button
@@ -38,7 +94,7 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
       </button>
 
       <aside
-        className={`fixed inset-y-0 left-0 min-w-56 bg-customBg text-white border-r shadow-lg transform transition-transform duration-300 ease-in-out z-40
+        className={`fixed inset-y-0 left-0 min-w-56 bg-customBg text-white border-r shadow-lg transform transition-transform duration-300 ease-in-out z-40 min-h-screen
           ${isOpen ? "translate-x-0" : "-translate-x-full"} 
           md:relative md:w-1/6 md:translate-x-0`}
       >
@@ -60,213 +116,55 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
             </div>
 
             {/* Menu */}
-            <nav className="flex flex-col overflow-y-auto 2xl:mt-10">
+            <nav className="flex flex-col  2xl:mt-10">
               <ul className="flex flex-col gap-2 px-2">
-                <li
-                  className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
-                    isActive("admin")
-                      ? "bg-blue-900 text-white scale-105"
-                      : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
-                  }`}
-                  onClick={() => {
-                    setActiveComponent("admin");
-                    setIsOpen(false);
-                  }}
-                >
-                  <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  Acc Admin
-                </li>
-
-                {/* Quản Lý Dropdown */}
-                <li>
-                  <div
-                    className={`font-medium cursor-pointer p-3 rounded flex items-center justify-between transition-all duration-300 transform ${
-                      dropdowns.quanly
-                        ? "bg-blue-900 text-white scale-105"
-                        : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                    }`}
-                    onClick={() => toggleDropdown("quanly")}
-                  >
-                    <div className="flex items-center gap-3">
-                      <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                      Quản Lý
+                {menuItems.map((item) => (
+                  <li key={item.key}>
+                    <div
+                      className={`font-medium cursor-pointer p-3 rounded flex items-center justify-between transition-all duration-300 transform ${
+                        isActive(item.key) || dropdowns[item.key]
+                          ? "bg-blue-900 text-white scale-105"
+                          : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
+                      }`}
+                      onClick={() =>
+                        item.children
+                          ? toggleDropdown(item.key)
+                          : (setActiveComponent(item.key), setIsOpen(false))
+                      }
+                    >
+                      <div className="flex items-center gap-3">
+                        {item.icon}
+                        {item.label}
+                      </div>
+                      {item.children &&
+                        (dropdowns[item.key] ? (
+                          <IoChevronUp />
+                        ) : (
+                          <IoChevronDown />
+                        ))}
                     </div>
-                    {dropdowns.quanly ? <IoChevronUp /> : <IoChevronDown />}
-                  </div>
-                  {dropdowns.quanly && (
-                    <ul className="ml-6 flex flex-col gap-2 mt-2">
-                      <li
-                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
-                          isActive("phongtro")
-                            ? "bg-blue-900 text-white scale-105"
-                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                        }`}
-                        onClick={() => {
-                          setActiveComponent("phongtro");
-                          setIsOpen(false);
-                        }}
-                      >
-                        Quản lý phòng
-                      </li>
-                      <li
-                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
-                          isActive("danhmuc")
-                            ? "bg-blue-900 text-white scale-105"
-                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                        }`}
-                        onClick={() => {
-                          setActiveComponent("danhmuc");
-                          setIsOpen(false);
-                        }}
-                      >
-                        Quản lý Danh Mục
-                      </li>
-                      <li
-                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
-                          isActive("thietbi")
-                            ? "bg-blue-900 text-white scale-105"
-                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                        }`}
-                        onClick={() => {
-                          setActiveComponent("thietbi");
-                          setIsOpen(false);
-                        }}
-                      >
-                        Quản lý Thiết Bị
-                      </li>
-                      <li
-                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
-                          isActive("anhphong")
-                            ? "bg-blue-900 text-white scale-105"
-                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                        }`}
-                        onClick={() => {
-                          setActiveComponent("anhphong");
-                          setIsOpen(false);
-                        }}
-                      >
-                        Quản lý Ảnh Phòng
-                      </li>
-                      <li
-                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
-                          isActive("yeuthich")
-                            ? "bg-blue-900 text-white scale-105"
-                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                        }`}
-                        onClick={() => {
-                          setActiveComponent("yeuthich");
-                          setIsOpen(false);
-                        }}
-                      >
-                        Quản lý Yêu Thích
-                      </li>
-                      <li
-                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
-                          isActive("adminuser")
-                            ? "bg-blue-900 text-white scale-105"
-                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                        }`}
-                        onClick={() => {
-                          setActiveComponent("adminuser");
-                          setIsOpen(false);
-                        }}
-                      >
-                        Quản lý User
-                      </li>
-                    </ul>
-                  )}
-                </li>
-
-                <li
-                  className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
-                    isActive("mess")
-                      ? "bg-blue-900 text-white scale-105"
-                      : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
-                  }`}
-                  onClick={() => {
-                    setActiveComponent("mess");
-                    setIsOpen(false);
-                  }}
-                >
-                  <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  Mess
-                </li>
-
-                <li
-                  className={`font-medium cursor-pointer p-3 rounded flex items-center gap-3 transition-all duration-300 transform ${
-                    isActive("map")
-                      ? "bg-blue-900 text-white scale-105"
-                      : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
-                  }`}
-                  onClick={() => {
-                    setActiveComponent("map");
-                    setIsOpen(false);
-                  }}
-                >
-                  <FaMap className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                  Map
-                </li>
-
-                {/* Thống Kê Dropdown */}
-                <li>
-                  <div
-                    className={`font-medium cursor-pointer p-3 rounded flex items-center justify-between transition-all duration-300 transform ${
-                      dropdowns.thongke
-                        ? "bg-blue-900 text-white scale-105"
-                        : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                    }`}
-                    onClick={() => toggleDropdown("thongke")}
-                  >
-                    <div className="flex items-center gap-3">
-                      <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
-                      Thống Kê
-                    </div>
-                    {dropdowns.thongke ? <IoChevronUp /> : <IoChevronDown />}
-                  </div>
-                  {dropdowns.thongke && (
-                    <ul className="ml-6 flex flex-col gap-2 mt-2">
-                      <li
-                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
-                          isActive("thongke")
-                            ? "bg-blue-900 text-white scale-105"
-                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                        }`}
-                        onClick={() => {
-                          setActiveComponent("thongkeDanhgia");
-                          setIsOpen(false);
-                        }}
-                      >
-                        Thống kê đánh giá
-                      </li>
-                      <li
-                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
-                          isActive("thongke_dien")
-                            ? "bg-blue-900 text-white scale-105"
-                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                        }`}
-                        onClick={() => {
-                          setActiveComponent("thongkeYeuthich");
-                          setIsOpen(false);
-                        }}
-                      >
-                        Thống kê yêu thích
-                      </li>
-                      <li
-                        className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
-                          isActive("thongke_dien")
-                            ? "bg-blue-900 text-white scale-105"
-                            : "text-gray-300 hover:bg-blue-950  hover:scale-102"
-                        }`}
-                        onClick={() => {
-                          setActiveComponent("thongkeDien");
-                          setIsOpen(false);
-                        }}
-                      >
-                        Thống kê Điện tiêu thụ
-                      </li>
-                    </ul>
-                  )}
-                </li>
+                    {item.children && dropdowns[item.key] && (
+                      <ul className="ml-6 flex flex-col gap-2 mt-2">
+                        {item.children.map((child) => (
+                          <li
+                            key={child.key}
+                            className={`font-medium cursor-pointer p-2 rounded flex items-center gap-3 transition-all duration-300 ${
+                              isActive(child.key)
+                                ? "bg-blue-900 text-white scale-105"
+                                : "text-gray-300 hover:bg-blue-950 hover:scale-102"
+                            }`}
+                            onClick={() => {
+                              setActiveComponent(child.key);
+                              setIsOpen(false);
+                            }}
+                          >
+                            {child.label}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
               </ul>
             </nav>
           </div>

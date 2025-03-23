@@ -142,42 +142,27 @@ function ThietBiAdmin() {
                   className="border py-3 px-5 rounded-md w-full  border-gray-500"
                 >
                   <option value="">Chọn thiết bị</option>
-                  <option value="Quạt">Quạt</option>
-                  <option value="Quạt trần">Quạt trần</option>
                   <option value="Quạt hơi nước">Quạt hơi nước</option>
                   <option value="Điều hòa">Điều hòa</option>
-                  <option value="Máy lạnh">Máy lạnh</option>
                   <option value="Tủ lạnh">Tủ lạnh</option>
                   <option value="Máy giặt">Máy giặt</option>
-                  <option value="Máy sấy quần áo">Máy sấy quần áo</option>
                   <option value="Bình nóng lạnh">Bình nóng lạnh</option>
                   <option value="Bếp gas">Bếp gas</option>
-                  <option value="Bếp điện">Bếp điện</option>
-                  <option value="Bếp hồng ngoại">Bếp hồng ngoại</option>
                   <option value="Lò vi sóng">Lò vi sóng</option>
-                  <option value="Lò nướng">Lò nướng</option>
                   <option value="Nồi cơm điện">Nồi cơm điện</option>
                   <option value="Ấm đun nước">Ấm đun nước</option>
-                  <option value="Máy sấy tóc">Máy sấy tóc</option>
-                  <option value="Bàn ủi">Bàn ủi (bàn là)</option>
                   <option value="Máy lọc nước">Máy lọc nước</option>
                   <option value="Tủ quần áo">Tủ quần áo</option>
                   <option value="Giường">Giường</option>
-                  <option value="Đệm">Đệm</option>
                   <option value="Bàn ghế">Bàn ghế</option>
                   <option value="Kệ sách">Kệ sách</option>
-                  <option value="Bàn trang điểm">Bàn trang điểm</option>
                   <option value="Đèn ngủ">Đèn ngủ</option>
-                  <option value="Đèn học">Đèn học</option>
                   <option value="Tivi">Tivi</option>
                   <option value="Wifi">Wifi</option>
-                  <option value="Camera an ninh">Camera an ninh</option>
                   <option value="Loa Bluetooth">Loa Bluetooth</option>
                   <option value="Rèm cửa">Rèm cửa</option>
                   <option value="Ban công">Ban công</option>
-                  <option value="Quạt sạc">Quạt sạc</option>
                   <option value="Máy chiếu">Máy chiếu</option>
-                  <option value="Máy tính">Máy tính</option>
                 </select>
               </div>
               <input

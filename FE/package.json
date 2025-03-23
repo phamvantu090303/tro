@@ -16,7 +16,7 @@
     "antd": "^5.24.0",
     "axios": "^1.7.9",
     "chart.js": "^4.4.8",
-    "framer-motion": "^12.4.10",
+    "framer-motion": "^12.5.0",
     "jsonwebtoken": "^9.0.2",
     "leaflet": "^1.9.4",
     "leaflet-routing-machine": "^3.2.12",
