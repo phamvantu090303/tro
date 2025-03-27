@@ -385,6 +385,7 @@ export class ThongKeSevice {
       danhGiaTheoNam,
     };
   }
+  
   async getChartDienNang({
     ngay,
     thang,

@@ -36,16 +36,13 @@ const ElectricityInvoice = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Dữ liệu mẫu cho biểu đồ (vì API không có dữ liệu chi tiết hàng ngày)
+  // Dữ liệu cho biểu đồ
   const [usageData, setUsageData] = useState({
-    labels: Array.from({ length: 31 }, (_, i) => `Ngày ${i + 1}`),
+    labels: [],
     datasets: [
       {
         label: "Số điện sử dụng (kWh)",
-        data: Array.from(
-          { length: 31 },
-          () => Math.floor(Math.random() * 15) + 5
-        ),
+        data: [],
         backgroundColor: "rgba(75, 192, 192, 0.6)",
         borderColor: "rgb(75, 192, 192)",
         borderWidth: 1,
@@ -100,6 +97,39 @@ const ElectricityInvoice = () => {
 
   const handleSelectInvoice = (invoice) => {
     setSelectedInvoice(invoice);
+
+    // dienNangChenhLech
+    if (invoice.dienNangChenhLech && invoice.dienNangChenhLech.length > 0) {
+      const labels = invoice.dienNangChenhLech.map((item) => item.date);
+      const data = invoice.dienNangChenhLech.map((item) => item.energy);
+
+      setUsageData({
+        labels,
+        datasets: [
+          {
+            label: "Số điện sử dụng (kWh)",
+            data,
+            backgroundColor: "rgba(75, 192, 192, 0.6)",
+            borderColor: "rgb(75, 192, 192)",
+            borderWidth: 1,
+          },
+        ],
+      });
+    } else {
+      setUsageData({
+        labels: [],
+        datasets: [
+          {
+            label: "Số điện sử dụng (kWh)",
+            data: [],
+            backgroundColor: "rgba(75, 192, 192, 0.6)",
+            borderColor: "rgb(75, 192, 192)",
+            borderWidth: 1,
+          },
+        ],
+      });
+    }
+
     setStep(2);
   };
 
