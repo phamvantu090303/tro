@@ -36,6 +36,8 @@ function RoomDetails() {
   const [yeuthich, setYeuthich] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [thietbi, setThietbi] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const statusMapping = {
     1: { text: "Còn trống", color: "green" },
     0: { text: "Đã có người thuê", color: "red" },
@@ -120,12 +122,15 @@ function RoomDetails() {
   const handlePile = async (e) => {
     if (!user) return alert("Vui lòng đăng nhập,đăng ký để được đặt cọc");
     try {
+      setIsLoading(true);
       await axiosInstance.post("/hoadon/Create", {
         ma_phong: e,
       });
       toast.success("Đã gửi hợp đồng đặt cọc hãy kiểm tra email của bạn");
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -283,8 +288,9 @@ function RoomDetails() {
                   <button
                     className="bg-[#23284C] font-medium py-3 px-8 text-white rounded-md"
                     onClick={() => handlePile(id)}
+                    disabled={isLoading}
                   >
-                    Đặt cọc
+                    {isLoading ? "Đang xử lý..." : "Đặc cọc"}
                   </button>
                 </div>
               </div>
