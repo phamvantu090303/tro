@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { Line, Doughnut } from "react-chartjs-2";
+import { motion } from "framer-motion";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,6 +27,14 @@ ChartJS.register(
   ArcElement
 );
 
+const itemVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1 } },
+};
+const slideUpVariants = {
+  hidden: { opacity: 0, y: 70 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" } },
+};
 function ChartAdmin() {
   const [date, setDate] = useState(new Date());
   const [loaiBieuDo, setLoaiBieuDo] = useState("dienNangTheoTungNgay");
@@ -289,20 +298,20 @@ function ChartAdmin() {
       },
     },
   };
-
   const doughnutChartOptions = {
-    cutout: "70%", // Giữ hiệu ứng vòng tròn
+    responsive: true,
+    maintainAspectRatio: false, // Cho phép biểu đồ mở rộng theo chiều cao
+    cutout: "60%",
     plugins: {
       legend: {
-        display: true, // Bật legend
-        position: "bottom", // Đặt dưới biểu đồ
+        display: true,
+        position: "right",
         labels: {
-          font: { size: 12 },
-          padding: 10,
+          font: { size: 16 },
         },
       },
       tooltip: {
-        enabled: true, // Bật tooltip
+        enabled: true,
         callbacks: {
           label: (context) => {
             const label = context.label || "";
@@ -322,7 +331,12 @@ function ChartAdmin() {
   ];
 
   return (
-    <div className="space-y-6 ">
+    <motion.div
+      variants={itemVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6 "
+    >
       <div className="flex flex-col lg:flex-row w-full gap-4 md:gap-6">
         {/* Biểu đồ điện năng & Tổng số tiền */}
         <div className="flex flex-col w-full gap-4 md:gap-6 lg:w-2/3">
@@ -336,7 +350,7 @@ function ChartAdmin() {
             ) : error ? (
               <p className="text-center text-red-500">{error}</p>
             ) : (
-              <div className="h-64 md:h-80">
+              <div className="h-64 md:h-80 2xl:h-full w-full">
                 <Line data={getLineChartData()} options={lineChartOptions} />
               </div>
             )}
@@ -362,7 +376,8 @@ function ChartAdmin() {
                     .toLocaleString("vi-VN")}{" "}
                   VND
                 </p>
-                <div className="w-32 md:w-40 h-32 md:h-36 2xl:h-40 mt-4">
+
+                <div className="mt-4 w-[60%]  2xl:w-[40%]">
                   <Doughnut
                     data={getDoughnutChartData()}
                     options={doughnutChartOptions}
@@ -414,15 +429,21 @@ function ChartAdmin() {
       </div>
 
       {/* Phần dưới: Danh sách phòng */}
-      <div className="w-full">
+      <motion.section
+        className="w-full"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={slideUpVariants}
+      >
         <RoomTable
           headers={headers}
           displayedRooms={duLieuBieuDo[loaiBieuDo]}
           title={"Danh sách phòng"}
           roomsPerPage={5}
         />
-      </div>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 }
 

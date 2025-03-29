@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { CiSearch } from "react-icons/ci";
 import { axiosInstance } from "../../../Axios";
 import CardSearch from "../../component/Search/CardSearch";
-import { data } from "autoprefixer";
 import { FiPlus, FiMinus } from "react-icons/fi";
 import { motion } from "framer-motion";
+import Spinner from "../../component/Loading";
+import debounce from "lodash/debounce";
+
 function Search() {
   const [search, setSearch] = useState("");
   const [dataSearch, setDataSearch] = useState([]);
@@ -12,13 +14,15 @@ function Search() {
   const [songuoi, setSonguoi] = useState("");
   const [khuvuc, setKhuvuc] = useState("");
   const [showPriceFilter, setShowPriceFilter] = useState(false);
+  const [showNumberFilter, setShowNumberFilter] = useState(false);
   const [showLocationFilter, setShowLocationFilter] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch dữ liệu khi có thay đổi trong bộ lọc
-  const fetchSearch = async () => {
+  // Hàm fetch dữ liệu
+  const fetchSearch = async (searchValue, khuVuc, soNguoi, maxGia) => {
     try {
       const res = await axiosInstance.get(
-        `/api/search?ten_phong_tro=${search}&dia_chi=${khuvuc}&so_luong_nguoi=${songuoi}&trang_thai=1&max_gia=${tamgia}`
+        `/api/search?ten_phong_tro=${searchValue}&dia_chi=${khuVuc}&so_luong_nguoi=${soNguoi}&trang_thai=1&max_gia=${maxGia}`
       );
       const sortedResults = res.data.data.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
@@ -26,27 +30,37 @@ function Search() {
       setDataSearch(sortedResults);
     } catch (error) {
       console.error("Lỗi khi fetch dữ liệu:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Gọi fetch API mỗi khi bộ lọc thay đổi
+  const debouncedFetchSearch = useCallback(
+    debounce((search, khuvuc, songuoi, tamgia) => {
+      fetchSearch(search, khuvuc, songuoi, tamgia);
+    }, 500),
+    []
+  );
+
   useEffect(() => {
-    fetchSearch();
-  }, [search, tamgia, songuoi, khuvuc]);
+    setIsLoading(true);
+    debouncedFetchSearch(search, khuvuc, songuoi, tamgia);
+    return () => debouncedFetchSearch.cancel();
+  }, [search, tamgia, songuoi, khuvuc, debouncedFetchSearch]);
 
   const handleChange = (e) => {
     setSearch(e.target.value);
   };
 
   const handleCheckboxChange = (value, setter) => {
-    setter((prev) => (prev === value ? "" : value)); // Chọn lại sẽ bỏ chọn
+    setter((prev) => (prev === value ? "" : value));
   };
 
   return (
     <div className="w-full">
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-[150px] mt-[40px] lg:mt-[78px] flex flex-col lg:flex-row gap-6 lg:gap-[59px] mb-[140px] ">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-[150px] mt-[40px] lg:mt-[78px] flex flex-col lg:flex-row gap-6 lg:gap-[59px] mb-[140px]">
         {/* Bộ lọc */}
-        <div className="w-full lg:w-1/4  xl:sticky top-2 bg-white/50 md:bg-inherit">
+        <div className="w-full lg:w-1/4 xl:sticky top-2 bg-white/50 md:bg-inherit">
           <div className="xl:sticky top-2">
             <div className="bg-[#282C4E] py-4 px-4 sm:px-[18px] rounded-lg">
               <p className="text-base text-white mb-3">Tìm kiếm phòng trọ</p>
@@ -78,8 +92,6 @@ function Search() {
                     <FiPlus className="text-white text-xl" />
                   )}
                 </div>
-
-                {/* Hiệu ứng trượt xuống */}
                 {showPriceFilter && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
@@ -120,8 +132,6 @@ function Search() {
                     <FiPlus className="text-white text-xl" />
                   )}
                 </div>
-
-                {/* Hiệu ứng trượt xuống */}
                 {showLocationFilter && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
@@ -148,35 +158,88 @@ function Search() {
                   </motion.div>
                 )}
               </div>
+              {/*so luong nguoi */}
+              <div className="bg-[#282C4E] rounded-lg">
+                <div
+                  className="flex justify-between items-center py-4 px-4 sm:px-[18px] cursor-pointer"
+                  onClick={() => setShowNumberFilter(!showNumberFilter)}
+                >
+                  <p className="text-base text-white">Số lượng người ở</p>
+                  {showNumberFilter ? (
+                    <FiMinus className="text-white text-xl" />
+                  ) : (
+                    <FiPlus className="text-white text-xl" />
+                  )}
+                </div>
+                {showNumberFilter && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="bg-white py-4 px-4 sm:px-[18px] flex flex-col gap-4 overflow-hidden"
+                  >
+                    {[1, 2, 3, 4, 5].map((number, index) => (
+                      <div key={index} className="flex gap-3">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4 sm:w-5 sm:h-5"
+                          checked={songuoi === number}
+                          onChange={() =>
+                            handleCheckboxChange(number, setSonguoi)
+                          }
+                        />
+                        <p className="text-sm sm:text-base">{number}</p>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Kết quả tìm kiếm */}
         <div className="w-full">
-          <div className="grid grid-cols-1  gap-4 lg:gap-5">
-            {dataSearch.length > 0 ? (
-              dataSearch.map((item) => (
-                <CardSearch
-                  key={item.id}
-                  ma_phong={item.ma_phong}
-                  price={item.gia_tien}
-                  title={item.ten_phong_tro}
-                  img={item.anh_phong}
-                  noidung={item.mo_ta}
-                  number={item.so_luong_nguoi}
-                  dientich={item.dien_tich}
-                  diachi={item.dia_chi}
-                  trangthai={item.trang_thai}
-                  thanhpho={item.ward}
-                />
-              ))
-            ) : (
-              <p className="text-xl sm:text-3xl font-bold text-center col-span-full">
-                Không tìm thấy kết quả nào
-              </p>
-            )}
-          </div>
+          {isLoading ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex justify-center items-center h-64"
+            >
+              <Spinner />
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="grid grid-cols-1 gap-4 lg:gap-5"
+            >
+              {dataSearch.length > 0 ? (
+                dataSearch.map((item) => (
+                  <CardSearch
+                    key={item.id}
+                    ma_phong={item.ma_phong}
+                    price={item.gia_tien}
+                    title={item.ten_phong_tro}
+                    img={item.anh_phong}
+                    noidung={item.mo_ta}
+                    number={item.so_luong_nguoi}
+                    dientich={item.dien_tich}
+                    diachi={item.dia_chi}
+                    trangthai={item.trang_thai}
+                    thanhpho={item.ward}
+                  />
+                ))
+              ) : (
+                <p className="text-xl sm:text-3xl font-bold text-center col-span-full">
+                  Không tìm thấy kết quả nào
+                </p>
+              )}
+            </motion.div>
+          )}
         </div>
       </div>
     </div>

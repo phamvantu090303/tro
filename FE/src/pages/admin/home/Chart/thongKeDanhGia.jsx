@@ -11,7 +11,7 @@ import {
 } from "chart.js";
 import Calendar from "react-calendar";
 import { axiosInstance } from "../../../../../Axios";
-
+import { motion } from "framer-motion";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -20,7 +20,15 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+const itemVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1 } },
+};
 
+const slideUpVariants = {
+  hidden: { opacity: 0, y: 70 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" } },
+};
 function ThongKeDanhGia() {
   const [date, setDate] = useState(new Date());
   const [loaiBieuDo, setLoaiBieuDo] = useState("danhGiaTheoThang");
@@ -179,7 +187,12 @@ function ThongKeDanhGia() {
       : null;
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      variants={itemVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <header>
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">
           Thống Kê Đánh Giá
@@ -219,7 +232,13 @@ function ThongKeDanhGia() {
             <Bar data={getBarChartData()} options={barChartOptions} />
           </div>
         </div>
-        <div className="grid grid-cols-1 xl:grid-cols-2  mt-10 gap-5 ">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={slideUpVariants}
+          className="grid grid-cols-1 xl:grid-cols-2  mt-10 gap-5 "
+        >
           <div className=" rounded-xl overflow-y-auto max-h-[450px] 2xl:max-h-[500px]">
             <table className="w-full text-left">
               <thead className="sticky top-0 bg-gray-100">
@@ -289,9 +308,9 @@ function ThongKeDanhGia() {
               ))}
             </select>
           </div>
-        </div>
+        </motion.div>
       </main>
-    </div>
+    </motion.div>
   );
 }
 

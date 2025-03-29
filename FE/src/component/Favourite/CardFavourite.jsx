@@ -57,7 +57,7 @@ function CardFavourite({
   };
 
   return (
-    <div className="flex gap-8 px-12 py-5 bg-white hover:bg-black/10 cursor-pointer rounded-lg z-10">
+    <div className="flex gap-8 px-12 py-5 bg-white  cursor-pointer rounded-lg z-10">
       <img src={img} alt="" className="w-[329px] h-[226px] " />
       <div className="flex justify-between w-full">
         <div className="flex flex-col justify-between">
@@ -65,6 +65,12 @@ function CardFavourite({
             {title}
           </h6>
           <p className="text-base text-gray-500 mt-4">{noidung}</p>
+          <button
+            className="py-3 px-5 bg-customBlue text-white font-medium  w-[150px] rounded-lg hover:bg-customBlue/90"
+            onClick={() => navigate(`/details/${id}`)}
+          >
+            Xem
+          </button>
           <div>
             <p
               style={{ color: colorStatus }}

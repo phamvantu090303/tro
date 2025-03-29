@@ -29,3 +29,52 @@ html {
     transform: rotate(360deg);
   }
 }
+.chart-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.chart-container canvas {
+  max-width: 60% !important; /* Giới hạn biểu đồ */
+}
+
+.chart-container .chart-legend {
+  max-width: 100% !important; /* Giới hạn legend */
+}
+
+/* loading */
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dashoffset: -125px;
+  }
+}
+
+.animate-rotate {
+  transform-origin: center;
+  animation: rotate 2s linear infinite;
+}
+
+.animate-dash {
+  stroke: hsl(214, 97%, 59%);
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+.stroke-primary {
+  stroke: hsl(214, 97%, 59%);
+}

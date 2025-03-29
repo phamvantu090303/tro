@@ -385,6 +385,7 @@ export class ThongKeSevice {
       danhGiaTheoNam,
     };
   }
+  
   async getChartDienNang({
     ngay,
     thang,
@@ -508,29 +509,117 @@ export class ThongKeSevice {
       ]);
 
     // 2. Điện năng theo ngày (tổng hợp theo ngày cho mỗi phòng)
-    const dienNangTheoNgay = ngay
-      ? await aggregateByRoom(
-          filterByDate(
-            new Date(
-              `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
-                2,
-                "0"
-              )}T00:00:00.000Z`
-            ),
-            new Date(
-              `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
-                2,
-                "0"
-              )}T23:59:59.999Z`
-            )
+    // const dienNangTheoNgay = ngay
+    //   ? await aggregateByRoom(
+    //       filterByDate(
+    //         new Date(
+    //           `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+    //             2,
+    //             "0"
+    //           )}T00:00:00.000Z`
+    //         ),
+    //         new Date(
+    //           `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+    //             2,
+    //             "0"
+    //           )}T23:59:59.999Z`
+    //         )
+    //       )
+    //     )
+    //   : await aggregateByRoom(
+    //       filterByDate(
+    //         new Date(currentDate.setHours(0, 0, 0, 0)),
+    //         new Date(currentDate.setHours(23, 59, 59, 999))
+    //       )
+    //     );
+
+    // 2. Điện năng theo ngày (tính chênh lệch với ngày trước)
+    const dienNangTheoNgay = async () => {
+      const today = ngay
+        ? new Date(
+            `${defaultYear}-${defaultMonth}-${String(ngay).padStart(
+              2,
+              "0"
+            )}T00:00:00.000Z`
           )
-        )
-      : await aggregateByRoom(
-          filterByDate(
-            new Date(currentDate.setHours(0, 0, 0, 0)),
-            new Date(currentDate.setHours(23, 59, 59, 999))
-          )
+        : new Date(currentDate.setHours(0, 0, 0, 0));
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+
+      // Lấy dữ liệu ngày hôm nay
+      const todayData = await Electricity.aggregate([
+        {
+          $match: filterByDate(
+            today,
+            new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999)
+          ),
+        },
+        {
+          $group: {
+            _id: "$room_id",
+            totalEnergy: { $sum: "$energy" },
+            totalCost: { $sum: "$total_cost" },
+            latestTimestamp: { $max: "$timestamp" },
+          },
+        },
+        {
+          $project: {
+            room_id: "$_id",
+            energy: "$totalEnergy",
+            total_cost: "$totalCost",
+            timestamp: "$latestTimestamp",
+            _id: 0,
+          },
+        },
+      ]);
+
+      // Lấy dữ liệu ngày hôm qua
+      const yesterdayData = await Electricity.aggregate([
+        {
+          $match: filterByDate(
+            yesterday,
+            new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 23, 59, 59, 999)
+          ),
+        },
+        {
+          $group: {
+            _id: "$room_id",
+            totalEnergy: { $sum: "$energy" },
+            totalCost: { $sum: "$total_cost" },
+            latestTimestamp: { $max: "$timestamp" },
+          },
+        },
+        {
+          $project: {
+            room_id: "$_id",
+            energy: "$totalEnergy",
+            total_cost: "$totalCost",
+            timestamp: "$latestTimestamp",
+            _id: 0,
+          },
+        },
+      ]);
+
+      // Tính chênh lệch điện năng
+      const result = todayData.map((todayItem) => {
+        const yesterdayItem = yesterdayData.find(
+          (item) => item.room_id === todayItem.room_id
         );
+        const energyDiff = yesterdayItem
+          ? todayItem.energy - yesterdayItem.energy
+          : todayItem.energy; // Nếu không có dữ liệu ngày trước, giữ nguyên
+
+        return {
+          room_id: todayItem.room_id,
+          energy: energyDiff,
+          total_cost: todayItem.total_cost, // Giữ nguyên total_cost của ngày hiện tại
+          timestamp: todayItem.timestamp,
+        };
+      });
+
+      return result;
+    };
+    const dienNangChenhLech = await dienNangTheoNgay();
 
     // 3. Điện năng theo tháng (tổng hợp theo tháng cho mỗi phòng)
     const dienNangTheoThang = thang
@@ -586,7 +675,7 @@ export class ThongKeSevice {
     // Trả về dữ liệu tổng hợp
     return {
       dienNangTheoTungNgay,
-      dienNangTheoNgay,
+      dienNangTheoNgay: dienNangChenhLech,
       dienNangTheoThang,
       dienNangTheoNam,
     };
