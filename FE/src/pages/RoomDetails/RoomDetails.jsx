@@ -17,7 +17,7 @@ import { useSelector } from "react-redux";
 import { usePhongTro } from "../../Context/PhongTroContext";
 import RoomReview from "../../component/RoomDetailsComponent/Review";
 import { toast } from "react-toastify";
-import DeviceSelector from "../../component/thietbi/device";
+import Device from "../../component/thietbi/device";
 
 const slideUpVariants = {
   hidden: { opacity: 0, y: 70 },
@@ -368,7 +368,7 @@ function RoomDetails() {
               <h2 ref={amenitiesRef} className="text-3xl font-semibold">
                 Tiện nghi
               </h2>
-              <DeviceSelector data={thietbi} />
+              <Device data={thietbi} />
             </motion.section>
 
             {/*phòng trọ khu vực */}
