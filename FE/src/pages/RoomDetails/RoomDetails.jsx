@@ -17,7 +17,8 @@ import { useSelector } from "react-redux";
 import { usePhongTro } from "../../Context/PhongTroContext";
 import RoomReview from "../../component/RoomDetailsComponent/Review";
 import { toast } from "react-toastify";
-import DeviceSelector from "../../component/Categories/Categories";
+import DeviceSelector from "../../component/thietbi/device";
+
 const slideUpVariants = {
   hidden: { opacity: 0, y: 70 },
   visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" } },
