@@ -7,19 +7,23 @@ import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import ModalConFirm from "../../component/ModalConfirm";
 import { openConfirmModal } from "../../Store/filterConfirmModal";
-import ElectricityInvoice from "./test";
+import ElectricityInvoice from "./ThongKeDienUser";
+import OtpVerification from "../../component/Otp";
 
 function Profile() {
   const { user } = useSelector((state) => state.auth);
   const [chucnang, setChucnang] = useState("Thông tin cá nhân");
   const [data, setData] = useState([]);
+  const [dataContract, setDataContract] = useState({});
   const dispatch = useDispatch();
   const [repairData, setRepairData] = useState({
     maphong: "",
     lydo: "",
   });
   const { isOpen } = useSelector((state) => state.ModalForm);
-
+  const [modal, setModal] = useState(false);
+  const [modal1, setModal1] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -46,6 +50,10 @@ function Profile() {
   const fetchData = async () => {
     try {
       const res = await axiosInstance.get("/sua_chua/GetById");
+      const dataDetailContract = await axiosInstance.get(
+        "/api/contracts/detail"
+      );
+      setDataContract(dataDetailContract.data.data);
       setData(res.data.suaChua);
     } catch (error) {
       console.log(error);
@@ -78,6 +86,19 @@ function Profile() {
       }));
     }
   }, [isOpen]);
+
+  const sendOtp = async () => {
+    try {
+      setIsLoading(true);
+      await axiosInstance.post("/Otp/sendOtp");
+      setModal(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-50">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
@@ -147,9 +168,6 @@ function Profile() {
               {chucnang === "Thông tin cá nhân" && (
                 <div className="space-y-6 w-full">
                   <div>
-                    <h3 className="font-bold text-xl mb-6">
-                      Thông tin cá nhân
-                    </h3>
                     <div className="space-y-4 w-full">
                       <div className="flex gap-5 w-full">
                         <div className="w-full">
@@ -312,101 +330,121 @@ function Profile() {
 
               {chucnang === "Hóa đơn" && (
                 <div>
-                  {/* <div className="overflow-x-auto rounded-lg border border-gray-200">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-center text-xl font-medium">
-                            Tháng
-                          </th>
-                          <th className="px-6 py-3 text-center text-xl font-medium">
-                            Tổng tiền
-                          </th>
-                          <th className="px-6 py-3 text-center text-xl font-medium">
-                            Trạng thái
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        <tr>
-                          <td className="px-6 py-4 text-lg text-gray-500">
-                            02/2024
-                          </td>
-                          <td className="px-6 py-4 text-lg text-gray-500">
-                            {formatCurrency(2500000)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                              Đã thanh toán
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right text-sm font-medium"></td>
-                        </tr>
-                        <tr>
-                          <td className="px-6 py-4 text-lg text-gray-500">
-                            03/2024
-                          </td>
-                          <td className="px-6 py-4 text-lg text-gray-500">
-                            {formatCurrency(2700000)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
-                              Chưa thanh toán
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right text-sm font-medium">
-                            <button
-                              onClick={() =>
-                                dispatch(
-                                  OpenModalForm({ modalType: "payment" })
-                                )
-                              }
-                              className="text-blue-600 hover:text-blue-900"
-                            >
-                              Thanh toán
-                            </button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div> */}
                   <ElectricityInvoice />
                 </div>
               )}
 
               {chucnang === "Hợp đồng" && (
-                <div className="space-y-6">
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                      Thông tin hợp đồng
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <InfoItem label="Ngày ký" value="01/01/2024" />
-                      <InfoItem label="Ngày hết hạn" value="01/01/2025" />
-                      <InfoItem
-                        label="Giá thuê"
-                        value={formatCurrency(2500000) + "/tháng"}
-                      />
-                      <div>
-                        <span className="text-sm font-medium text-black">
-                          Trạng thái
-                        </span>
-                        <span className="mt-1 block px-2 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800 w-fit">
-                          Đang hiệu lực
-                        </span>
+                <div className="space-y-6 px-4 sm:px-6 lg:px-8">
+                  {dataContract ? (
+                    <div>
+                      <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                          Thông tin hợp đồng
+                        </h3>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                          <InfoItem
+                            label="Ngày ký"
+                            value={formatDate(dataContract.start_date)}
+                          />
+                          <div>
+                            <span className="text-sm font-medium text-black">
+                              Trạng thái
+                            </span>
+                            <span className="mt-1 block px-2 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800 w-fit">
+                              Đang hiệu lực
+                            </span>
+                          </div>
+                        </div>
+                        <div className="mt-4">
+                          <button
+                            onClick={sendOtp}
+                            className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200"
+                          >
+                            {isLoading ? "Đang gửi OTP..." : "Xem chi tiết"}
+                          </button>
+                        </div>
                       </div>
+
+                      {/* Modal OTP */}
+                      {modal && (
+                        <div>
+                          <OtpVerification
+                            nextModal={setModal1}
+                            modal={setModal}
+                          />
+                        </div>
+                      )}
+
+                      {/* Modal chi tiết hợp đồng */}
+                      {modal1 && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                          <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-full sm:max-w-2xl  sm:h-auto overflow-y-auto">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                              Chi tiết hợp đồng
+                            </h3>
+                            <div className="space-y-6">
+                              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                                <InfoItem
+                                  label="Ngày ký"
+                                  value={formatDate(dataContract.start_date)}
+                                />
+                                <InfoItem
+                                  label="Ngày hết hạn"
+                                  value={formatDate(dataContract.end_date)}
+                                />
+                              </div>
+                              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                                <InfoItem
+                                  label="Tiền cọc"
+                                  value={`${dataContract.tien_coc} VND`}
+                                />
+                                <div>
+                                  <span className="text-sm font-medium text-black">
+                                    Trạng thái
+                                  </span>
+                                  <span className="mt-1 block px-2 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800 w-fit">
+                                    Đang hiệu lực
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="w-full h-64 sm:h-[450px] py-4">
+                                <iframe
+                                  src={dataContract.file_hop_dong}
+                                  className="w-full h-full rounded-lg"
+                                  title="Hợp đồng PDF"
+                                />
+                                <a
+                                  href={dataContract.file_hop_dong}
+                                  download="hopdong.pdf"
+                                  className="text-blue-500 underline mt-2 block "
+                                >
+                                  Tải hợp đồng đầy đủ
+                                </a>
+                              </div>
+                              <div className="mt-10 flex flex-col sm:flex-row gap-4">
+                                <button className="w-full px-4 py-2 bg-customBlue text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm sm:text-base">
+                                  Yêu cầu hủy hợp đồng
+                                </button>
+                                <button
+                                  onClick={() => setModal1(false)}
+                                  className="w-full px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-all duration-200 text-sm sm:text-base"
+                                >
+                                  Đóng
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Buttons responsive */}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <div className="flex justify-end">
-                    <button
-                      onClick={() =>
-                        dispatch(OpenModalForm({ modalType: "contract" }))
-                      }
-                      className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200"
-                    >
-                      Yêu cầu hủy hợp đồng
-                    </button>
-                  </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <p className="text-gray-600">Bạn chưa có hợp đồng nào</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -421,8 +459,10 @@ function Profile() {
 
 const InfoItem = ({ label, value }) => (
   <div className="space-y-1">
-    <span className="text-sm font-medium text-black">{label}</span>
-    <p className="text-gray-800">{value}</p>
+    <span className="text-sm md:text-lg 2xl:text-xl font-medium text-black">
+      {label}
+    </span>
+    <p className="text-sm md:text-lg">{value}</p>
   </div>
 );
 

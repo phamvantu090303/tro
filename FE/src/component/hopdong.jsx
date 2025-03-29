@@ -13,10 +13,10 @@ const Contract = () => {
   const [signature, setSignature] = useState(null);
   const sigCanvas = useRef();
   const [isSigned, setIsSigned] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [hopdong, setHopdong] = useState(null);
   const { maphong } = useParams();
-  console.log(maphong);
+
   useEffect(() => {
     if (token) {
       fetchhopdongFromAPI();
@@ -207,6 +207,7 @@ const Contract = () => {
 
   const submitContract = async () => {
     try {
+      setIsLoading(true);
       const response = await axiosInstance.post("/api/contracts/create", {
         maphong,
         signature, // Chữ ký
@@ -219,12 +220,12 @@ const Contract = () => {
       if (error.response) {
         console.error("Lỗi từ server:", error.response.data);
       } else if (error.request) {
-        // Lỗi khi không nhận được phản hồi từ server
         console.error("Không nhận được phản hồi từ server:", error.request);
       } else {
-        // Lỗi trong khi cấu hình yêu cầu
         console.error("Lỗi khi cấu hình yêu cầu:", error.message);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -238,23 +239,20 @@ const Contract = () => {
           />
 
           {/* Phần chữ ký */}
-          <div className="relative mt-8 sm:mt-12">
-            <div className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 mx-auto bg-gray-200 p-3 rounded-lg">
-              <SignatureCanvas
-                ref={sigCanvas}
-                penColor="black"
-                onEnd={handleEnd}
-                canvasProps={{
-                  className:
-                    "signature-canvas w-full h-32 sm:h-40 md:h-48 bg-white rounded-md",
-                }}
-              />
-            </div>
-
+          <div className="">
+            <SignatureCanvas
+              ref={sigCanvas}
+              penColor="black"
+              onEnd={handleEnd}
+              canvasProps={{
+                className:
+                  "signature-canvas xl:w-[300px] md:w-[250px] w-[150px] h-32 sm:h-40 md:h-48 bg-gray-100 rounded-md absolute bottom-[3%] right-0   sm:bottom-[3%] sm:right-[10%]",
+              }}
+            />
             {/* Nút điều khiển */}
             <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 mb-10">
               <button
-                onClick={saveSignature}
+                onClick={signed ? () => setModal(true) : saveSignature}
                 disabled={!isSigned}
                 className={`w-full sm:w-auto px-6 py-3 rounded-lg text-white font-medium transition-colors ${
                   isSigned
@@ -262,7 +260,7 @@ const Contract = () => {
                     : "bg-gray-400 cursor-not-allowed"
                 }`}
               >
-                Lưu chữ ký
+                {signed ? "Gửi hợp đồng" : "Lưu chữ ký"}
               </button>
               <button
                 onClick={clearSignature}
@@ -271,18 +269,6 @@ const Contract = () => {
                 Xóa chữ ký
               </button>
             </div>
-
-            {/* Nút gửi hợp đồng */}
-            {signed && (
-              <div className="flex justify-center mt-6 mb-10">
-                <button
-                  className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                  onClick={() => setModal(true)}
-                >
-                  Gửi hợp đồng
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Modal xác nhận */}
@@ -304,9 +290,10 @@ const Contract = () => {
                   </button>
                   <button
                     onClick={submitContract}
+                    disabled={isLoading}
                     className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    Gửi hợp đồng
+                    {isLoading ? "Đang xử lý..." : "Gửi hợp đồng"}
                   </button>
                 </div>
               </div>
