@@ -1,16 +1,7 @@
 import { useState } from "react";
-import {
-  FaFan,
-  FaTv,
-  FaLaptop,
-  FaBed,
-  FaCouch,
-  FaWifi,
-  FaBlenderPhone,
-} from "react-icons/fa";
+import { FaFan, FaTv, FaLaptop, FaBed, FaCouch, FaWifi } from "react-icons/fa";
 import {
   MdOutlineMicrowave,
-  MdOutlineSecurity,
   MdBalcony,
   MdOutlineMediaBluetoothOn,
 } from "react-icons/md";
