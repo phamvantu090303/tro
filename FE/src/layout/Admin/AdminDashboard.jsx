@@ -11,6 +11,7 @@ import ChartAdmin from "../../pages/admin/home/Chart/thongKeDienNang";
 import ThongKeYeuThich from "../../pages/admin/home/Chart/thongKeYeuThich";
 import ThongKeDanhGia from "../../pages/admin/home/Chart/thongKeDanhGia";
 import QuyenManagement from "../../pages/admin/home/Quyen";
+import DichvuAdmin from "../../pages/admin/home/dichvuAdmin";
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
     switch (activeComponent) {
@@ -22,6 +23,8 @@ function AdminDashboard({ activeComponent }) {
         return <PhongTroAdmin />;
       case "danhmuc":
         return <DanhMucAdmin />;
+      case "dichvu":
+        return <DichvuAdmin />;
       case "thietbi":
         return <ThietBiAdmin />;
       case "anhphong":
