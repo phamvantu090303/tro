@@ -12,8 +12,8 @@ const routerSuaChua = Router();
 
 routerSuaChua.post("/Create", accessTokenValidatetor, createSuaChua);
 routerSuaChua.post("/Update/:id", updateSuaChua);
-routerSuaChua.delete("/Delete/:id", deleteSuaChua);
+routerSuaChua.delete("/delete/:id", deleteSuaChua);
 routerSuaChua.get("/GetAll", getAllSuaChua);
 routerSuaChua.get("/GetById", accessTokenValidatetor, GetSuaChuaById);
-routerSuaChua.get("/UpdateStatus/:id", UpdateStatus);
+routerSuaChua.post("/UpdateStatus/:id", UpdateStatus);
 export default routerSuaChua;

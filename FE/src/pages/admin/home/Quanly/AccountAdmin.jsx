@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import RoomTable from "../../../component/admin/RoomTable";
-import useApiManagerAdmin from "../../../hook/useApiManagerAdmin";
-import SearchBar from "./SearchBar";
+import RoomTable from "../../../../component/admin/RoomTable";
+import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
+import SearchBar from "../../../../component/admin/SearchBar";
 
 function AccountAdmin() {
   const [modal, setModal] = useState(false);

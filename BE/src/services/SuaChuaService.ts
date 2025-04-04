@@ -59,12 +59,17 @@ export class SuaChuaService {
 
   async UpdateStatus(id: string, status: string) {
     try {
+      const updateData: any = { status };
+      if (status === "Đang xử lý" || status === "Hoàn thành") {
+        updateData.approved = "Đã phê duyệt";
+      } else if (status === "Chờ xử lý") {
+        updateData.approved = "Chưa phê duyệt";
+      }
       return (
-        (await SuachuaModel.findByIdAndUpdate(
-          id,
-          { status },
-          { new: true, runValidators: true }
-        ).lean()) || null
+        (await SuachuaModel.findByIdAndUpdate(id, updateData, {
+          new: true,
+          runValidators: true,
+        }).lean()) || null
       );
     } catch (error) {
       console.error("Error in UpdateStatus:", error);

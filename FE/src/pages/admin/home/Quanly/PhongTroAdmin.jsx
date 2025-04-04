@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { axiosInstance } from "../../../../Axios";
-import RoomTable from "../../../component/admin/RoomTable";
+import { axiosInstance } from "../../../../../Axios";
+import RoomTable from "../../../../component/admin/RoomTable";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { useDanhMuc } from "../../../Context/DanhMucContext";
+import { useDanhMuc } from "../../../../Context/DanhMucContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import SearchBar from "./SearchBar";
-import useApiManagerAdmin from "../../../hook/useApiManagerAdmin";
+import SearchBar from "../../../../component/admin/SearchBar";
+import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
 
 function PhongTroAdmin() {
   const [chucnang, setChucnang] = useState("Tất cả các phòng");

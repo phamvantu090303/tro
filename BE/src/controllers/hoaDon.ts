@@ -1,9 +1,12 @@
+import { HoaDonService } from "./../services/HoaDonService";
 import nodemailer from "nodemailer";
 import { Request, Response } from "express";
 import PhongTroModel from "../models/PhongTroModel";
 import HoaDonThanhToanModel from "../models/HoaDonThanhToanModel";
 import dotenv from "dotenv";
 dotenv.config();
+
+const hoaDonService = new HoaDonService();
 
 export const CreateHoaDon = async (req: Request, res: Response) => {
   try {
@@ -134,10 +137,13 @@ const sendEmail = async (user: any, hoadon: any) => {
 
 export const getAllHoaDon = async (req: Request, res: Response) => {
   try {
-    const hoadon = await HoaDonThanhToanModel.find({}, "ma_don_hang ma_phong so_tien trang_thai ngay_chuyen_khoan");
-    if (!hoadon || hoadon.length === 0) 
+    const hoadon = await hoaDonService.getAll();
+    if (!hoadon || hoadon.length === 0)
       return res.status(404).json({ message: "Không có hóa đơn nào" });
-    res.status(200).json(hoadon);
+    res.status(200).json({
+      status: "200",
+      data: hoadon,
+    });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -147,21 +153,21 @@ export const deleteHoadon = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const hoadon = await HoaDonThanhToanModel.findByIdAndDelete(id);
-    if (!hoadon) return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
+    if (!hoadon)
+      return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
     res.status(200).json({ message: "Xóa hóa đơn thành công" });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 export const DetaijHoaDon = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const hoadon = await HoaDonThanhToanModel.findById(id);
-    if (!hoadon) return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
+    const hoadon = await hoaDonService.getById(id);
+    if (!hoadon)
+      return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
     res.status(200).json(hoadon);
-  }catch (error: any) {
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
-  } 
-}
-
-
+  }
+};
