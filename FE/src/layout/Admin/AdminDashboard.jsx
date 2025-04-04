@@ -11,7 +11,7 @@ import ChartAdmin from "../../pages/admin/home/Chart/thongKeDienNang";
 import ThongKeYeuThich from "../../pages/admin/home/Chart/thongKeYeuThich";
 import ThongKeDanhGia from "../../pages/admin/home/Chart/thongKeDanhGia";
 import QuyenManagement from "../../pages/admin/home/Quyen";
-import DichvuAdmin from "../../pages/admin/home/dichvuAdmin";
+// import DichvuAdmin from "../../pages/admin/home/PhongTroAdmin/DichVuAdmin";
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
     switch (activeComponent) {

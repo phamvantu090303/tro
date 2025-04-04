@@ -3,7 +3,8 @@ services:
     frontend:
         build:
             context: ./FE
-            dockerfile: Dockerfile
+            # sử dụng  file docker trong thư mục FE
+            dockerfile: Dockerfile 
         container_name: frontend
         working_dir: /var/www/html/TESTNE_MASTER/FE
         ports:
