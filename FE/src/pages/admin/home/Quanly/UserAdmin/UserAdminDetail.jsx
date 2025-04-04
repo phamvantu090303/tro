@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { axiosInstance } from "../../../../../Axios";
-import { useParams } from "react-router";
+import { axiosInstance } from "../../../../../../Axios";
 import { FaRegUserCircle, FaPhoneAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { IoMdArrowRoundBack } from "react-icons/io";

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { axiosInstance } from "../../../../../Axios";
-import RoomTable from "../../../../component/admin/RoomTable";
+
 import UserAdminDetail from "./UserAdminDetail";
-import SearchBar from "../SearchBar";
+import SearchBar from "../../../../../component/admin/SearchBar";
+import { axiosInstance } from "../../../../../../Axios";
+import RoomTable from "../../../../../component/admin/RoomTable";
 
 function UserAdmin() {
   const [data, setData] = useState([]);

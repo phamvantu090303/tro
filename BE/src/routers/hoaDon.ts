@@ -1,15 +1,19 @@
-import { Router} from 'express';
-import { CreateHoaDon, deleteHoadon, DetaijHoaDon, getAllHoaDon } from '../controllers/hoaDon';
-import { accessTokenValidatetor } from '../middlewares/user.middleware';
-import { accessTokenAdmin } from '../middlewares/admin.middleware';
+import { Router } from "express";
+import {
+  CreateHoaDon,
+  deleteHoadon,
+  DetaijHoaDon,
+  getAllHoaDon,
+} from "../controllers/hoaDon";
+import { accessTokenValidatetor } from "../middlewares/user.middleware";
+import { accessTokenAdmin } from "../middlewares/admin.middleware";
 const routeHoaDon = Router();
 
-routeHoaDon.post('/Create',accessTokenValidatetor,CreateHoaDon)
+routeHoaDon.post("/create", accessTokenValidatetor, CreateHoaDon);
 
 //admin
-routeHoaDon.get('/GetAll',getAllHoaDon)
-routeHoaDon.get('/Delete/:id',deleteHoadon)
-routeHoaDon.get('/detail/hoadon/:id',DetaijHoaDon)
+routeHoaDon.get("/getAll", getAllHoaDon);
+routeHoaDon.delete("/delete/:id", deleteHoadon);
+routeHoaDon.get("/detail/:id", DetaijHoaDon);
 
-
-export default routeHoaDon; 
+export default routeHoaDon;

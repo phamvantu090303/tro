@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import SearchBar from "./SearchBar";
-import RoomTable from "../../../component/admin/RoomTable";
-import { usePhongTro } from "../../../Context/PhongTroContext";
-import useApiManagerAdmin from "../../../hook/useApiManagerAdmin";
+import SearchBar from "../../../../component/admin/SearchBar";
+import RoomTable from "../../../../component/admin/RoomTable";
+import { usePhongTro } from "../../../../Context/PhongTroContext";
+import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
 
 function ThietBiAdmin() {
   const [modal, setModal] = useState(false);

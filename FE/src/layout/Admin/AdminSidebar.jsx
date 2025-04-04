@@ -51,7 +51,7 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
         { key: "phongtro", label: "Quản lý phòng" },
         { key: "danhmuc", label: "Quản lý Danh Mục" },
         { key: "dichvu", label: "Quản lý dịch vụ" },
-        { key: "hoadon", label: "Quản lý hóa đơn" },
+        { key: "hoadoncoc", label: "Quản lý hóa đơn cọc" },
         { key: "suachua", label: "Quản lý sửa chữa" },
         { key: "hoadonthang", label: "Quản lý hóa đơn tháng" },
         { key: "thietbi", label: "Quản lý Thiết Bị" },
