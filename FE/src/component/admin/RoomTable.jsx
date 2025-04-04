@@ -5,6 +5,8 @@ import { MdOutlineDelete } from "react-icons/md";
 import Pagination from "../Phantrang/Pagination";
 import usePagination from "../../hook/usePagination";
 import { motion } from "framer-motion";
+import { FaRegEdit } from "react-icons/fa";
+
 const itemVariants = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 1 } },
@@ -18,6 +20,7 @@ function RoomTable({
   setStep,
   renderStatus,
   handleDelete,
+  handleOpenModalEdit,
 }) {
   const { currentPage, totalPages, currentItems, handlePageChange } =
     usePagination(displayedRooms, roomsPerPage, 330, 20);
@@ -70,17 +73,23 @@ function RoomTable({
         </div>
       );
     }
-    if (key === "trang_thai") {
+    if (key === "trang_thai" || key === "status") {
       return renderStatus
         ? renderStatus(room)
-        : defaultRenderStatus(room.trang_thai);
+        : defaultRenderStatus(room.trang_thai || room.status);
     }
     if (key === "is_block") {
       return renderStatus
         ? renderStatus(room)
         : defaultRenderStatus(room.is_block);
     }
-    if (key === "ngay_sinh" || key === "timestamp")
+    if (
+      key === "ngay_sinh" ||
+      key === "timestamp" ||
+      key === "createdAt" ||
+      key === "ngay_tao_hoa_don" ||
+      key === "ngay_chuyen_khoan"
+    )
       return formatDate(room[key]);
     if (key === "email") return maskEmail(room[key]);
     if (key === "id_quyen") return maskID(room[key]);
@@ -138,18 +147,27 @@ function RoomTable({
                   </td>
                 ))}
                 <td className="p-3 flex gap-3">
-                  <button
-                    className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
-                    onClick={() =>
-                      setStep((prev) => ({
-                        ...prev,
-                        page: 2,
-                        id: room._id,
-                      }))
-                    }
-                  >
-                    👁️
-                  </button>
+                  {setStep ? (
+                    <button
+                      className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                      onClick={() =>
+                        setStep((prev) => ({
+                          ...prev,
+                          page: 2,
+                          id: room._id,
+                        }))
+                      }
+                    >
+                      👁️
+                    </button>
+                  ) : handleOpenModalEdit ? (
+                    <button className="text-gray-600 hover:text-red-600 transition-colors duration-200">
+                      <FaRegEdit
+                        size={23}
+                        onClick={() => handleOpenModalEdit(room)}
+                      />
+                    </button>
+                  ) : null}
                   <button className="text-gray-600 hover:text-red-600 transition-colors duration-200">
                     <MdOutlineDelete
                       size={24}
@@ -177,12 +195,27 @@ function RoomTable({
               </div>
             ))}
             <div className="flex justify-end gap-3 mt-2">
-              <button
-                className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
-                onClick={() => setStep(2)}
-              >
-                👁️
-              </button>
+              {setStep ? (
+                <button
+                  className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                  onClick={() =>
+                    setStep((prev) => ({
+                      ...prev,
+                      page: 2,
+                      id: room._id,
+                    }))
+                  }
+                >
+                  👁️
+                </button>
+              ) : handleOpenModalEdit ? (
+                <button className="text-gray-600 hover:text-red-600 transition-colors duration-200">
+                  <FaRegEdit
+                    size={23}
+                    onClick={() => handleOpenModalEdit(room)}
+                  />
+                </button>
+              ) : null}
               <button className="text-gray-600 hover:text-red-600 transition-colors duration-200">
                 <MdOutlineDelete size={24} onClick={() => handleDelete(room)} />
               </button>

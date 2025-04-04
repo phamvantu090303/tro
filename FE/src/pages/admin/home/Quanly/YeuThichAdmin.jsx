@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import SearchBar from "../../admin/home/SearchBar";
-import { axiosInstance } from "../../../../Axios";
-import { GrLinkNext, GrLinkPrevious } from "react-icons/gr";
-import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
-import RoomTable from "../../../component/admin/RoomTable";
+import SearchBar from "../../../../component/admin/SearchBar";
+import { axiosInstance } from "../../../../../Axios";
+import RoomTable from "../../../../component/admin/RoomTable";
 
 function YeuThichAdmin() {
   const [data, setData] = useState([]);
@@ -31,7 +29,12 @@ function YeuThichAdmin() {
       <div className="flex gap-5 ">
         <SearchBar />
       </div>
-      <RoomTable headers={headers} displayedRooms={data} roomsPerPage={5} />
+      <RoomTable
+        title={"Yêu thích"}
+        headers={headers}
+        displayedRooms={data}
+        roomsPerPage={5}
+      />
       {modal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px]">

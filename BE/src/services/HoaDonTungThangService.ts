@@ -91,9 +91,39 @@ export class HoaDonThangService {
     }
   }
 
-  async getDataHoaDon(): Promise<any[]> {
-    const hoaDonThang = await HoaDonTungThangModel.find();
-    return hoaDonThang;
+  async getDataHoaDon() {
+    return await HoaDonTungThangModel.aggregate([
+      {
+        // Chuyển id_users (string) thành ObjectId
+        $addFields: {
+          id_users: { $toObjectId: "$id_users" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "id_users",
+          foreignField: "_id",
+          as: "id_users",
+        },
+      },
+      {
+        $unwind: {
+          path: "$id_users", // biến nó thành object
+          preserveNullAndEmptyArrays: false, // hoặc true nếu muốn giữ bản ghi lỗi
+        },
+      },
+      {
+        // Chỉ lấy các trường cần thiết
+        $project: {
+          ho_va_ten: "$id_users.ho_va_ten",
+          ma_phong: 1,
+          tong_tien: 1,
+          trang_thai: 1,
+          ngay_tao_hoa_don: 1,
+        },
+      },
+    ]);
   }
 
   // async getUserHoaDon(id_user: string): Promise<any[]> {
@@ -113,10 +143,12 @@ export class HoaDonThangService {
     }
 
     // 2. Tạo danh sách room_id và khoảng thời gian từ hóa đơn
-    const roomIdsWithDates = hoaDonThang.map((hoaDon) => ({
-      room_id: hoaDon.ma_phong,
-      ngay_tao_hoa_don: new Date(hoaDon.ngay_tao_hoa_don),
-    })).filter((item) => item.room_id); // Loại bỏ room_id không hợp lệ
+    const roomIdsWithDates = hoaDonThang
+      .map((hoaDon) => ({
+        room_id: hoaDon.ma_phong,
+        ngay_tao_hoa_don: new Date(hoaDon.ngay_tao_hoa_don),
+      }))
+      .filter((item) => item.room_id); // Loại bỏ room_id không hợp lệ
 
     // 3. Lấy dữ liệu điện năng chênh lệch theo từng ngày cho các room_id và thời gian
     const dienNangChenhLech = await this.getDienNangChenhLech(roomIdsWithDates);
@@ -134,7 +166,8 @@ export class HoaDonThangService {
 
       return {
         ...hoaDon.toObject(),
-        dienNangChenhLech: dienNangTheoPhong.length > 0 ? dienNangTheoPhong : null,
+        dienNangChenhLech:
+          dienNangTheoPhong.length > 0 ? dienNangTheoPhong : null,
       };
     });
 
@@ -142,7 +175,9 @@ export class HoaDonThangService {
   }
 
   // Hàm lấy dữ liệu điện năng chênh lệch theo từng ngày dựa trên room_id và ngay_tao_hoa_don
-  async getDienNangChenhLech(roomIdsWithDates: { room_id: string; ngay_tao_hoa_don: Date }[]): Promise<any[]> {
+  async getDienNangChenhLech(
+    roomIdsWithDates: { room_id: string; ngay_tao_hoa_don: Date }[]
+  ): Promise<any[]> {
     if (!roomIdsWithDates || roomIdsWithDates.length === 0) {
       return [];
     }
@@ -162,7 +197,15 @@ export class HoaDonThangService {
           room_id: { $in: roomIds },
           timestamp: {
             $gte: new Date(minDate.getFullYear(), minDate.getMonth(), 1), // Đầu tháng của ngày sớm nhất
-            $lte: new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, 0, 23, 59, 59, 999), // Cuối tháng của ngày muộn nhất
+            $lte: new Date(
+              maxDate.getFullYear(),
+              maxDate.getMonth() + 1,
+              0,
+              23,
+              59,
+              59,
+              999
+            ), // Cuối tháng của ngày muộn nhất
           },
         },
       },
@@ -178,7 +221,7 @@ export class HoaDonThangService {
         },
       },
       {
-        $sort: { "latestTimestamp": 1 }, // Sắp xếp theo thời gian tăng dần để tính chênh lệch
+        $sort: { latestTimestamp: 1 }, // Sắp xếp theo thời gian tăng dần để tính chênh lệch
       },
       {
         $project: {
@@ -229,7 +272,10 @@ export class HoaDonThangService {
       }
     });
 
-    return dienNangChenhLech.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return dienNangChenhLech.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
   }
 
   // Cập nhật thông tin danh mục

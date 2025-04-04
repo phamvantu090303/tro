@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import SearchBar from "../../admin/home/SearchBar";
-import { axiosInstance } from "../../../../Axios";
-import RoomTable from "../../../component/admin/RoomTable";
-import { usePhongTro } from "../../../Context/PhongTroContext";
+import SearchBar from "../../../../component/admin/SearchBar";
+import { axiosInstance } from "../../../../../Axios";
+import RoomTable from "../../../../component/admin/RoomTable";
+import { usePhongTro } from "../../../../Context/PhongTroContext";
 import { toast } from "react-toastify";
-import useApiManagerAdmin from "../../../hook/useApiManagerAdmin";
+import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
 
 function AnhPhongAdmin() {
   const { phongTro } = usePhongTro();
@@ -68,6 +68,7 @@ function AnhPhongAdmin() {
         </button>
       </div>
       <RoomTable
+        title={"Ảnh phòng"}
         headers={headers}
         displayedRooms={anhphong}
         roomsPerPage={5}

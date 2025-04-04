@@ -8,16 +8,16 @@ import {
   useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { axiosInstance } from "../../../../Axios";
-import { usePhongTro } from "../../../Context/PhongTroContext";
-import RoomTable from "../../../component/admin/RoomTable";
+import { axiosInstance } from "../../../../../Axios";
+import { usePhongTro } from "../../../../Context/PhongTroContext";
+import RoomTable from "../../../../component/admin/RoomTable";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
-import ModalMap from "../../../component/admin/ModalMap/ModalMap";
-import { OpenModalForm } from "../../../Store/filterModalForm";
-import { openConfirmModal } from "../../../Store/filterConfirmModal";
+import ModalMap from "../../../../component/admin/ModalMap/ModalMap";
+import { OpenModalForm } from "../../../../Store/filterModalForm";
+import { openConfirmModal } from "../../../../Store/filterConfirmModal";
 import { useDispatch, useSelector } from "react-redux";
-import ModalConFirm from "../../../component/ModalConfirm";
+import ModalConFirm from "../../../../component/ModalConfirm";
 
 export default function MapAdmin() {
   const dispatch = useDispatch();

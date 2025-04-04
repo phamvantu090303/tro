@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import SearchBar from "../../admin/home/SearchBar";
-import OptionDanhMuc from "../../../component/Admin/OptionDanhMuc";
-import RoomTable from "../../../component/admin/RoomTable";
-import useApiManagerAdmin from "../../../hook/useApiManagerAdmin";
+import SearchBar from "../../../../component/admin/SearchBar";
+import OptionDanhMuc from "../../../../component/Admin/OptionDanhMuc";
+import RoomTable from "../../../../component/admin/RoomTable";
+import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
 
 function DanhMucAdmin() {
   const [modal, setModal] = useState(false);

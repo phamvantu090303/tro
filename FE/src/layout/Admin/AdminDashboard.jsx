@@ -1,17 +1,20 @@
-import AccountAdmin from "../../pages/admin/home/AccountAdmin";
-import PhongTroAdmin from "../../pages/admin/home/PhongTroAdmin";
-import DanhMucAdmin from "../../pages/admin/home/DanhMucAdmin";
-import ThietBiAdmin from "../../pages/admin/home/ThietBiAdmin";
-import AnhPhongAdmin from "../../pages/admin/home/AnhPhongAdmin";
-import YeuThichAdmin from "../../pages/admin/home/YeuThichAdmin";
-import UserAdmin from "../../pages/admin/home/UserAdmin/UserAdmin";
+import AccountAdmin from "../../pages/admin/home/Quanly/AccountAdmin";
+import PhongTroAdmin from "../../pages/admin/home/Quanly/PhongTroAdmin";
+import DanhMucAdmin from "../../pages/admin/home/Quanly/DanhMucAdmin";
+import ThietBiAdmin from "../../pages/admin/home/Quanly/ThietBiAdmin";
+import AnhPhongAdmin from "../../pages/admin/home/Quanly/AnhPhongAdmin";
+import YeuThichAdmin from "../../pages/admin/home/Quanly/YeuThichAdmin";
+import UserAdmin from "../../pages/admin/home/Quanly/UserAdmin/UserAdmin";
 import MessAdmin from "../../component/Mess/messAdmin";
-import MapAdmin from "../../pages/admin/home/Map";
+import MapAdmin from "../../pages/admin/home/Quanly/Map";
 import ChartAdmin from "../../pages/admin/home/Chart/thongKeDienNang";
 import ThongKeYeuThich from "../../pages/admin/home/Chart/thongKeYeuThich";
 import ThongKeDanhGia from "../../pages/admin/home/Chart/thongKeDanhGia";
-import QuyenManagement from "../../pages/admin/home/Quyen";
-import DichvuAdmin from "../../pages/admin/home/dichvuAdmin";
+import QuyenManagement from "../../pages/admin/home/Quanly/Quyen";
+import DichvuAdmin from "../../pages/admin/home/Quanly/dichvuAdmin";
+import SuachuaAdmin from "../../pages/admin/home/Quanly/SuachuaAdmin";
+import HoadonThangAdmin from "../../pages/admin/home/Quanly/HoadonThang";
+import HoadonCocAdmin from "../../pages/admin/home/Quanly/HoadonCocAdmin";
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
     switch (activeComponent) {
@@ -25,12 +28,18 @@ function AdminDashboard({ activeComponent }) {
         return <DanhMucAdmin />;
       case "dichvu":
         return <DichvuAdmin />;
+      case "hoadoncoc":
+        return <HoadonCocAdmin />;
+      case "hoadonthang":
+        return <HoadonThangAdmin />;
       case "thietbi":
         return <ThietBiAdmin />;
       case "anhphong":
         return <AnhPhongAdmin />;
       case "yeuthich":
         return <YeuThichAdmin />;
+      case "suachua":
+        return <SuachuaAdmin />;
       case "adminuser":
         return <UserAdmin />;
       case "mess":
