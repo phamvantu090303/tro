@@ -19,19 +19,23 @@ export class HoaDonThangService {
         timestamp: { $gte: startOfMonth(thang), $lte: endOfMonth(thang) },
       }).sort({ timestamp: -1 });
 
-      if (!electricityData.length) {
-        throw new Error("Không có dữ liệu tiêu thụ điện trong tháng này");
+      // Nếu không có dữ liệu điện, đặt chiSoDienThangNay = 0
+      let chiSoDienThangNay = 0;
+      let latestElectricity = null;
+      if (electricityData.length > 0) {
+        latestElectricity = electricityData[0];
+        chiSoDienThangNay = latestElectricity.energy;
+        console.log("latestElectricity", latestElectricity);
+      } else {
+        console.log(`Không có dữ liệu tiêu thụ điện trong tháng ${thang} cho phòng ${ma_phong}, sử dụng giá trị 0.`);
       }
 
-      // Lấy bản ghi mới nhất (bản ghi đầu tiên sau khi sắp xếp)
-      const latestElectricity = electricityData[0];
-      const chiSoDienThangNay = latestElectricity.energy;
-      console.log("latestElectricity", latestElectricity);
       // Lấy dữ liệu dịch vụ
       const dichVu = await DichVuModel.findOne();
       if (!dichVu)
         throw new Error("Không tìm thấy thông tin dịch vụ cho phòng này");
-
+      
+      const giaDien = dichVu.tien_dien ?? 0;
       const tienNuoc = dichVu.tien_nuoc ?? 0;
       const tienWifi = dichVu.tien_wifi ?? 0;
 
@@ -63,11 +67,12 @@ export class HoaDonThangService {
         );
       }
 
-      const tienDien = soDienTieuThu * 3500;
+      const tienDien = soDienTieuThu * giaDien;
       const tongTien = tienPhong + tienDien + tienNuoc + tienWifi;
 
       // Tạo hóa đơn
       const hoaDon = new HoaDonTungThangModel({
+        ma_hoa_don_thang: "HD_T" + Math.floor(Math.random() * 1000000),
         ma_phong,
         id_users,
         chi_so_dien_thang_nay: chiSoDienThangNay,
@@ -125,12 +130,6 @@ export class HoaDonThangService {
       },
     ]);
   }
-
-  // async getUserHoaDon(id_user: string): Promise<any[]> {
-  //   const id = new ObjectId(id_user);
-  //   const hoaDonThang = await HoaDonTungThangModel.find({ id_users: id });
-  //   return hoaDonThang;
-  // }
 
   async getUserHoaDon(id_user: string): Promise<any[]> {
     const id = new ObjectId(id_user);

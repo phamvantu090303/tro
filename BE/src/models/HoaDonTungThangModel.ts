@@ -2,6 +2,10 @@ import mongoose, { Schema } from "mongoose";
 
 const HoaDonTungThangSchema = new Schema(
   {
+    ma_hoa_don_thang: {
+      type: String,
+      required: false,
+    },
     ma_phong: {
       type: String,
       required: true,

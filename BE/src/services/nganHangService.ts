@@ -2,6 +2,7 @@ import axios from "axios";
 import dotenv from "dotenv";
 import HoaDonThanhToanModel from "../models/HoaDonThanhToanModel";
 import PhongTroModel from "../models/PhongTroModel";
+import NganHangModel from "../models/nganHangModel";
 
 dotenv.config();
 export class TransactionService {
@@ -103,4 +104,10 @@ export class TransactionService {
       );
     }
   }
+
+
+  async getTransaction(): Promise<any[]> {
+        const data = await NganHangModel.find();
+        return data;
+      }
 }

@@ -6,7 +6,7 @@ import moment from "moment";
 let latestData: Record<string, IElectricity> = {};
 
 // Ngưỡng năng lượng tiêu thụ quy định (Wh)
-const ENERGY_LIMIT = 0.15; // Bạn có thể thay đổi giá trị này nếu cần
+const ENERGY_LIMIT = 100; // Bạn có thể thay đổi giá trị này nếu cần
 
 // Nhận dữ liệu từ ESP32
 export const receiveElectricityData = (req: Request, res: Response): void => {

@@ -6,7 +6,6 @@ import {
   taoHoaDon,
   updateHoaDon,
 } from "../controllers/HoaDonTungThangController";
-import { accessTokenValidatetor } from "../middlewares/user.middleware";
 
 const routerThang = express.Router();
 
