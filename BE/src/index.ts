@@ -33,7 +33,7 @@ import nganHangRouter from "./routers/nganHangRouter";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 const dbURL = `mongodb+srv://phamtu090303:gSPppVILdD2EJl4g@quanlyphongtro.k5jir.mongodb.net/?retryWrites=true&w=majority`;
 // const dbURL = `mongodb://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@mongo:27017/${process.env.DB_NAME}?authSource=admin`;
 const app = express();
@@ -43,7 +43,7 @@ const server = createServer(app);
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000", // Địa chỉ của frontend
+    origin: "http://phongtro.hoclaptrinhiz.com", // Địa chỉ của frontend
     credentials: true, // Cho phép gửi cookie
   })
 );

@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import logo from "../../assets/logo/Logo.svg";
+import logo from "../../assets/logo/logo.svg";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
 import { FaMap } from "react-icons/fa";

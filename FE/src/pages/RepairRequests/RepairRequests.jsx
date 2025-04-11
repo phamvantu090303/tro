@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
-const API_BASE_URL = "http://localhost:5000/sua_chua"; // Đổi thành đường dẫn thực tế của bạn
+const API_BASE_URL = "http://bephongtro.hoclaptrinhiz.com/sua_chua"; // Đổi thành đường dẫn thực tế của bạn
 
 const RepairRequests = () => {
   const [requests, setRequests] = useState([]);

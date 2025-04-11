@@ -89,7 +89,7 @@ function Register() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/auth/register", {
+      const res = await axios.post("http://bephongtro.hoclaptrinhiz.com/auth/register", {
         email: user.email,
         password: user.password,
         username: user.username,

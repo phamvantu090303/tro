@@ -5,7 +5,7 @@ import { FaPaperPlane } from "react-icons/fa";
 
 // Khởi tạo socket với token từ localStorage
 const token = localStorage.getItem("token");
-const socket = io("http://localhost:5000", {
+const socket = io("http://phongtro.hoclaptrinhiz.com", {
   auth: { Authorization: `Bearer ${token}` },
   transports: ["websocket"],
 });

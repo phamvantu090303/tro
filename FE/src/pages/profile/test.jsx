@@ -135,7 +135,7 @@ const ElectricityInvoice = () => {
 
   const handlePayment = async () => {
     try {
-      await axios.post("http://localhost:5000/hoa-don-thang/updateStatus", {
+      await axios.post("http://bephongtro.hoclaptrinhiz.com/api/hoa-don-thang/updateStatus", {
         id: selectedInvoice._id,
         trang_thai: "đã thanh toán",
       });
