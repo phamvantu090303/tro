@@ -26,14 +26,14 @@ function MapDetail({ toado }) {
   };
 
   return (
-    <div>
-      <div className="bg-gray-200 py-6 px-6 flex items-center justify-center w-[70%] mx-auto rounded-xl">
-        <div className="bg-white py-6 px-6 flex items-center justify-center w-[100%] mx-auto rounded-xl">
+    <div className="px-4">
+      <div className="bg-gray-200 py-4 px-4 sm:px-6 flex items-center justify-center w-full sm:w-[90%] md:w-[80%] lg:w-[70%] mx-auto rounded-xl">
+        <div className="bg-white py-4 px-4 sm:px-6 w-full rounded-xl">
           <MapContainer
             key={toado}
             center={toado}
             zoom={16}
-            style={{ height: "600px", width: "100%" }}
+            style={{ height: "400px", width: "100%" }}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -53,16 +53,17 @@ function MapDetail({ toado }) {
           </MapContainer>
         </div>
       </div>
-      <div className="flex justify-center gap-10 mt-6">
+
+      <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-10 mt-6">
         <button
           onClick={handleGetMyLocation}
-          className="bg-[#23284C] font-medium py-3 px-8 text-white rounded-md"
+          className="bg-[#23284C] font-medium py-3 px-6 text-white rounded-md w-full sm:w-auto"
         >
           Địa chỉ của tôi
         </button>
         <button
           onClick={() => setShowRoute(true)}
-          className="bg-[#23284C] font-medium py-3 px-8 text-white rounded-md"
+          className="bg-[#23284C] font-medium py-3 px-6 text-white rounded-md w-full sm:w-auto"
         >
           Vẽ đường đi
         </button>

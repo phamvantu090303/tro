@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-function ProductShowcase({ data, desc, limit, link, slide }) {
+function ProductShowcase({ data, desc, limit, slide }) {
   const settings = {
     dots: false,
     infinite: data.length > 1,
@@ -36,8 +36,8 @@ function ProductShowcase({ data, desc, limit, link, slide }) {
         breakpoint: 640, // Tablet & Mobile
         settings: {
           slidesToShow: 1,
-          vertical: true,
-          verticalSwiping: true,
+          vertical: false,
+          verticalSwiping: false,
         },
       },
     ],

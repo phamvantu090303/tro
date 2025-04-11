@@ -3,6 +3,7 @@ import { FaArrowsAlt, FaUserFriends } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { axiosInstance } from "../../../Axios";
+import { motion } from "framer-motion";
 
 function CardFavourite({
   id,
@@ -57,53 +58,79 @@ function CardFavourite({
   };
 
   return (
-    <div className="flex gap-8 px-12 py-5 bg-white  cursor-pointer rounded-lg z-10">
-      <img src={img} alt="" className="w-[329px] h-[226px] " />
-      <div className="flex justify-between w-full">
-        <div className="flex flex-col justify-between">
-          <h6 className="text-xl font-semibold" onClick={() => handleCard(id)}>
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col md:flex-row gap-6 sm:gap-8 p-4 sm:p-6 md:px-10 md:py-5 bg-white cursor-pointer rounded-lg shadow-sm"
+    >
+      {/* Ảnh */}
+      <img
+        src={img}
+        alt=""
+        className="w-auto md:w-[329px] h-auto object-cover rounded-md"
+      />
+
+      {/* Nội dung */}
+      <div className="flex flex-col lg:flex-row justify-between w-full gap-4">
+        {/* Bên trái */}
+        <div className="flex flex-col justify-between flex-1">
+          <h6
+            className="text-lg sm:text-xl font-semibold"
+            onClick={() => handleCard(id)}
+          >
             {title}
           </h6>
-          <p className="text-base text-gray-500 mt-4">{noidung}</p>
-          <button
-            className="py-3 px-5 bg-customBlue text-white font-medium  w-[150px] rounded-lg hover:bg-customBlue/90"
-            onClick={() => navigate(`/details/${id}`)}
-          >
-            Xem
-          </button>
-          <div>
-            <p
-              style={{ color: colorStatus }}
-              className="font-medium text-xl sm:text-lg"
+          <p className="text-sm sm:text-base text-gray-500 mt-2 lg:mt-4">
+            {noidung}
+          </p>
+
+          <div className="flex justify-between lg:block mt-2 lg:mt-4">
+            <button
+              className="py-2 lg:py-3 px-4 sm:px-5 bg-customBlue text-white font-medium w-fit rounded-lg hover:bg-customBlue/90"
+              onClick={() => navigate(`/details/${id}`)}
             >
-              {status}
-            </p>
-            <p className="mt-4">Khu vực {diachi}</p>
+              Xem
+            </button>
+            <div>
+              <p
+                style={{ color: colorStatus }}
+                className="font-medium text-base sm:text-lg"
+              >
+                {status}
+              </p>
+              <p className="mt-2 lg:mt-4 text-sm sm:text-base">
+                Khu vực {diachi}
+              </p>
+            </div>
           </div>
         </div>
-        <div className="flex flex-col justify-between text-right">
+
+        {/* Bên phải */}
+        <div className="flex lg:flex-col justify-between items-end text-right gap-3">
           <button
-            className="bg-customBg text-white px-[31px] py-[11px] rounded-lg z-50"
+            className="bg-customBg text-white px-4 py-2 rounded-lg z-50"
             onClick={handleDelete}
           >
             Hủy yêu thích
           </button>
+
           <div>
-            <div className="flex gap-3 justify-end">
-              <p className="flex items-center gap-2 xl:text-base">
-                <FaUserFriends className="2xl:text-xl text-base text-gray-600" />
-                {number}
+            <div className="flex gap-3 justify-end mt-2">
+              <p className="flex items-center gap-1 text-sm sm:text-base">
+                <FaUserFriends className="text-gray-600" /> {number}
               </p>
-              <p className="flex items-center gap-2 xl:text-base">
-                <FaArrowsAlt className="2xl:text-xl text-base text-gray-600" />
-                {dientich}
+              <p className="flex items-center gap-1 text-sm sm:text-base">
+                <FaArrowsAlt className="text-gray-600" /> {dientich}
               </p>
             </div>
-            <p className="text-bold text-xl mt-4 text-yellow-500">${price}</p>
+            <p className="text-bold text-lg sm:text-xl mt-3 text-yellow-500">
+              ${price}
+            </p>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
