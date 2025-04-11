@@ -32,13 +32,6 @@ function Profile() {
     return `${day}/${month}/${year}`;
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
-
   const menuItems = [
     { title: "Thông tin cá nhân", icon: "👤" },
     { title: "Sửa chữa", icon: "🔧" },
@@ -249,66 +242,70 @@ function Profile() {
               )}
 
               {chucnang === "Sửa chữa" && (
-                <div>
-                  <div className="overflow-x-auto rounded-lg border border-gray-200">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-customBlue text-white ">
+                <div className="w-full">
+                  <div className="overflow-x-auto w-full rounded-lg border border-gray-200">
+                    <table className="min-w-[800px] w-full divide-y divide-gray-200">
+                      <thead className="bg-customBlue text-white">
                         <tr>
-                          <th className="px-6 py-3 text-center text-xl font-medium">
+                          <th className="px-6 py-3 text-center text-sm md:text-base lg:text-xl font-medium">
                             Ngày gửi
                           </th>
-                          <th className="px-6 py-3 text-center text-xl font-medium">
+                          <th className="px-6 py-3 text-center text-sm md:text-base lg:text-xl font-medium">
                             Mô tả
                           </th>
-                          <th className="px-6 py-3 text-center text-xl font-medium">
+                          <th className="px-6 py-3 text-center text-sm md:text-base lg:text-xl font-medium">
                             Trạng thái xử lý
                           </th>
-                          <th className="px-6 py-3 text-center text-xl font-medium">
+                          <th className="px-6 py-3 text-center text-sm md:text-base lg:text-xl font-medium">
                             Xét duyệt
                           </th>
-                          <th className="px-6 py-3 text-center text-xl font-medium">
+                          <th className="px-6 py-3 text-center text-sm md:text-base lg:text-xl font-medium">
                             Hành động
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white space-y-5">
+                      <tbody className="bg-white">
                         {data.length > 0 ? (
                           data.map((item, index) => (
                             <tr key={index}>
-                              <td className="px-6 py-4 text-lg text-gray-500 text-center">
+                              <td className="px-6 py-4 text-sm md:text-base text-gray-700 text-center">
                                 {formatDate(item.createdAt)}
                               </td>
-                              <td className="px-6 py-4 text-lg text-gray-500 text-center">
+                              <td className="px-6 py-4 text-sm md:text-base text-gray-700 text-center">
                                 {item.issue}
                               </td>
-                              <td className="px-6 py-4  text-center">
-                                <span className="px-4 py-2 text-base font-medium rounded-full bg-red-500 text-white">
+                              <td className="px-6 py-4 text-center">
+                                <span className="px-4 py-1 text-xs md:text-sm font-medium rounded-full bg-red-500 text-white">
                                   {item.status}
                                 </span>
                               </td>
-                              <td className="px-6 py-4  text-center">
-                                <span className="px-4 py-2 text-base font-medium rounded-full bg-red-500 text-white">
+                              <td className="px-6 py-4 text-center">
+                                <span className="px-4 py-1 text-xs md:text-sm font-medium rounded-full bg-red-500 text-white">
                                   {item.approved}
                                 </span>
                               </td>
-                              <div className="flex gap-5 text-center px-10 py-4 items-center justify-center">
-                                <FaEdit
-                                  size={20}
-                                  onClick={() => handleUpdateModal(item)}
-                                />
-                                <MdDelete
-                                  size={20}
-                                  color="red"
-                                  onClick={() => handleConfirmModal(item._id)}
-                                />
-                              </div>
+                              <td className="px-6 py-4 text-center">
+                                <div className="flex justify-center items-center gap-4">
+                                  <FaEdit
+                                    size={18}
+                                    onClick={() => handleUpdateModal(item)}
+                                    className="cursor-pointer hover:text-blue-500"
+                                  />
+                                  <MdDelete
+                                    size={18}
+                                    color="red"
+                                    onClick={() => handleConfirmModal(item._id)}
+                                    className="cursor-pointer hover:text-red-600"
+                                  />
+                                </div>
+                              </td>
                             </tr>
                           ))
                         ) : (
                           <tr>
                             <td
-                              colSpan="3"
-                              className="text-xl sm:text-3xl font-bold text-center py-4"
+                              colSpan="5"
+                              className="text-center text-sm md:text-xl font-semibold py-4"
                             >
                               Chưa có yêu cầu sửa chữa nào
                             </td>

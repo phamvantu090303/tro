@@ -1,15 +1,16 @@
-import { FaUser, FaLock, FaAddressCard } from "react-icons/fa";
+import { FaUser, FaLock } from "react-icons/fa";
 import wallperlogin from "../../assets/roomwallper.jpg";
 import { useState } from "react";
 import { IoIosCall } from "react-icons/io";
 import { MdDateRange } from "react-icons/md";
 import { CgMail } from "react-icons/cg";
 import { PiGenderIntersex } from "react-icons/pi";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { FaMapLocationDot } from "react-icons/fa6";
-import axios from "axios";
 import { toast } from "react-toastify";
+import { axiosInstance } from "../../../Axios";
 function Register() {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -18,12 +19,12 @@ function Register() {
     ngaysinh: "",
     quequan: "",
     sodienthoai: "",
-    gioitinh: 0,
+    gioitinh: "",
     cccd: "",
   });
 
   const [errors, setErrors] = useState({});
-
+  const [loading, setLoading] = useState(false);
   const validate = (name, value) => {
     let errorMsg = "";
 
@@ -89,7 +90,8 @@ function Register() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/auth/register", {
+      setLoading(true);
+      const res = await axiosInstance.post("/auth/register", {
         email: user.email,
         password: user.password,
         username: user.username,
@@ -97,7 +99,7 @@ function Register() {
         ngay_sinh: new Date(user.ngaysinh).toISOString(),
         que_quan: user.quequan,
         so_dien_thoai: user.sodienthoai,
-        gioi_tinh: user.gioitinh,
+        gioi_tinh: new Number(user.gioitinh),
         cccd: user.cccd,
       });
       console.log("Server response:", res.data);
@@ -110,6 +112,8 @@ function Register() {
       }
     } catch (error) {
       console.error("Submission error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -334,9 +338,9 @@ function Register() {
 
               <button
                 type="submit"
-                className="w-full 2xl:py-3 xl:py-2 bg-gray-900 text-white rounded-lg 2xl:text-lg font-semibold hover:bg-gray-700 transition"
+                className="w-full 2xl:py-3 py-2 bg-gray-900 text-white rounded-lg 2xl:text-lg font-semibold hover:bg-gray-700 transition"
               >
-                Đăng ký →
+                {loading ? "Đang xử lý" : "Đăng ký →"}
               </button>
             </form>
 

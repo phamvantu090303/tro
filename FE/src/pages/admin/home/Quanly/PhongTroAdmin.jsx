@@ -156,50 +156,37 @@ function PhongTroAdmin() {
   });
 
   return (
-    <div className="">
+    <div className="p-4 w-full">
       {page === 1 && (
-        <div className="">
+        <div className="space-y-4">
           <h2 className="text-2xl font-bold">Room</h2>
-          <div className="flex justify-between">
-            <div className="flex gap-3">
-              <p
-                className={`text-lg py-2 px-4  ${
-                  chucnang === "Tất cả các phòng"
-                    ? "font-medium border-b border-gray-500"
-                    : ""
-                }`}
-                onClick={() => setChucnang("Tất cả các phòng")}
-              >
-                Tất cả các phòng
-              </p>
-              <p
-                className={`text-lg py-2 px-4  ${
-                  chucnang === "Phòng trống"
-                    ? "font-medium border-b border-gray-500"
-                    : ""
-                }`}
-                onClick={() => setChucnang("Phòng trống")}
-              >
-                Phòng trống
-              </p>
-              <p
-                className={`text-lg py-2 px-4  ${
-                  chucnang === "Phòng đã được thuê"
-                    ? "font-medium border-b border-gray-500"
-                    : ""
-                }`}
-                onClick={() => setChucnang("Phòng đã được thuê")}
-              >
-                Phòng đã được thuê
-              </p>
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div className="flex flex-wrap gap-3">
+              {["Tất cả các phòng", "Phòng trống", "Phòng đã được thuê"].map(
+                (label) => (
+                  <p
+                    key={label}
+                    className={`text-lg py-2 px-4 cursor-pointer ${
+                      chucnang === label
+                        ? "font-medium border-b-2 border-gray-500"
+                        : ""
+                    }`}
+                    onClick={() => setChucnang(label)}
+                  >
+                    {label}
+                  </p>
+                )
+              )}
             </div>
-            <SearchBar />
-            <button
-              className="text-base bg-red-500 text-white rounded-full py-2 px-3"
-              onClick={() => setPage(2)}
-            >
-              + Thêm phòng trọ
-            </button>
+            <div className="flex items-center gap-4">
+              <SearchBar />
+              <button
+                className="text-base bg-red-500 text-white rounded-full py-2 px-3"
+                onClick={() => setPage(2)}
+              >
+                + Thêm phòng trọ
+              </button>
+            </div>
           </div>
           <RoomTable
             displayedRooms={filteredRooms}
@@ -211,178 +198,156 @@ function PhongTroAdmin() {
         </div>
       )}
       {page === 2 && (
-        <div>
-          <div className="flex items-center gap-5">
-            <IoMdArrowRoundBack size={25} onClick={() => setPage(1)} />
+        <div className="space-y-6">
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => setPage(1)}
+          >
+            <IoMdArrowRoundBack size={25} />
             <h2 className="text-2xl font-bold">Thêm phòng trọ</h2>
           </div>
-          <div className="mt-10">
-            <div>
-              <p className="text-xl font-medium mb-4">Ảnh phòng</p>
-              <div className="flex space-x-2 w-full overflow-x-auto mt-4">
-                {hienthiAnh.map((src, index) => (
-                  <img
-                    src={src}
-                    key={index}
-                    alt={`Uploaded ${index}`}
-                    className="w-[200px] h-[120px] object-contain"
-                  />
-                ))}
-                <label className="w-[200px] h-[120px] border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center text-gray-500 cursor-pointer">
-                  Add image
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={handleAddImage}
-                  />
-                </label>
-              </div>
+
+          {/* Ảnh */}
+          <div>
+            <p className="text-xl font-medium mb-4">Ảnh phòng</p>
+            <div className="flex space-x-2 overflow-x-auto">
+              {hienthiAnh.map((src, index) => (
+                <img
+                  src={src}
+                  key={index}
+                  alt={`Uploaded ${index}`}
+                  className="w-[200px] h-[120px] object-contain"
+                />
+              ))}
+              <label className="w-[200px] h-[120px] border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center text-gray-500 cursor-pointer">
+                Add image
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleAddImage}
+                />
+              </label>
             </div>
-            <span className="block h-[1px] bg-gray-500 w-full my-4"></span>
-            <div>
-              <p className="text-xl font-medium mb-4">Chi tiết phòng</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-base">Mã phòng</p>
-                  <input
-                    type="text"
-                    placeholder="Mã phòng"
-                    name="maPhong"
-                    className="border p-2 rounded-md w-full mt-2"
-                    value={phongTroMoi.maPhong}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <p>Tên phòng</p>
-                  <input
-                    type="text"
-                    placeholder="Tên phòng"
-                    name="tenPhongtro"
-                    className="border p-2 rounded-md w-full mt-2"
-                    value={phongTroMoi.tenPhongtro}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <p className="text-base">Mã map</p>
-                  <select
-                    className="border p-2 rounded-md w-full mt-2"
-                    value={phongTroMoi.maMap}
-                    onChange={handleChange}
-                    name="maMap"
-                  >
-                    <option value="">-- Chọn mã map--</option>
-                    {maps.map((dm) => (
-                      <option key={dm.ma_map} value={dm.ma_map}>
-                        {dm.ma_map}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <p>Trạng thái</p>
-                  <select
-                    className="border p-2 rounded-md w-full mt-2"
-                    value={phongTroMoi.trangthai}
-                    onChange={handleChange}
-                    name="trangthai"
-                  >
-                    <option value={0}>Đã cho thuê</option>
-                    <option value={1}>Còn trống</option>
-                    <option value={2}>Đang sửa chữa</option>
-                  </select>
-                </div>
-                <div>
-                  <p>Danh mục</p>
-                  <select
-                    className="border p-2 rounded-md w-full mt-2"
-                    value={phongTroMoi.madanhmuc}
-                    onChange={handleChange}
-                    name="madanhmuc"
-                  >
-                    <option value="">-- Chọn danh mục --</option>
-                    {danhMuc.map((dm) => (
-                      <option key={dm.ma_danh_muc} value={dm.ma_danh_muc}>
-                        {dm.ten_danh_muc}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <p>Số người</p>
-                  <input
-                    type="text"
-                    placeholder="Số lượng người ở"
-                    className="border p-2 rounded-md w-full mt-2"
-                    name="soLuongnguoi"
-                    value={phongTroMoi.soLuongnguoi}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <p>Giá tiền</p>
-                  <input
-                    type="text"
-                    placeholder="Giá tiền"
-                    className="border p-2 rounded-md w-full mt-2"
-                    name="giatien"
-                    value={phongTroMoi.giatien}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <p>Diện tích</p>
-                  <input
-                    type="text"
-                    placeholder="Diện tích"
-                    className="border p-2 rounded-md w-full mt-2"
-                    name="dientich"
-                    value={phongTroMoi.dientich}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <p className="text-base">Địa chỉ</p>
-                  <input
-                    type="text"
-                    placeholder="Địa chỉ"
-                    name="diachi"
-                    className="border p-2 rounded-md w-full mt-2"
-                    value={phongTroMoi.diachi}
-                    onChange={handleChange}
-                  />
-                </div>
-                <textarea
-                  placeholder="Mô tả phòng"
-                  className="border p-2 rounded-md w-full mt-2 col-span-2"
-                  name="mota"
-                  value={phongTroMoi.mota}
-                  onChange={handleChange}
-                ></textarea>
-              </div>
-            </div>
-            <span className="block h-[1px] bg-gray-500 w-full my-4"></span>
-            <div>
-              <p>Thiết bị</p>
-              <div className="grid grid-cols-4 gap-2">
-                {/* {amenities.map((item, index) => (
-                  <label key={index} className="flex items-center space-x-2">
-                    <input type="checkbox" className="rounded" />
-                    <span>{item}</span>
-                  </label>
-                ))} */}
-              </div>
-            </div>
-            <button
-              onClick={handleCreateRoom}
-              className="py-4 px-10 rounded-lg bg-indigo-950 text-white text-xl font-bold"
-            >
-              Tạo phòng
-            </button>
           </div>
+
+          <hr className="border-gray-300" />
+
+          {/* Chi tiết phòng */}
+          <div>
+            <p className="text-xl font-medium mb-4">Chi tiết phòng</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { label: "Mã phòng", name: "maPhong", type: "text" },
+                { label: "Tên phòng", name: "tenPhongtro", type: "text" },
+              ].map(({ label, name, type }) => (
+                <div key={name}>
+                  <p>{label}</p>
+                  <input
+                    type={type}
+                    name={name}
+                    placeholder={label}
+                    className="border p-2 rounded-md w-full mt-2"
+                    value={phongTroMoi[name]}
+                    onChange={handleChange}
+                  />
+                </div>
+              ))}
+
+              <div>
+                <p>Mã map</p>
+                <select
+                  className="border p-2 rounded-md w-full mt-2"
+                  value={phongTroMoi.maMap}
+                  onChange={handleChange}
+                  name="maMap"
+                >
+                  <option value="">-- Chọn mã map--</option>
+                  {maps.map((dm) => (
+                    <option key={dm.ma_map} value={dm.ma_map}>
+                      {dm.ma_map}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <p>Trạng thái</p>
+                <select
+                  className="border p-2 rounded-md w-full mt-2"
+                  value={phongTroMoi.trangthai}
+                  onChange={handleChange}
+                  name="trangthai"
+                >
+                  <option value={0}>Đã cho thuê</option>
+                  <option value={1}>Còn trống</option>
+                  <option value={2}>Đang sửa chữa</option>
+                </select>
+              </div>
+
+              <div>
+                <p>Danh mục</p>
+                <select
+                  className="border p-2 rounded-md w-full mt-2"
+                  value={phongTroMoi.madanhmuc}
+                  onChange={handleChange}
+                  name="madanhmuc"
+                >
+                  <option value="">-- Chọn danh mục --</option>
+                  {danhMuc.map((dm) => (
+                    <option key={dm.ma_danh_muc} value={dm.ma_danh_muc}>
+                      {dm.ten_danh_muc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {[
+                { label: "Số người", name: "soLuongnguoi" },
+                { label: "Giá tiền", name: "giatien" },
+                { label: "Diện tích", name: "dientich" },
+                { label: "Địa chỉ", name: "diachi" },
+              ].map(({ label, name }) => (
+                <div key={name}>
+                  <p>{label}</p>
+                  <input
+                    type="text"
+                    placeholder={label}
+                    className="border p-2 rounded-md w-full mt-2"
+                    name={name}
+                    value={phongTroMoi[name]}
+                    onChange={handleChange}
+                  />
+                </div>
+              ))}
+
+              <textarea
+                placeholder="Mô tả phòng"
+                className="border p-2 rounded-md w-full mt-2 col-span-1 md:col-span-2"
+                name="mota"
+                value={phongTroMoi.mota}
+                onChange={handleChange}
+              ></textarea>
+            </div>
+          </div>
+
+          <hr className="border-gray-300" />
+
+          {/* Thiết bị */}
+          <div>
+            <p className="text-xl font-medium mb-4">Thiết bị</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {/* Thêm checkbox nếu bạn có mảng amenities */}
+            </div>
+          </div>
+
+          <button
+            onClick={handleCreateRoom}
+            className="py-4 px-10 rounded-lg bg-indigo-950 text-white text-xl font-bold"
+          >
+            Tạo phòng
+          </button>
         </div>
       )}
     </div>

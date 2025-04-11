@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FaFan, FaTv, FaLaptop, FaBed, FaCouch, FaWifi } from "react-icons/fa";
 import {
   MdOutlineMicrowave,
@@ -39,13 +38,13 @@ const deviceIcons = {
 };
 export default function DeviceSelector({ data }) {
   return (
-    <div className="p-4">
+    <div className="p-4 flex justify-center md:block">
       {data ? (
-        <ul className="grid grid-cols-5 gap-y-5">
+        <ul className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-y-5 gap-x-5 md:gap-x-0">
           {data.map((item) => (
             <li
               key={item._id}
-              className="flex items-center gap-2  px-[51px] py-[21px] bg-white max-w-[257px] max-h-[62px]"
+              className="flex items-center justify-center gap-2 px-[21px] xl:px-[51px] py-[21px] bg-white w-[180px] lg:w-[200px] xl:w-[220px] 2xl:w-auto max-w-[257px] max-h-[62px]"
             >
               <p className="text-xl text-center text-[#229935]">
                 {deviceIcons[item.ten_thiet_bi]}
