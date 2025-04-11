@@ -3,7 +3,7 @@ import { axiosInstance } from "../../../Axios";
 import { useSelector } from "react-redux";
 import CardFavourite from "../../component/Favourite/CardFavourite";
 import { useNavigate } from "react-router";
-
+import { motion } from "framer-motion";
 function Favourite() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
@@ -25,29 +25,40 @@ function Favourite() {
     <div className="w-full">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
         <h1 className="text-3xl font-bold">Yêu thích</h1>
-        <div className="space-y-5 min-h-[800px]">
+        <div className="space-y-5 min-h-[800px] mt-10">
           {data.length > 0 ? (
             data.map((item, index) => (
-              <CardFavourite
-                key={index}
-                id={item.ma_phong}
-                price={item.gia_tien}
-                title={item.ten_phong_tro}
-                img={item.anh_phong}
-                noidung={item.mo_ta}
-                number={item.so_luong_nguoi}
-                dientich={item.dien_tich}
-                diachi={item.dia_chi}
-                trangthai={item.trang_thai}
-                thanhpho={item.ward}
-                reloadData={fetchDataFavourite}
-              />
+              <motion.div
+                key={item.ma_phong}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <CardFavourite
+                  id={item.ma_phong}
+                  price={item.gia_tien}
+                  title={item.ten_phong_tro}
+                  img={item.anh_phong}
+                  noidung={item.mo_ta}
+                  number={item.so_luong_nguoi}
+                  dientich={item.dien_tich}
+                  diachi={item.dia_chi}
+                  trangthai={item.trang_thai}
+                  thanhpho={item.ward}
+                  reloadData={fetchDataFavourite}
+                />
+              </motion.div>
             ))
           ) : (
-            <div className="min-h-[500px] flex items-center flex-col mt-40">
-              <p className="text-black text-3xl font-medium text-center ">
-                Bạn chưa có yêu thích phòng trọ nào , hãy trở về trang chủ để
-                lựa phòng yêu thích nhé
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="min-h-[500px] flex items-center flex-col mt-40"
+            >
+              <p className="text-black text-3xl font-medium text-center">
+                Bạn chưa có yêu thích phòng trọ nào, hãy trở về trang chủ để lựa
+                phòng yêu thích nhé
               </p>
               <button
                 onClick={() => navigate("/")}
@@ -55,7 +66,7 @@ function Favourite() {
               >
                 Trở về trang chủ
               </button>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>

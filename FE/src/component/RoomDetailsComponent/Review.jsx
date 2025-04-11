@@ -53,9 +53,12 @@ export default function RoomReview({ id }) {
   };
 
   return (
-    <div className="w-full mx-auto bg-gray-100 rounded-xl shadow-md">
-      <div className="w-full mx-auto mt-6 p-6 bg-white rounded-xl shadow-md">
-        <h3 className="text-xl font-semibold mb-4">Đánh giá từ khách hàng</h3>
+    <div className="w-full px-4 sm:px-6 mx-auto bg-gray-100 rounded-xl shadow-md">
+      <div className="w-full mt-6 p-4 sm:p-6 bg-white rounded-xl shadow-md">
+        <h3 className="text-xl sm:text-2xl font-semibold mb-4 text-center sm:text-left">
+          Đánh giá từ khách hàng
+        </h3>
+
         {reviews.length > 0 ? (
           reviews.map((review) => (
             <ReviewItem
@@ -65,14 +68,16 @@ export default function RoomReview({ id }) {
             />
           ))
         ) : (
-          <p className="text-gray-600">Chưa có đánh giá nào.</p>
+          <p className="text-gray-600 text-center">Chưa có đánh giá nào.</p>
         )}
-        <div className="h-[1px] w-full bg-gray-800 mt-4"></div>
+
+        <div className="h-[1px] w-full bg-gray-300 mt-6"></div>
+
         {user ? (
-          <div className=" flex gap-3 mt-10">
+          <div className="flex flex-col gap-3 mt-8">
             <div className="w-full relative">
               <textarea
-                className="w-full p-3  border rounded-md outline-none text-black bg-gray-100 placeholder-gray-500 focus:outline-slate-700 "
+                className="w-full p-3 border rounded-md outline-none text-black bg-gray-100 placeholder-gray-500 focus:outline-slate-700 resize-none"
                 rows="5"
                 placeholder="Nhập nhận xét của bạn..."
                 value={review}
@@ -80,7 +85,7 @@ export default function RoomReview({ id }) {
               ></textarea>
 
               <button
-                className="absolute bottom-5 right-4  flex bg-[#23284C] text-white py-3 px-5 font-medium mt-5 rounded-full hover:bg-blue-700 transition-all ml-auto"
+                className="absolute bottom-4 right-4 bg-[#23284C] text-white py-2 px-4 text-sm sm:text-base font-medium rounded-full hover:bg-blue-700 transition-all"
                 onClick={handleSubmit}
               >
                 Gửi đánh giá
@@ -88,9 +93,9 @@ export default function RoomReview({ id }) {
             </div>
           </div>
         ) : (
-          <div>
-            <p>Vui lòng đăng nhập để sử dụng đánh giá</p>
-          </div>
+          <p className="text-gray-600 text-center mt-6">
+            Vui lòng đăng nhập để sử dụng đánh giá
+          </p>
         )}
       </div>
     </div>
@@ -132,56 +137,56 @@ function ReviewItem({ review, fetchReviews }) {
       console.error("Lỗi khi xóa bình luận:", error);
     }
   };
-  console.log("review", review);
   return (
     <div className="mb-4 p-4 border rounded-lg bg-gray-50">
-      <div className="">
-        <div className="flex gap-3">
-          <FaUser size={30} className="border border-gray-500 rounded-full" />
-          <div>
-            <p className="font-medium text-lg">{review.user.username}</p>
-            <p className="text-black text-lg mt-3">{review.noi_dung}</p>
-            <div className="flex gap-4 mt-2">
-              <button
-                className="text-gray-600 hover:underline flex items-center gap-1"
-                onClick={() => setIsReplying(!isReplying)}
-              >
-                {isReplying ? (
-                  "Hủy"
-                ) : (
-                  <>
-                    {" "}
-                    <FaComment />
-                    Trả lời
-                  </>
-                )}
-              </button>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <FaUser
+          size={30}
+          className="border border-gray-500 rounded-full shrink-0 self-start"
+        />
+        <div className="flex-1">
+          <p className="font-medium text-lg">{review.user.username}</p>
+          <p className="text-black text-base sm:text-lg mt-2">
+            {review.noi_dung}
+          </p>
 
-              <button
-                className="text-red-600 hover:underline"
-                onClick={handleDelete}
-              >
-                Thu hồi
-              </button>
-            </div>
+          <div className="flex flex-wrap gap-4 mt-2">
+            <button
+              className="text-gray-600 hover:underline flex items-center gap-1"
+              onClick={() => setIsReplying(!isReplying)}
+            >
+              {isReplying ? (
+                "Hủy"
+              ) : (
+                <>
+                  <FaComment />
+                  Trả lời
+                </>
+              )}
+            </button>
+
+            <button
+              className="text-red-600 hover:underline"
+              onClick={handleDelete}
+            >
+              Thu hồi
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Nút trả lời & thu hồi */}
-
       {/* Form nhập trả lời */}
       {isReplying && (
-        <div className="mt-2 ml-6">
+        <div className="mt-4 sm:ml-10">
           <textarea
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-blue-500 text-sm"
             rows="2"
             placeholder="Nhập câu trả lời..."
             value={reply}
             onChange={(e) => setReply(e.target.value)}
           ></textarea>
           <button
-            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
             onClick={handleReply}
           >
             Gửi trả lời
@@ -189,9 +194,9 @@ function ReviewItem({ review, fetchReviews }) {
         </div>
       )}
 
-      {/* Nếu có phản hồi con, hiển thị chúng theo dạng cây */}
+      {/* Hiển thị phản hồi con */}
       {review.replies.length > 0 && (
-        <div className="mt-3 ml-6 border-l-2 border-gray-300 pl-4">
+        <div className="mt-4 sm:ml-10 border-l-2 border-gray-300 pl-4">
           {review.replies.map((reply) => (
             <ReviewItem
               key={reply._id}

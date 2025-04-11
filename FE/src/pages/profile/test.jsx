@@ -86,7 +86,7 @@ const ElectricityInvoice = () => {
           setError("Không có dữ liệu hóa đơn");
         }
         setLoading(false);
-      } catch (err) {
+      } catch {
         setError("Không thể tải dữ liệu hóa đơn");
         setLoading(false);
       }
@@ -152,7 +152,7 @@ const ElectricityInvoice = () => {
         )
       );
       alert("Thanh toán thành công!");
-    } catch (err) {
+    } catch {
       alert("Thanh toán thất bại!");
     }
   };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -9,7 +9,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { axiosInstance } from "../../../Axios";
 
@@ -83,11 +82,11 @@ const ElectricityInvoice = () => {
         if (data.status === "200" && data.data.length > 0) {
           setInvoices(data.data);
         } else {
-          setError("Không có dữ liệu hóa đơn");
+          setError(data.message);
         }
         setLoading(false);
-      } catch (err) {
-        setError("Không thể tải dữ liệu hóa đơn");
+      } catch (error) {
+        setError(error.response.data.message);
         setLoading(false);
       }
     };
@@ -135,7 +134,8 @@ const ElectricityInvoice = () => {
 
   const handlePayment = async () => {
     try {
-      await axios.post("http://bephongtro.hoclaptrinhiz.com/hoa-don-thang/updateStatus", {
+
+      await axiosInstance.post("/hoa-don-thang/updateStatus", {
         id: selectedInvoice._id,
         trang_thai: "đã thanh toán",
       });
@@ -152,7 +152,7 @@ const ElectricityInvoice = () => {
         )
       );
       alert("Thanh toán thành công!");
-    } catch (err) {
+    } catch {
       alert("Thanh toán thất bại!");
     }
   };

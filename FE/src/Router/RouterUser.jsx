@@ -6,8 +6,6 @@ import Search from "../pages/Search/Search";
 import RoomDetails from "../pages/RoomDetails/RoomDetails";
 import Contract from "../component/hopdong";
 import Chat from "../component/Mess/mess";
-import BillPayment from "../pages/BillPayment/BillPayment";
-import RepairRequests from "../pages/RepairRequests/RepairRequests";
 import Favourite from "../pages/Favourite/Favourite";
 import Profile from "../pages/profile/Profile";
 import VerifySuccess from "../pages/Login/VerifySuccess";
@@ -28,8 +26,6 @@ const routerUser = (
     <Route path="details/:id" element={<RoomDetails />} />
     <Route path="hopdong/:maphong" element={<Contract />} />
     <Route path="mess" element={<Chat />} />
-    <Route path="billpayment" element={<BillPayment />} />
-    <Route path="suachua" element={<RepairRequests />} />
     <Route path="yeuthich" element={<Favourite />} />
     <Route path="profile" element={<Profile />} />
     <Route path="/my-room" element={<MyRoom />} />
