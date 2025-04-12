@@ -2,8 +2,23 @@ import { useState, useEffect } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet-routing-machine";
-
+import { FaMapMarkerAlt } from "react-icons/fa";
 // ✅ Component điều khiển định tuyến
+import { renderToStaticMarkup } from "react-dom/server";
+
+const customIcon = new L.DivIcon({
+  className: "custom-icon",
+  html: renderToStaticMarkup(
+    <FaMapMarkerAlt style={{ color: "#007BFF", fontSize: "30px" }} />
+  ),
+});
+
+const iconMe = new L.DivIcon({
+  className: "custom-icon",
+  html: renderToStaticMarkup(
+    <FaMapMarkerAlt style={{ color: "#0008FF", fontSize: "30px" }} />
+  ),
+});
 function RoutingControl({ start, end }) {
   const map = useMap();
 
@@ -104,14 +119,14 @@ function MapDetail({ toado }) {
 
             {currentLocation && (
               <>
-                <Marker position={currentLocation}>
+                <Marker position={currentLocation} icon={iconMe}>
                   <Popup>{currentAddress || "Vị trí của tôi"}</Popup>
                 </Marker>
                 <MyLocationUpdater location={currentLocation} />
               </>
             )}
 
-            <Marker position={toado}>
+            <Marker position={toado} icon={customIcon}>
               <Popup>{destinationAddress || toado.join(", ")}</Popup>
             </Marker>
 

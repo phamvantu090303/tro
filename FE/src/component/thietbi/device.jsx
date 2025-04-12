@@ -38,7 +38,7 @@ const deviceIcons = {
 };
 export default function DeviceSelector({ data }) {
   return (
-    <div className="p-4 flex justify-center md:block">
+    <div className="mt-10 flex justify-center md:block">
       {data ? (
         <ul className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-y-5 gap-x-5 md:gap-x-0">
           {data.map((item) => (
