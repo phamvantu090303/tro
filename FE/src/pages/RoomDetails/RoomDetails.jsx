@@ -110,7 +110,7 @@ function RoomDetails() {
       case "Địa chỉ":
         ref = addressRef;
         break;
-      case "Danh gia":
+      case "Đánh giá":
         ref = reviewRef;
         break;
       default:
@@ -119,7 +119,13 @@ function RoomDetails() {
     ref?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const tabs = ["Tổng quan", "Tiện nghi", "Phòng trọ cùng khu vực", "Địa chỉ"];
+  const tabs = [
+    "Tổng quan",
+    "Tiện nghi",
+    "Phòng trọ cùng khu vực",
+    "Địa chỉ",
+    "Đánh giá",
+  ];
   const handlePile = async (e) => {
     if (!user) return alert("Vui lòng đăng nhập,đăng ký để được đặt cọc");
     try {
@@ -137,9 +143,9 @@ function RoomDetails() {
 
   const handleHeart = async (idUser, maphong) => {
     if (!user) return alert("Vui lòng đăng nhập, đăng ký để sử dụng");
-    if (isProcessing) return; // Chặn spam khi đang xử lý
+    if (isProcessing) return;
 
-    setIsProcessing(true); // Bắt đầu loading
+    setIsProcessing(true);
     try {
       await axiosInstance.post("/yeu-thich/create", {
         ma_phong: maphong,
@@ -149,13 +155,13 @@ function RoomDetails() {
     } catch (error) {
       console.log(error);
     } finally {
-      setIsProcessing(false); // Kết thúc loading
+      setIsProcessing(false);
     }
   };
 
   const handleDelete = async () => {
     if (!user) return alert("Vui lòng đăng nhập, đăng ký để sử dụng chức năng");
-    if (isProcessing) return; // Chặn spam khi đang xử lý
+    if (isProcessing) return;
 
     setIsProcessing(true);
     try {
@@ -311,7 +317,10 @@ function RoomDetails() {
                   {data?.mapDetail?.address}
                 </p>
               </div>
-              <span className="text-xl font-medium text-[#2F80ED] cursor-pointer">
+              <span
+                ref={addressRef}
+                className="text-xl font-medium text-[#2F80ED] cursor-pointer"
+              >
                 Hiển thị bản đồ
               </span>
             </motion.section>
@@ -375,14 +384,20 @@ function RoomDetails() {
             <motion.section
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={slideUpVariants}
+              viewport={{ once: true, amount: 0.1 }}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 1.2, ease: "easeOut" },
+                },
+              }}
             >
-              <ProductShowcase
-                data={roomSame}
-                limit={5}
-                desc={"Phòng trọ cùng khu vực"}
-              />
+              <h2 ref={nearbyRef} className="text-3xl font-semibold mb-4">
+                Phòng trọ cùng khu vực
+              </h2>
+              <ProductShowcase data={roomSame} limit={5} />
             </motion.section>
 
             {/*Bản đồ */}
@@ -397,6 +412,7 @@ function RoomDetails() {
               </h2>
               {toado ? <MapDetail toado={toado} /> : <p>Đang tải vị trí...</p>}
             </motion.section>
+
             <motion.section
               initial="hidden"
               whileInView="visible"

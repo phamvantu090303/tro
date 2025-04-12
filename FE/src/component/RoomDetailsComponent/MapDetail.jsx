@@ -3,18 +3,80 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet-routing-machine";
 
+// ✅ Component điều khiển định tuyến
+function RoutingControl({ start, end }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!start || !end) return;
+
+    const routingControl = L.Routing.control({
+      waypoints: [L.latLng(start[0], start[1]), L.latLng(end[0], end[1])],
+      createMarker: () => null,
+      showAlternatives: false,
+      routeWhileDragging: false,
+    }).addTo(map);
+
+    // Zoom để hiển thị cả điểm bắt đầu và kết thúc
+    const bounds = L.latLngBounds([start, end]);
+    map.fitBounds(bounds, { padding: [50, 50] });
+
+    return () => map.removeControl(routingControl);
+  }, [map, start, end]);
+
+  return null;
+}
+
+// ✅ Component giúp bản đồ bay đến vị trí hiện tại
+function MyLocationUpdater({ location }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (location) {
+      map.flyTo(location, 16);
+    }
+  }, [location, map]);
+
+  return null;
+}
+
+// ✅ Hàm chính MapDetail
 function MapDetail({ toado }) {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [showRoute, setShowRoute] = useState(false);
+  const [currentAddress, setCurrentAddress] = useState("");
+  const [destinationAddress, setDestinationAddress] = useState("");
 
+  // Lấy địa chỉ từ tọa độ
+  const fetchAddress = async (lat, lon, setAddress) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+      );
+      const data = await response.json();
+      setAddress(data.display_name || "Không xác định địa chỉ");
+    } catch {
+      setAddress("Không xác định địa chỉ");
+    }
+  };
+
+  // Lấy địa chỉ đến khi component mount
+  useEffect(() => {
+    if (toado) {
+      fetchAddress(toado[0], toado[1], setDestinationAddress);
+    }
+  }, [toado]);
+
+  // Lấy vị trí hiện tại
   const handleGetMyLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setCurrentLocation([
-            position.coords.latitude,
-            position.coords.longitude,
-          ]);
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const location = [lat, lon];
+          setCurrentLocation(location);
+          fetchAddress(lat, lon, setCurrentAddress);
         },
         () => {
           alert("Không thể lấy vị trí của bạn!");
@@ -39,14 +101,20 @@ function MapDetail({ toado }) {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution=""
             />
+
             {currentLocation && (
-              <Marker position={currentLocation}>
-                <Popup>Vị trí của tôi</Popup>
-              </Marker>
+              <>
+                <Marker position={currentLocation}>
+                  <Popup>{currentAddress || "Vị trí của tôi"}</Popup>
+                </Marker>
+                <MyLocationUpdater location={currentLocation} />
+              </>
             )}
+
             <Marker position={toado}>
-              <Popup>{toado}</Popup>
+              <Popup>{destinationAddress || toado.join(", ")}</Popup>
             </Marker>
+
             {showRoute && currentLocation && (
               <RoutingControl start={currentLocation} end={toado} />
             )}
@@ -70,25 +138,6 @@ function MapDetail({ toado }) {
       </div>
     </div>
   );
-}
-
-function RoutingControl({ start, end }) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (!start || !end) return;
-
-    const routingControl = L.Routing.control({
-      waypoints: [L.latLng(start[0], start[1]), L.latLng(end[0], end[1])],
-      routes: () => null,
-      createMarker: () => null, // Không hiển thị marker
-      showAlternatives: false, // Tắt tuyến đường thay thế
-    }).addTo(map);
-
-    return () => map.removeControl(routingControl);
-  }, [map, start, end]);
-
-  return null;
 }
 
 export default MapDetail;
