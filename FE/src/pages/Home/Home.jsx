@@ -12,7 +12,7 @@ import Slider from "react-slick";
 import { useNavigate } from "react-router";
 
 const slideUpVariants = {
-  hidden: { opacity: 0, y: 70 },
+  hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" } },
 };
 
@@ -161,8 +161,15 @@ function Homepage() {
           <motion.section
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={slideUpVariants}
+            viewport={{ once: true, amount: 0.1 }}
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 1.2, ease: "easeOut" },
+              },
+            }}
             className="mt-10"
           >
             <ProductShowcase
