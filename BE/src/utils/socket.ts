@@ -12,7 +12,7 @@ class SocketMessager {
     constructor(httpServer: HttpServer) {
         this.io = new Server(httpServer, {
             cors: {
-                origin: "http://localhost:3000",
+                origin: "http://localhost:3000, http://phongtro.hoclaptrinhiz.com, https://phongtro.hoclaptrinhiz.com",
                 methods: ["GET", "POST"],
                 credentials: true,
             },

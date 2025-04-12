@@ -43,10 +43,13 @@ const server = createServer(app);
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://phongtro.hoclaptrinhiz.com", // Địa chỉ của frontend
-    credentials: true, // Cho phép gửi cookie
+    origin: ["http://phongtro.hoclaptrinhiz.com", "https://phongtro.hoclaptrinhiz.com", "http://localhost:3000/"], // hoặc https nếu bạn bật SSL
+    credentials: true, // Cho phép frontend gửi cookie, token
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Chỉ định rõ các method
+    allowedHeaders: ["Content-Type", "Authorization"], // Headers cần thiết
   })
 );
+
 // app.use((req, res, next) => {
 //   res.header("Access-Control-Allow-Origin", "*");
 //   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");

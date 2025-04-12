@@ -25,13 +25,9 @@ const QuyenManagement = () => {
 
   const fetchQuyenList = async () => {
     try {
-<<<<<<< HEAD
-      const response = await axios.get(
-        "http://bephongtro.hoclaptrinhiz.com/phan_quyen/AllQuyen"
-      );
-=======
+
       const response = await axiosInstance.get("/phan_quyen/AllQuyen");
->>>>>>> 32244e68a8da0db195f5c708fcc539b5bbc5d187
+
       setQuyenList(response.data.data);
     } catch (error) {
       console.error("Lỗi khi tải danh sách quyền:", error);
@@ -40,13 +36,9 @@ const QuyenManagement = () => {
 
   const fetchFunctionList = async (quyenId) => {
     try {
-<<<<<<< HEAD
-      const response = await axios.post(
-        `http://bephongtro.hoclaptrinhiz.com/quyenchucnang/CheckQuyen/${quyenId}`
-=======
+
       const response = await axiosInstance.post(
         `/quyenchucnang/CheckQuyen/${quyenId}`
->>>>>>> 32244e68a8da0db195f5c708fcc539b5bbc5d187
       );
       setFunctionList(response.data.data);
       setSelectedFunctions(
@@ -67,11 +59,8 @@ const QuyenManagement = () => {
 
   const handleAssignFunctions = async () => {
     try {
-<<<<<<< HEAD
-      await axios.post(`http://bephongtro.hoclaptrinhiz.com/quyenchucnang/CreatQuyen`, {
-=======
+
       await axiosInstance.post(`/quyenchucnang/CreatQuyen`, {
->>>>>>> 32244e68a8da0db195f5c708fcc539b5bbc5d187
         id_quyen: selectedQuyen._id,
         functions: selectedFunctions,
       });
@@ -98,11 +87,8 @@ const QuyenManagement = () => {
   const handleAddQuyen = async (e) => {
     e.preventDefault();
     try {
-<<<<<<< HEAD
-      await axios.post("http://bephongtro.hoclaptrinhiz.com/phan_quyen/CreatQuyen", newQuyen);
-=======
+
       await axiosInstance.post("/phan_quyen/CreatQuyen", newQuyen);
->>>>>>> 32244e68a8da0db195f5c708fcc539b5bbc5d187
       alert("Thêm mới quyền thành công!");
       setNewQuyen({ ten_quyen: "", trang_thai: 1 });
       setIsAddFormVisible(false);
@@ -115,13 +101,9 @@ const QuyenManagement = () => {
   const handleUpdateQuyen = async (e) => {
     e.preventDefault();
     try {
-<<<<<<< HEAD
-      await axios.post(
-        `http://bephongtro.hoclaptrinhiz.com/phan_quyen/UpdateQuyen/${editQuyen._id}`,
-=======
+
       await axiosInstance.post(
         `/phan_quyen/UpdateQuyen/${editQuyen._id}`,
->>>>>>> 32244e68a8da0db195f5c708fcc539b5bbc5d187
         editQuyen
       );
       alert("Cập nhật quyền thành công!");
@@ -135,11 +117,8 @@ const QuyenManagement = () => {
   const handleChangeStatus = async (id, currentStatus) => {
     try {
       const newStatus = currentStatus === 1 ? 0 : 1;
-<<<<<<< HEAD
-      await axios.post(`http://bephongtro.hoclaptrinhiz.com/phan_quyen/UpdateStatus/${id}`, {
-=======
+
       await axiosInstance.post(`/phan_quyen/UpdateStatus/${id}`, {
->>>>>>> 32244e68a8da0db195f5c708fcc539b5bbc5d187
         trang_thai: newStatus,
       });
       setQuyenList((prev) =>
@@ -155,11 +134,8 @@ const QuyenManagement = () => {
 
   const handleDeleteQuyen = async (id) => {
     try {
-<<<<<<< HEAD
-      await axios.post(`http://bephongtro.hoclaptrinhiz.com/phan_quyen/DeleteQuyen/${id}`);
-=======
+
       await axiosInstance.post(`/phan_quyen/DeleteQuyen/${id}`);
->>>>>>> 32244e68a8da0db195f5c708fcc539b5bbc5d187
       alert("Xóa quyền thành công!");
       fetchQuyenList();
     } catch {
