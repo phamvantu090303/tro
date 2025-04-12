@@ -8,7 +8,6 @@ import UserAdmin from "../../pages/admin/home/Quanly/UserAdmin/UserAdmin";
 import MessAdmin from "../../component/Mess/messAdmin";
 import MapAdmin from "../../pages/admin/home/Quanly/Map";
 import ChartAdmin from "../../pages/admin/home/Chart/thongKeDienNang";
-import ThongKeYeuThich from "../../pages/admin/home/Chart/thongKeYeuThich";
 import ThongKeDanhGia from "../../pages/admin/home/Chart/thongKeDanhGia";
 
 import QuyenManagement from "../../pages/admin/home/Quanly/Quyen";
@@ -16,6 +15,7 @@ import DichvuAdmin from "../../pages/admin/home/Quanly/dichvuAdmin";
 import SuachuaAdmin from "../../pages/admin/home/Quanly/SuachuaAdmin";
 import HoadonThangAdmin from "../../pages/admin/home/Quanly/HoadonThang";
 import HoadonCocAdmin from "../../pages/admin/home/Quanly/HoadonCocAdmin";
+import ThongKeYeuThich from "../../pages/admin/home/Chart/thongKeYeuthich";
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
     switch (activeComponent) {

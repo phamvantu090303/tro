@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import axios from "axios";
 import { useSelector } from "react-redux";
 import { axiosInstance } from "../../../Axios";
 
@@ -82,11 +83,11 @@ const ElectricityInvoice = () => {
         if (data.status === "200" && data.data.length > 0) {
           setInvoices(data.data);
         } else {
-          setError(data.message);
+          setError("Không có dữ liệu hóa đơn");
         }
         setLoading(false);
-      } catch (error) {
-        setError(error.response.data.message);
+      } catch {
+        setError("Không thể tải dữ liệu hóa đơn");
         setLoading(false);
       }
     };
@@ -134,8 +135,7 @@ const ElectricityInvoice = () => {
 
   const handlePayment = async () => {
     try {
-
-      await axiosInstance.post("/hoa-don-thang/updateStatus", {
+      await axios.post("https://bephongtro.hoclaptrinhiz.com/api/hoa-don-thang/updateStatus", {
         id: selectedInvoice._id,
         trang_thai: "đã thanh toán",
       });
@@ -168,7 +168,7 @@ const ElectricityInvoice = () => {
   // Step 1: Danh sách hóa đơn
   if (step === 1) {
     return (
-      <div className="">
+      <div className="container mx-auto p-4 max-w-4xl">
         <h1 className="text-2xl font-bold mb-6 text-center">
           Danh Sách Hóa Đơn
         </h1>
@@ -232,7 +232,7 @@ const ElectricityInvoice = () => {
   // Step 2: Chi tiết hóa đơn
   if (step === 2 && selectedInvoice) {
     return (
-      <div className="">
+      <div className="container mx-auto p-4 max-w-4xl">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-center">Hóa Đơn Tiền Điện</h1>
           <button
@@ -250,29 +250,27 @@ const ElectricityInvoice = () => {
               <h2 className="text-lg font-semibold mb-2">
                 Thông tin khách hàng
               </h2>
-              <p className="text-gray-600 ">
+              <p className="text-gray-600">
                 Mã phòng: {selectedInvoice.ma_phong}
               </p>
-              <p className="text-gray-600 ">
-                Mã KH: {selectedInvoice.id_users}
-              </p>
+              <p className="text-gray-600">Mã KH: {selectedInvoice.id_users}</p>
             </div>
             <div>
               <h2 className="text-lg font-semibold mb-2">Chi tiết hóa đơn</h2>
-              <p className="text-gray-600 ">
+              <p className="text-gray-600">
                 Tháng:{" "}
                 {new Date(selectedInvoice.ngay_tao_hoa_don).toLocaleString(
                   "vi-VN",
                   { month: "long", year: "numeric" }
                 )}
               </p>
-              <p className="text-gray-600 ">
+              <p className="text-gray-600">
                 Số điện tiêu thụ: {selectedInvoice.so_dien_tieu_thu} kWh
               </p>
-              <p className="text-gray-600 ">
+              <p className="text-gray-600">
                 Tiền điện: {formatCurrency(selectedInvoice.tien_dien)}
               </p>
-              <p className="text-gray-600 ">
+              <p className="text-gray-600">
                 Tiền phòng: {formatCurrency(selectedInvoice.tien_phong)}
               </p>
               <p className="text-xl font-bold mt-2">
@@ -305,6 +303,35 @@ const ElectricityInvoice = () => {
         {/* Biểu đồ thống kê */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <Bar options={chartOptions} data={usageData} />
+        </div>
+
+        {/* Bảng chi tiết sử dụng */}
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold mb-4">Chi tiết sử dụng điện</h2>
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-center text-xl font-medium">
+                    Ngày
+                  </th>
+                  <th className="px-6 py-3 text-center text-xl font-medium">
+                    Số kWh
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {usageData.labels.map((day, index) => (
+                  <tr key={index}>
+                    <td className="px-6 py-4 text-lg text-gray-500">{day}</td>
+                    <td className="px-6 py-4 text-lg text-gray-500">
+                      {usageData.datasets[0].data[index]}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );

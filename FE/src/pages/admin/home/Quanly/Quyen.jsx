@@ -25,7 +25,9 @@ const QuyenManagement = () => {
 
   const fetchQuyenList = async () => {
     try {
+
       const response = await axiosInstance.get("/phan_quyen/AllQuyen");
+
       setQuyenList(response.data.data);
     } catch (error) {
       console.error("Lỗi khi tải danh sách quyền:", error);
@@ -34,6 +36,7 @@ const QuyenManagement = () => {
 
   const fetchFunctionList = async (quyenId) => {
     try {
+
       const response = await axiosInstance.post(
         `/quyenchucnang/CheckQuyen/${quyenId}`
       );
@@ -56,6 +59,7 @@ const QuyenManagement = () => {
 
   const handleAssignFunctions = async () => {
     try {
+
       await axiosInstance.post(`/quyenchucnang/CreatQuyen`, {
         id_quyen: selectedQuyen._id,
         functions: selectedFunctions,
@@ -83,6 +87,7 @@ const QuyenManagement = () => {
   const handleAddQuyen = async (e) => {
     e.preventDefault();
     try {
+
       await axiosInstance.post("/phan_quyen/CreatQuyen", newQuyen);
       alert("Thêm mới quyền thành công!");
       setNewQuyen({ ten_quyen: "", trang_thai: 1 });
@@ -96,6 +101,7 @@ const QuyenManagement = () => {
   const handleUpdateQuyen = async (e) => {
     e.preventDefault();
     try {
+
       await axiosInstance.post(
         `/phan_quyen/UpdateQuyen/${editQuyen._id}`,
         editQuyen
@@ -111,6 +117,7 @@ const QuyenManagement = () => {
   const handleChangeStatus = async (id, currentStatus) => {
     try {
       const newStatus = currentStatus === 1 ? 0 : 1;
+
       await axiosInstance.post(`/phan_quyen/UpdateStatus/${id}`, {
         trang_thai: newStatus,
       });
@@ -127,6 +134,7 @@ const QuyenManagement = () => {
 
   const handleDeleteQuyen = async (id) => {
     try {
+
       await axiosInstance.post(`/phan_quyen/DeleteQuyen/${id}`);
       alert("Xóa quyền thành công!");
       fetchQuyenList();

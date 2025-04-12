@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "https://bephongtro.hoclaptrinhiz.com",
   timeout: 10000,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
@@ -15,7 +15,7 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     } else if (authorization) {
       config.headers.Authorization = `${authorization}`;
-    } else {
+    } else {   
       console.log("token không tồn tại");
     }
     return config;

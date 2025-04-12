@@ -90,9 +90,10 @@ function Register() {
     }
 
     try {
+
       setLoading(true);
       const res = await axiosInstance.post("/auth/register", {
-        email: user.email,
+       email: user.email,
         password: user.password,
         username: user.username,
         ho_va_ten: user.hovaten,

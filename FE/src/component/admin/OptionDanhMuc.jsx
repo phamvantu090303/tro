@@ -1,4 +1,4 @@
-function OptionDanhMuc({ setTendanhmuc }) {
+export default function  OptionDanhMuc({ setTendanhmuc }) {
   const provinces = [
     "An Giang",
     "Bà Rịa - Vũng Tàu",
@@ -82,4 +82,4 @@ function OptionDanhMuc({ setTendanhmuc }) {
   );
 }
 
-export default OptionDanhMuc;
+// export default OptionDanhMuc;

@@ -1,18 +1,23 @@
-# Sử dụng base image Node.js
-FROM node:18
-
-# Set thư mục làm việc
-WORKDIR /var/www/html/TESTNE_MASTER/FE
-
-# Sao chép package.json và cài đặt dependencies
-COPY package*.json ./
+# Step 1: Install dependencies
+FROM node:18-alpine AS dependencies
+WORKDIR /app
+COPY package.json ./
 RUN npm install
 
-# Sao chép toàn bộ mã nguồn
+# Step 2: Build the application
+FROM node:18-alpine AS build
+WORKDIR /app
 COPY . .
+COPY --from=dependencies /app/node_modules ./node_modules
 
-# Expose port cho Vite
-EXPOSE 5173
+RUN npm run build
 
-# Chạy ứng dụng
-CMD ["npm", "run", "dev"]
+# Step 3: Serve using Nginx
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/.env ./
+
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

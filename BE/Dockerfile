@@ -1,17 +1,25 @@
-# Sử dụng Node.js 20
-FROM node:20
-
-WORKDIR /var/www/html/TESTNE_MASTER/BE
-
-# Copy và cài đặt dependencies
-COPY package*.json ./
+# Step 1: Install dependencies
+FROM node:18-alpine AS dependencies
+WORKDIR /app
+COPY package.json ./
 RUN npm install
 
-# Copy mã nguồn vào container
+# Step 2: Build source code (TypeScript, etc.)
+FROM node:18-alpine AS build
+WORKDIR /app
 COPY . .
+COPY --from=dependencies /app/node_modules ./node_modules
+RUN npm run build
 
-# Cài đặt Vite để chạy trong chế độ phát triển
+# Step 3: Run application
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+# Chỉ copy những gì cần thiết để chạy app
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package.json ./
+COPY --from=dependencies /app/node_modules ./node_modules  
+COPY --from=build /app/.env ./                             
+
 EXPOSE 5000
-
-# Sử dụng lệnh dev của Vite để chạy trong chế độ phát triển
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
