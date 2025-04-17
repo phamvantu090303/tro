@@ -9,7 +9,7 @@ import {
 } from "../utils/getAccesstoken";
 import { UserVerifyStatus } from "../constants/enum";
 import { ObjectId } from "mongodb";
-import jwkToPemModule from 'jwk-to-pem';
+import jwkToPemModule from "jwk-to-pem";
 
 export class UserService {
   async registerUser(body: any): Promise<string> {
@@ -112,6 +112,15 @@ export class UserService {
     update.cccd = cccd ?? update.cccd;
 
     await update.save();
+  }
+
+  async deleteUserService(body: any): Promise<void> {
+    const { id } = body;
+    const delet = await UserModel.findById(id);
+    if (!delet) {
+      throw new Error("User không tồn tại");
+    }
+    await UserModel.findByIdAndDelete(id);
   }
 
   async getMe(user_id: string) {
@@ -257,51 +266,55 @@ export class UserService {
     return result[0] || null;
   }
 
-async googleLogin(token: string): Promise<string> {
-  const response = await axios.get("https://www.googleapis.com/oauth2/v3/certs");
+  async googleLogin(token: string): Promise<string> {
+    const response = await axios.get(
+      "https://www.googleapis.com/oauth2/v3/certs"
+    );
 
-  let payload: any;
-  for (const key of response.data.keys) {
-    try {
-      const pemKey = jwkToPemModule(key);
-      payload = await verifyToken(token, pemKey);
-      break;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log("Key failed:", key.kid, error.message);
-      } else {
-        console.log("Key failed:", key.kid, String(error));
+    let payload: any;
+    for (const key of response.data.keys) {
+      try {
+        const pemKey = jwkToPemModule(key);
+        payload = await verifyToken(token, pemKey);
+        break;
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log("Key failed:", key.kid, error.message);
+        } else {
+          console.log("Key failed:", key.kid, String(error));
+        }
+        continue;
       }
-      continue;
     }
-  }
 
-  if (!payload) {
-    throw new Error("Invalid or unverifiable token");
-  }
+    if (!payload) {
+      throw new Error("Invalid or unverifiable token");
+    }
 
-  if (payload.aud !== process.env.GG_CLIENT_ID) {
-    throw new Error("Invalid token: Audience mismatch");
-  }
+    if (payload.aud !== process.env.GG_CLIENT_ID) {
+      throw new Error("Invalid token: Audience mismatch");
+    }
 
-  const { email, name, given_name } = payload;
-  let user = await UserModel.findOne({ email });
-  if (!user) {
-    user = new UserModel({ 
-      email: email, 
-      username: name, 
-      password: null, 
-      ho_va_ten: given_name, 
-      verify: UserVerifyStatus.Verified 
+    const { email, name, given_name } = payload;
+    let user = await UserModel.findOne({ email });
+    if (!user) {
+      user = new UserModel({
+        email: email,
+        username: name,
+        password: null,
+        ho_va_ten: given_name,
+        verify: UserVerifyStatus.Verified,
+      });
+      await user.save();
+    }
+    const authToken = await getAccesstoken({
+      _id: user._id,
+      verify:
+        user.verify === UserVerifyStatus.Verified
+          ? UserVerifyStatus.Verified
+          : UserVerifyStatus.Unverified,
     });
-    await user.save();
+
+    return authToken;
   }
-  const authToken = await getAccesstoken({
-    _id: user._id,
-    verify: user.verify === UserVerifyStatus.Verified ? UserVerifyStatus.Verified : UserVerifyStatus.Unverified
-  });
-
-  return authToken;
 }
-}
-

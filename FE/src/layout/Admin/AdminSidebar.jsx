@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import logo from "../../assets/logo/Logo.svg";
@@ -7,9 +7,11 @@ import { IoIosLogOut } from "react-icons/io";
 import { FaMap } from "react-icons/fa";
 import { FaBars } from "react-icons/fa";
 import { IoChevronDown, IoChevronUp } from "react-icons/io5";
+import { logoutAdmin } from "../../Store/filterAdmin";
 
 export default function AdminSidebar({ setActiveComponent, activeComponent }) {
   const { admin } = useSelector((state) => state.authAdmin);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdowns, setDropdowns] = useState({});
@@ -23,6 +25,10 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
       ...prev,
       [key]: !prev[key],
     }));
+  };
+  const handleLogout = () => {
+    dispatch(logoutAdmin());
+    navigate("/admin/login");
   };
 
   // Danh sách items menu
@@ -62,14 +68,14 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
     },
     {
       key: "mess",
-      label: "Mess",
+      label: "Nhắn tin",
       icon: (
         <MdOutlineAdminPanelSettings className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
       ),
     },
     {
       key: "map",
-      label: "Map",
+      label: "Bản đồ",
       icon: (
         <FaMap className="2xl:text-xl text-sm transition-transform duration-300 hover:rotate-12" />
       ),
@@ -91,16 +97,16 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
   return (
     <>
       <button
-        className="md:hidden fixed top-4 left-4 z-50 text-white bg-gray-800 p-2 rounded-lg"
+        className="md:hidden fixed top-0 left-0 z-10 text-white bg-gray-800 p-2 "
         onClick={toggleSidebar}
       >
         <FaBars className="text-xl" />
       </button>
 
       <aside
-        className={`fixed inset-y-0 left-0 min-w-56 bg-customBg text-white border-r shadow-lg transform transition-transform duration-300 ease-in-out z-40 min-h-screen
-          ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-          md:relative md:w-1/6 md:translate-x-0`}
+        className={`fixed inset-y-0 left-0 min-w-56 h-screen bg-customBg text-white border-r shadow-lg transform transition-transform duration-300 ease-in-out z-40 overflow-auto
+    ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+    md:relative md:w-1/6 md:translate-x-0`}
       >
         <div className="flex flex-col h-full justify-between">
           {/* Logo */}
@@ -191,7 +197,7 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
               </div>
             </div>
             <button
-              onClick={() => navigate("/admin/login")}
+              onClick={handleLogout}
               className="text-xl bg-gray-700 p-2 rounded transition-all duration-300 hover:bg-red-600 hover:scale-110"
             >
               <IoIosLogOut className="text-xl" />

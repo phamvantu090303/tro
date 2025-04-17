@@ -1,4 +1,4 @@
-function OptionDanhMuc({ setTendanhmuc }) {
+function OptionDanhMuc({ setTenDanhMuc, value }) {
   const provinces = [
     "An Giang",
     "Bà Rịa - Vũng Tàu",
@@ -57,7 +57,7 @@ function OptionDanhMuc({ setTendanhmuc }) {
     "Thanh Hóa",
     "Thừa Thiên Huế",
     "Tiền Giang",
-    "TP Hồ Chí Minh",
+    "Hồ Chí Minh",
     "Trà Vinh",
     "Tuyên Quang",
     "Vĩnh Long",
@@ -69,7 +69,8 @@ function OptionDanhMuc({ setTendanhmuc }) {
     <div className="relative w-full">
       <select
         className="border bg-white border-gray-300 p-3 rounded-lg w-full relative z-10"
-        onChange={(e) => setTendanhmuc(e.target.value)}
+        value={value}
+        onChange={(e) => setTenDanhMuc(e.target.value)}
       >
         <option value="">Chọn tỉnh/thành</option>
         {provinces.map((province, index) => (

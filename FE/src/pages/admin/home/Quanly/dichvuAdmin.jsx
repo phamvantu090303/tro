@@ -71,10 +71,25 @@ function DichvuAdmin() {
       tien_wifi: 0,
     });
   };
+  const handleDeleteAll = () => {};
   return (
     <div className="min-h-screen">
       <div className="flex gap-5 ">
         <SearchBar />
+        <button
+          className="bg-customBlue text-white p-3 rounded-lg hover:bg-sky-600"
+          onClick={() => {
+            dispatch(OpenModalForm({ modalType: "create", id: null }));
+          }}
+        >
+          Thêm dịch vụ
+        </button>
+        <button
+          className="bg-red-600 text-white p-3 rounded-lg hover:bg-sky-600"
+          onClick={handleDeleteAll}
+        >
+          Xóa tất cả
+        </button>
       </div>
       <RoomTable
         title={"Dịch vụ"}
@@ -85,7 +100,7 @@ function DichvuAdmin() {
         handleOpenModalEdit={handleOpenModalEdit}
       />
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30 ">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 ">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] w-1/4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold mb-4">
@@ -149,7 +164,7 @@ function DichvuAdmin() {
               onClick={handleCreate}
               className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
             >
-              Tạo
+              {modalType === "edit" ? "Chỉnh sửa" : "Tạo"}
             </button>
           </div>
         </div>

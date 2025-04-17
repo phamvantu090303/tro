@@ -3,15 +3,24 @@ import SearchBar from "../../../../component/admin/SearchBar";
 import RoomTable from "../../../../component/admin/RoomTable";
 import { usePhongTro } from "../../../../Context/PhongTroContext";
 import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  CloseModalForm,
+  OpenModalForm,
+} from "../../../../Store/filterModalForm";
 
 function ThietBiAdmin() {
-  const [modal, setModal] = useState(false);
-  const [maphong, setMaphong] = useState("");
-  const [thietbi, setThietbi] = useState("");
-  const [soluong, setSoluong] = useState("");
-  const [trangThai, setTrangthai] = useState(0);
+  const [dataThietbi, setDataThietbi] = useState({
+    ma_phong: "",
+    ten_thiet_bi: "",
+    so_luong_thiet_bi: "",
+    trang_thai: 0,
+  });
   const { phongTro } = usePhongTro();
-
+  const { modalType, idModal, isOpen } = useSelector(
+    (state) => state.ModalForm
+  );
+  const dispatch = useDispatch();
   const {
     data: thietBi,
     createData,
@@ -55,22 +64,33 @@ function ThietBiAdmin() {
     </select>
   );
 
-  const handleCreate = async () => {
-    const success = await createData({
-      ma_phong: maphong,
-      ten_thiet_bi: thietbi,
-      so_luong_thiet_bi: soluong,
-      trang_thai: trangThai,
+  const resetData = () => {
+    setDataThietbi({
+      ma_phong: "",
+      ten_thiet_bi: "",
+      so_luong_thiet_bi: "",
+      trang_thai: 0,
     });
-    if (success) {
-      setModal(false);
-      setMaphong("");
-      setThietbi("");
-      setSoluong("");
-      setTrangthai("");
-    }
+    dispatch(CloseModalForm());
   };
 
+  const handleCreateThietbi = async () => {
+    await createData({
+      ma_phong: dataThietbi.ma_phong,
+      ten_thiet_bi: dataThietbi.ten_thiet_bi,
+      so_luong_thiet_bi: dataThietbi.so_luong_thiet_bi,
+      trang_thai: dataThietbi.trang_thai,
+    });
+  };
+  const handleOpenModalEdit = async (room) => {
+    setDataThietbi({
+      ma_phong: room.ma_phong,
+      ten_thiet_bi: room.ten_thiet_bi,
+      so_luong_thiet_bi: room.so_luong_thiet_bi,
+      trang_thai: room.trang_thai,
+    });
+    dispatch(OpenModalForm({ modalType: "edit", id: room._id ?? null }));
+  };
   const handleDeleteAll = async () => {
     await DeleteAllData();
   };
@@ -84,19 +104,28 @@ function ThietBiAdmin() {
   const handleUpdateTrangThai = async (id, value) => {
     await UpdateData(id, { trang_thai: value });
   };
-
+  const handleCreate = async () => {
+    if (modalType === "create") {
+      await handleCreateThietbi();
+    } else if (modalType === "edit") {
+      await UpdateData(idModal, dataThietbi);
+    }
+    resetData();
+  };
   return (
-    <div className="space-y-10">
+    <div>
       <div className="flex gap-5 ">
         <SearchBar />
         <button
-          className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
-          onClick={() => setModal(true)}
+          className="bg-customBlue text-white p-3 rounded-lg hover:bg-sky-600"
+          onClick={() =>
+            dispatch(OpenModalForm({ modalType: "create", id: null }))
+          }
         >
           Thêm thiết bị
         </button>
         <button
-          className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
+          className="bg-red-600 text-white p-3 rounded-lg hover:bg-sky-600"
           onClick={handleDeleteAll}
         >
           Xóa tất cả
@@ -109,16 +138,20 @@ function ThietBiAdmin() {
         roomsPerPage={10}
         renderStatus={renderStatus}
         handleDelete={handleDelete}
-        updateTrangthai={handleUpdateTrangThai}
+        handleOpenModalEdit={handleOpenModalEdit}
       />
-      {modal && (
+      {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px]">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold mb-4">Thêm thiết bị </h2>
+              <h2 className="text-xl font-semibold mb-4">
+                {modalType === "create"
+                  ? "Thêm thiết bị"
+                  : "Chỉnh sửa thiết bị"}{" "}
+              </h2>
               <button
                 className="bg-red-500 text-white p-2 rounded-lg"
-                onClick={() => setModal(null)}
+                onClick={resetData}
               >
                 Close
               </button>
@@ -127,8 +160,13 @@ function ThietBiAdmin() {
               <div className="flex gap-5">
                 <select
                   className="border py-3 px-5 rounded-md w-full border-gray-500"
-                  onChange={(e) => setMaphong(e.target.value)}
-                  name="maMap"
+                  onChange={(e) =>
+                    setDataThietbi((prevData) => ({
+                      ...prevData,
+                      ma_phong: e.target.value,
+                    }))
+                  }
+                  value={dataThietbi.ma_phong}
                 >
                   <option value="">Chọn mã phòng</option>
                   {phongTro.map((dm) => (
@@ -138,8 +176,14 @@ function ThietBiAdmin() {
                   ))}
                 </select>
                 <select
-                  onChange={(e) => setThietbi(e.target.value)}
+                  onChange={(e) =>
+                    setDataThietbi((prevData) => ({
+                      ...prevData,
+                      ten_thiet_bi: e.target.value,
+                    }))
+                  }
                   className="border py-3 px-5 rounded-md w-full  border-gray-500"
+                  value={dataThietbi.ten_thiet_bi}
                 >
                   <option value="">Chọn thiết bị</option>
                   <option value="Quạt hơi nước">Quạt hơi nước</option>
@@ -169,11 +213,23 @@ function ThietBiAdmin() {
                 type="number"
                 placeholder="Số lượng thiết bị"
                 className="py-3 px-5 border border-gray-500 rounded-lg"
-                onChange={(e) => setSoluong(e.target.value)}
+                onChange={(e) =>
+                  setDataThietbi((prevData) => ({
+                    ...prevData,
+                    so_luong_thiet_bi: e.target.value,
+                  }))
+                }
+                value={dataThietbi.so_luong_thiet_bi}
               />
               <select
-                onChange={(e) => setTrangthai(e.target.value)}
+                onChange={(e) =>
+                  setDataThietbi((prevData) => ({
+                    ...prevData,
+                    trang_thai: e.target.value,
+                  }))
+                }
                 className="border bg-white border-gray-300 px-3 py-3 rounded-lg w-[60%]"
+                value={dataThietbi.trang_thai}
               >
                 <option value="">Chọn trạng thái</option>
                 <option value={1}>Hoạt động</option>
@@ -184,7 +240,7 @@ function ThietBiAdmin() {
               onClick={handleCreate}
               className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
             >
-              Tạo
+              {modalType === "create" ? "Thêm" : "Chỉnh sửa"}
             </button>
           </div>
         </div>
