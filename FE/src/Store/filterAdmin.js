@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  token: localStorage.getItem("authorization") || null, // Lấy token từ localStorage
   admin: JSON.parse(localStorage.getItem("admin")) || null,
+  token: localStorage.getItem("authorization") || null,
 };
 
 const authSlice = createSlice({
@@ -20,7 +20,7 @@ const authSlice = createSlice({
       state.token = null;
       state.admin = null;
       state.isAuthenticated = false;
-      localStorage.removeItem("access_token");
+      localStorage.removeItem("authorization");
       localStorage.removeItem("admin");
     },
   },

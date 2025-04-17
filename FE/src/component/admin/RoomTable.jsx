@@ -1,5 +1,3 @@
-// src/component/admin/RoomTable.jsx
-import React from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import Pagination from "../Phantrang/Pagination";
@@ -51,18 +49,21 @@ function RoomTable({
   };
 
   // Mặc định cho trạng thái nếu không truyền renderStatus
-  const defaultRenderStatus = (status) => (
-    <span
-      className={`px-2 py-1 text-white text-sm rounded-lg ${
-        Availability[status]?.bgColor || "bg-red-500"
-      }`}
-    >
-      {Availability[status]?.text || "Không xác định"}
-    </span>
-  );
+  const defaultRenderStatus = (status) => {
+    return (
+      <span
+        className={`px-2 py-1 text-white text-sm rounded-lg ${
+          Availability[status]?.bgColor || "bg-red-500"
+        }`}
+      >
+        {Availability[status]?.text || "Không xác định"}
+      </span>
+    );
+  };
 
   // Render ô trong bảng
   const defaultRenderCell = (room, key) => {
+    console.log("room", room);
     if (key === "so_luong_nguoi") {
       return (
         <div className="flex items-center">
@@ -76,7 +77,7 @@ function RoomTable({
     if (key === "trang_thai" || key === "status") {
       return renderStatus
         ? renderStatus(room)
-        : defaultRenderStatus(room.trang_thai || room.status);
+        : defaultRenderStatus(room.trang_thai ?? room.status);
     }
     if (key === "is_block") {
       return renderStatus

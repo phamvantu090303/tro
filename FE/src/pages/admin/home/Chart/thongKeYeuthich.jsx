@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -165,12 +164,7 @@ export default function ThongKeYeuThich() {
   };
 
   return (
-    <motion.div
-      variants={itemVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-10"
-    >
+    <motion.div variants={itemVariants} initial="hidden" animate="visible">
       <header className="">
         <h1 className="text-4xl font-extrabold text-gray-800 text-center tracking-tight">
           Thống Kê Yêu Thích

@@ -25,7 +25,7 @@ function YeuThichAdmin() {
   }, []);
 
   return (
-    <div className="space-y-10">
+    <div>
       <div className="flex gap-5 ">
         <SearchBar />
       </div>

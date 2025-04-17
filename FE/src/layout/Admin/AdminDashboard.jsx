@@ -5,7 +5,7 @@ import ThietBiAdmin from "../../pages/admin/home/Quanly/ThietBiAdmin";
 import AnhPhongAdmin from "../../pages/admin/home/Quanly/AnhPhongAdmin";
 import YeuThichAdmin from "../../pages/admin/home/Quanly/YeuThichAdmin";
 import UserAdmin from "../../pages/admin/home/Quanly/UserAdmin/UserAdmin";
-import MessAdmin from "../../component/Mess/messAdmin";
+import MessAdmin from "../../pages/admin/home/Quanly/messAdmin";
 import MapAdmin from "../../pages/admin/home/Quanly/Map";
 import ChartAdmin from "../../pages/admin/home/Chart/thongKeDienNang";
 import ThongKeDanhGia from "../../pages/admin/home/Chart/thongKeDanhGia";
@@ -57,7 +57,7 @@ function AdminDashboard({ activeComponent }) {
   };
 
   return (
-    <div className="w-full h-full bg-gray-100 p-6 rounded-lg shadow-lg text-black">
+    <div className="w-full min-h-screen bg-gray-100 p-6 rounded-lg shadow-lg text-black">
       <div>{renderComponent()}</div>
     </div>
   );
