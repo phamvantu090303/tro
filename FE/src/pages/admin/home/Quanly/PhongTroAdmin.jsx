@@ -7,6 +7,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import SearchBar from "../../../../component/admin/SearchBar";
 import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  CloseModalForm,
+  OpenModalForm,
+} from "../../../../Store/filterModalForm";
 
 function PhongTroAdmin() {
   const [chucnang, setChucnang] = useState("Tất cả các phòng");
@@ -16,25 +21,28 @@ function PhongTroAdmin() {
   const [maps, setMaps] = useState([]);
   const [hienthiAnh, setHienthiAnh] = useState([]);
   const [phongTroMoi, setPhongTroMoi] = useState({
-    maPhong: "",
-    maMap: "",
-    madanhmuc: "",
-    tenPhongtro: "",
-    mota: "",
-    dientich: "",
-    giatien: "",
-    trangthai: "",
-    soLuongnguoi: "",
-    diachi: "",
+    ma_phong: "",
+    ma_map: "",
+    ma_danh_muc: "",
+    ten_phong_tro: "",
+    mo_ta: "",
+    dien_tich: "",
+    gia_tien: "",
+    trang_thai: "",
+    so_luong_nguoi: "",
+    dia_chi: "",
   });
   const {
     data: phongTro,
     createData,
+    UpdateData,
     DeleteData,
     DeleteAllData,
-    UpdateData,
     fetchData,
   } = useApiManagerAdmin("/phongTro");
+
+  const { modalType, idModal } = useSelector((state) => state.ModalForm);
+  const dispatch = useDispatch();
   const headers = [
     { label: "Mã phòng", key: "ma_phong" },
     { label: "Tên phòng trọ", key: "ten_phong_tro" },
@@ -68,12 +76,16 @@ function PhongTroAdmin() {
     }));
   };
 
-  const handleAddImage = async (event) => {
-    if (event.target.files) {
-      const fileArray = Array.from(event.target.files);
-      const previewArray = fileArray.map((file) => URL.createObjectURL(file));
-      setHienthiAnh((prevImages) => [...prevImages, ...previewArray]);
-      setImages((prevImages) => [...prevImages, ...fileArray]);
+  const handleAddImage = (event) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0]; // chỉ lấy ảnh đầu tiên
+      const preview = URL.createObjectURL(file);
+
+      setHienthiAnh([preview]); // thay ảnh cũ
+      setImages([file]); // thay ảnh cũ
+
+      event.target.value = null; // reset input
     }
   };
 
@@ -107,42 +119,50 @@ function PhongTroAdmin() {
     return urls;
   };
 
+  const handleRemoveImage = (indexToRemove) => {
+    setHienthiAnh((prev) => prev.filter((_, i) => i !== indexToRemove));
+    setImages((prev) => prev.filter((_, i) => i !== indexToRemove));
+  };
+
+  const resetData = () => {
+    setPhongTroMoi({
+      ma_phong: "",
+      ma_map: "",
+      ma_danh_muc: "",
+      ten_phong_tro: "",
+      mo_ta: "",
+      dien_tich: "",
+      gia_tien: "",
+      trang_thai: "",
+      so_luong_nguoi: "",
+      dia_chi: "",
+    });
+    setImages([]);
+    setHienthiAnh([]);
+    setPage(1);
+    dispatch(CloseModalForm());
+  };
+
   const handleCreateRoom = async () => {
     const urlsImg = await upload(images);
     if (!urlsImg.length) {
       toast.error("Không có ảnh để tạo phòng!");
       return;
     }
-
     await createData({
-      ma_phong: phongTroMoi.maPhong,
-      ma_map: phongTroMoi.maMap,
+      ma_phong: phongTroMoi.ma_phong,
+      ma_map: phongTroMoi.ma_map,
       anh_phong: urlsImg.join(", "),
-      ma_danh_muc: phongTroMoi.madanhmuc,
-      ten_phong_tro: phongTroMoi.tenPhongtro,
-      mo_ta: phongTroMoi.mota,
-      dia_chi: phongTroMoi.diachi,
-      dien_tich: phongTroMoi.dientich,
-      gia_tien: Number(phongTroMoi.giatien),
-      trang_thai: Number(phongTroMoi.trangthai),
-      so_luong_nguoi: Number(phongTroMoi.soLuongnguoi),
+      ma_danh_muc: phongTroMoi.ma_danh_muc,
+      ten_phong_tro: phongTroMoi.ten_phong_tro,
+      mo_ta: phongTroMoi.mo_ta,
+      dia_chi: phongTroMoi.dia_chi,
+      dien_tich: phongTroMoi.dien_tich,
+      gia_tien: Number(phongTroMoi.gia_tien),
+      trang_thai: Number(phongTroMoi.trang_thai),
+      so_luong_nguoi: Number(phongTroMoi.so_luong_nguoi),
     });
-    setPage(1); // Quay lại trang danh sách
-    setPhongTroMoi({
-      // Reset form
-      maPhong: "",
-      maMap: "",
-      madanhmuc: "",
-      tenPhongtro: "",
-      mota: "",
-      dientich: "",
-      giatien: "",
-      trangthai: "",
-      soLuongnguoi: "",
-      diachi: "",
-    });
-    setImages([]);
-    setHienthiAnh([]);
+    resetData();
   };
 
   const handleDelete = async (room) => {
@@ -155,8 +175,34 @@ function PhongTroAdmin() {
     return true;
   });
 
+  const handleCreate = async () => {
+    if (modalType === "create") {
+      await handleCreateRoom();
+    } else if (modalType === "edit") {
+      await UpdateData(idModal, phongTroMoi);
+    }
+    resetData();
+  };
+  const handleOpenModalEdit = (room) => {
+    dispatch(OpenModalForm({ modalType: "edit", id: room.ma_phong ?? null }));
+    setPhongTroMoi({
+      ma_phong: room.ma_phong,
+      ma_map: room.ma_map,
+      ma_danh_muc: room.ma_danh_muc,
+      ten_phong_tro: room.ten_phong_tro,
+      mo_ta: room.mo_ta,
+      dien_tich: room.dien_tich,
+      gia_tien: room.gia_tien,
+      trang_thai: room.trang_thai,
+      so_luong_nguoi: room.so_luong_nguoi,
+      dia_chi: room.dia_chi,
+    });
+    setHienthiAnh(room.anh_phong?.split(", ") || []);
+    setPage(2);
+  };
+
   return (
-    <div className="p-4 w-full">
+    <div className="space-y-4">
       {page === 1 && (
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Room</h2>
@@ -181,10 +227,19 @@ function PhongTroAdmin() {
             <div className="flex items-center gap-4">
               <SearchBar />
               <button
-                className="text-base bg-red-500 text-white rounded-full py-2 px-3"
-                onClick={() => setPage(2)}
+                className="text-base bg-customBlue text-white rounded-full py-2 px-3"
+                onClick={() => {
+                  dispatch(OpenModalForm({ modalType: "create", id: null }));
+                  setPage(2);
+                }}
               >
                 + Thêm phòng trọ
+              </button>
+              <button
+                className="text-base bg-red-600 text-white rounded-full py-2 px-3"
+                onClick={DeleteAllData}
+              >
+                Xóa tất cả phòng
               </button>
             </div>
           </div>
@@ -194,6 +249,7 @@ function PhongTroAdmin() {
             title="Tất cả phòng trọ"
             headers={headers}
             handleDelete={handleDelete}
+            handleOpenModalEdit={handleOpenModalEdit}
           />
         </div>
       )}
@@ -201,10 +257,12 @@ function PhongTroAdmin() {
         <div className="space-y-6">
           <div
             className="flex items-center gap-3 cursor-pointer"
-            onClick={() => setPage(1)}
+            onClick={resetData}
           >
             <IoMdArrowRoundBack size={25} />
-            <h2 className="text-2xl font-bold">Thêm phòng trọ</h2>
+            <h2 className="text-2xl font-bold">
+              {modalType === "edit" ? "Chỉnh sửa phòng trọ" : "Thêm phòng trọ"}
+            </h2>
           </div>
 
           {/* Ảnh */}
@@ -212,19 +270,26 @@ function PhongTroAdmin() {
             <p className="text-xl font-medium mb-4">Ảnh phòng</p>
             <div className="flex space-x-2 overflow-x-auto">
               {hienthiAnh.map((src, index) => (
-                <img
-                  src={src}
-                  key={index}
-                  alt={`Uploaded ${index}`}
-                  className="w-[200px] h-[120px] object-contain"
-                />
+                <div key={index} className="relative w-[200px] h-[120px]">
+                  <img
+                    src={src}
+                    alt={`Uploaded ${index}`}
+                    className="w-full h-full object-cover rounded"
+                  />
+                  <button
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
               ))}
+
               <label className="w-[200px] h-[120px] border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center text-gray-500 cursor-pointer">
                 Add image
                 <input
                   type="file"
                   accept="image/*"
-                  multiple
                   className="hidden"
                   onChange={handleAddImage}
                 />
@@ -239,8 +304,8 @@ function PhongTroAdmin() {
             <p className="text-xl font-medium mb-4">Chi tiết phòng</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                { label: "Mã phòng", name: "maPhong", type: "text" },
-                { label: "Tên phòng", name: "tenPhongtro", type: "text" },
+                { label: "Mã phòng", name: "ma_phong", type: "text" },
+                { label: "Tên phòng", name: "ten_phong_tro", type: "text" },
               ].map(({ label, name, type }) => (
                 <div key={name}>
                   <p>{label}</p>
@@ -259,9 +324,9 @@ function PhongTroAdmin() {
                 <p>Mã map</p>
                 <select
                   className="border p-2 rounded-md w-full mt-2"
-                  value={phongTroMoi.maMap}
+                  value={phongTroMoi.ma_map}
                   onChange={handleChange}
-                  name="maMap"
+                  name="ma_map"
                 >
                   <option value="">-- Chọn mã map--</option>
                   {maps.map((dm) => (
@@ -276,9 +341,9 @@ function PhongTroAdmin() {
                 <p>Trạng thái</p>
                 <select
                   className="border p-2 rounded-md w-full mt-2"
-                  value={phongTroMoi.trangthai}
+                  value={phongTroMoi.trang_thai}
                   onChange={handleChange}
-                  name="trangthai"
+                  name="trang_thai"
                 >
                   <option value={0}>Đã cho thuê</option>
                   <option value={1}>Còn trống</option>
@@ -290,9 +355,9 @@ function PhongTroAdmin() {
                 <p>Danh mục</p>
                 <select
                   className="border p-2 rounded-md w-full mt-2"
-                  value={phongTroMoi.madanhmuc}
+                  value={phongTroMoi.ma_danh_muc}
                   onChange={handleChange}
-                  name="madanhmuc"
+                  name="ma_danh_muc"
                 >
                   <option value="">-- Chọn danh mục --</option>
                   {danhMuc.map((dm) => (
@@ -304,10 +369,10 @@ function PhongTroAdmin() {
               </div>
 
               {[
-                { label: "Số người", name: "soLuongnguoi" },
-                { label: "Giá tiền", name: "giatien" },
-                { label: "Diện tích", name: "dientich" },
-                { label: "Địa chỉ", name: "diachi" },
+                { label: "Số người", name: "so_luong_nguoi" },
+                { label: "Giá tiền", name: "gia_tien" },
+                { label: "Diện tích", name: "dien_tich" },
+                { label: "Địa chỉ", name: "dia_chi" },
               ].map(({ label, name }) => (
                 <div key={name}>
                   <p>{label}</p>
@@ -325,8 +390,8 @@ function PhongTroAdmin() {
               <textarea
                 placeholder="Mô tả phòng"
                 className="border p-2 rounded-md w-full mt-2 col-span-1 md:col-span-2"
-                name="mota"
-                value={phongTroMoi.mota}
+                name="mo_ta"
+                value={phongTroMoi.mo_ta}
                 onChange={handleChange}
               ></textarea>
             </div>
@@ -343,10 +408,10 @@ function PhongTroAdmin() {
           </div>
 
           <button
-            onClick={handleCreateRoom}
+            onClick={handleCreate}
             className="py-4 px-10 rounded-lg bg-indigo-950 text-white text-xl font-bold"
           >
-            Tạo phòng
+            {modalType === "edit" ? "Chỉnh sửa phòng" : "Tạo phòng"}
           </button>
         </div>
       )}

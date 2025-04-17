@@ -7,18 +7,25 @@ import {
   Circle,
   useMap,
 } from "react-leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { axiosInstance } from "../../../../../Axios";
 import { usePhongTro } from "../../../../Context/PhongTroContext";
 import RoomTable from "../../../../component/admin/RoomTable";
-import { FaRegEdit } from "react-icons/fa";
+import { FaMapMarkerAlt, FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
 import ModalMap from "../../../../component/admin/ModalMap/ModalMap";
 import { OpenModalForm } from "../../../../Store/filterModalForm";
 import { openConfirmModal } from "../../../../Store/filterConfirmModal";
 import { useDispatch, useSelector } from "react-redux";
 import ModalConFirm from "../../../../component/ModalConfirm";
-
+import { renderToStaticMarkup } from "react-dom/server";
+const customIcon = new L.DivIcon({
+  className: "custom-icon",
+  html: renderToStaticMarkup(
+    <FaMapMarkerAlt style={{ color: "#005BFF", fontSize: "30px" }} />
+  ),
+});
 export default function MapAdmin() {
   const dispatch = useDispatch();
   const [locations, setLocations] = useState({});
@@ -35,7 +42,7 @@ export default function MapAdmin() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [idModal, setIdModal] = useState(null);
   const [idModal1, setIdModal1] = useState(null);
-  const { isOpen, modalType } = useSelector((state) => state.ModalForm);
+  const { isOpen } = useSelector((state) => state.ModalForm);
 
   const fetchMap = async () => {
     try {
@@ -301,7 +308,11 @@ export default function MapAdmin() {
               })()}
 
             {filteredPhongTro.map((pt, index) => (
-              <Marker key={index} position={[pt.latitude, pt.longitude]}>
+              <Marker
+                key={index}
+                position={[pt.latitude, pt.longitude]}
+                icon={customIcon}
+              >
                 <Popup>
                   <p className="text-sm">
                     Đường: {pt.address}, {pt.district}, {pt.ward}

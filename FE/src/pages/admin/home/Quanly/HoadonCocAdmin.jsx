@@ -12,17 +12,10 @@ import { axiosInstance } from "../../../../../Axios";
 function HoadonCocAdmin() {
   const formatDate = (dateString) =>
     new Date(dateString).toLocaleDateString("vi-VN");
-  const { modalType, idModal, isOpen } = useSelector(
-    (state) => state.ModalForm
-  );
+  const { isOpen } = useSelector((state) => state.ModalForm);
   const [data, setData] = useState("");
   const dispatch = useDispatch();
-  const {
-    data: hdCoc,
-    UpdateData,
-    DeleteData,
-    fetchData,
-  } = useApiManagerAdmin("/hoadon");
+  const { data: hdCoc, DeleteData } = useApiManagerAdmin("/hoadon");
   const headers = [
     { label: "Tên user", key: "ho_va_ten" },
     { label: "Mã phòng", key: "ma_phong" },
@@ -31,9 +24,7 @@ function HoadonCocAdmin() {
     { label: "Trạng thái", key: "trang_thai" },
     { label: "Ngày chuyển khoản", key: "ngay_chuyen_khoan" },
   ];
-  const handleCreate = async () => {
-    await UpdateData(idModal, data);
-  };
+
   const handleClose = () => {
     dispatch(CloseModalForm());
   };
@@ -48,8 +39,8 @@ function HoadonCocAdmin() {
   const renderStatus = (status) => {
     return (
       <div>
-        {status.trang_thai === "Đã thanh toán" ? (
-          <p className="px-2 py-1 text-white text-sm rounded-lg bg-green-500">
+        {status.trang_thai === "đã thanh toán" ? (
+          <p className="px-2 py-2 text-white text-sm rounded-lg bg-green-500 w-[120px]">
             Đã thanh toán
           </p>
         ) : (

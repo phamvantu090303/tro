@@ -156,6 +156,21 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 };
 
+export const deleteUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    await userService.deleteUserService({ id });
+
+    res.status(200).json({
+      message: "Đã xóa User thành công",
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
 export const getMe = async (req: any, res: any) => {
   try {
     const user = req.user;
@@ -215,8 +230,11 @@ export const loginGoogle = async (req: any, res: any) => {
 
   try {
     const authToken = await userService.googleLogin(token);
-    
-    const decoded = jwt.verify(authToken, process.env.JWT_SECRET_ACCESS_TOKEN as string) as { _id: string; verify: string };
+
+    const decoded = jwt.verify(
+      authToken,
+      process.env.JWT_SECRET_ACCESS_TOKEN as string
+    ) as { _id: string; verify: string };
     const user = await UserModel.findById(decoded._id);
 
     if (!user) {

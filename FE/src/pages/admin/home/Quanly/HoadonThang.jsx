@@ -23,7 +23,6 @@ function HoadonThangAdmin() {
     createData,
     UpdateData,
     DeleteData,
-    fetchData,
   } = useApiManagerAdmin("/hoa-don-thang");
 
   const handleDelete = async (value) => {

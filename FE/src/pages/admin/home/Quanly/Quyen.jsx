@@ -145,7 +145,7 @@ const QuyenManagement = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-100 flex flex-col"
+      className="space-y-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
