@@ -92,6 +92,10 @@ function Profile() {
     }
   };
 
+  const handleYeuCauHuyHD = async () => {
+    await axiosInstance.post(`/hopdong/yeu_cau_huy_hd/${dataContract._id}`);
+};
+
   return (
     <div className="min-h-screen w-full bg-gray-50">
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
@@ -420,7 +424,7 @@ function Profile() {
                                 </a>
                               </div>
                               <div className="mt-10 flex flex-col sm:flex-row gap-4">
-                                <button className="w-full px-4 py-2 bg-customBlue text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm sm:text-base">
+                                <button onClick={handleYeuCauHuyHD} className="w-full px-4 py-2 bg-customBlue text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm sm:text-base">
                                   Yêu cầu hủy hợp đồng
                                 </button>
                                 <button

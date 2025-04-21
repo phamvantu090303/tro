@@ -37,6 +37,7 @@ export const CreateHoaDon = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const sendEmail = async (user: any, hoadon: any) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -47,88 +48,89 @@ const sendEmail = async (user: any, hoadon: any) => {
   });
 
   const hopdonglink = `${process.env.CLIENT_URL}/hopdong/${hoadon.ma_phong}`;
+  const linkThanhToan = `${process.env.CLIENT_URL}/thanh-toan`;
   const mailOptions = {
     from: process.env.MAIL_USERNAME,
     to: user.email,
     subject: "Hóa Đơn Thuê Trọ",
     html: `
-    <div style="max-width: 600px; margin: 20px auto; padding: 25px; font-family: 'Arial', sans-serif; border: 1px solid #e0e0e0; border-radius: 12px; background: linear-gradient(135deg, #ffffff, #f5f7fa); box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+    <div style="max-width: 600px; margin: 30px auto; padding: 30px; font-family: 'Helvetica', 'Arial', sans-serif; border: 1px solid #e5e7eb; border-radius: 16px; background: #ffffff; box-shadow: 0 6px 20px rgba(0,0,0,0.08);">
   <!-- Logo -->
-  <div style="text-align: center; margin-bottom: 25px;">
-    <img src="../../../FE/src/assets/logo/Logo.svg" alt="Logo" style="width: 100px; max-width: 100%; height: auto;">
+  <div style="text-align: center; margin-bottom: 30px;">
+    <img src="../../../FE/src/assets/logo/Logo.svg" alt="Logo" style="width: 120px; max-width: 100%; height: auto;">
   </div>
 
   <!-- Tiêu đề -->
-  <h2 style="text-align: center; color: #2c3e50; font-size: 24px; margin-bottom: 20px;">📄 HÓA ĐƠN ĐẶT CỌC</h2>
-  <p style="text-align: center; color: #555; font-size: 16px; margin-bottom: 25px;">Chào <b>${user.username}</b>, chúng tôi đã nhận được đơn đặt cọc phòng của bạn.</p>
+  <h2 style="text-align: center; color: #1f2937; font-size: 26px; margin-bottom: 15px; font-weight: 700;">📄 HÓA ĐƠN ĐẶT CỌC</h2>
+  <p style="text-align: center; color: #6b7280; font-size: 16px; margin-bottom: 30px;">Chào <b style="color: #1f2937;">${user.username}</b>, chúng tôi đã nhận được đơn đặt cọc phòng của bạn.</p>
 
-  <!-- Nội dung hóa đơn mới (dựa trên hình ảnh) -->
-  <div style="background: #fff; padding: 20px; border-left: 5px solid #e91e63; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;">
-    <!-- Header -->
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 16px; color: #333; margin-right:10px;">Mã đơn hàng:</h3>
-      <p style="font-size: 16px; color: #666;">${hoadon.ma_don_hang}</p>  
-    </div>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 16px; color: #333; margin-right:10px;">Người nhận:</h3>
-      <p style="font-size: 16px; color: #666;">${user.username}</p>
-    </div>
-   
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 16px; color: #333; margin-right:10px;">Số tiền đặt cọc:</h3>
-      <p style="font-size: 16px; color: #666;">${hoadon.so_tien} VND</p>
-    </div>   
-     <!-- Thông tin thanh toán -->
-    <div style="display: flex; justify-content: space-between; font-size: 13px; color: #555; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
-      <div>
-        <h4 style="font-size: 16px; color: #333; margin-bottom: 8px;">Thông tin thanh toán</h4>
-        <p style="margin: 5px 0; width: 50%;">Vui lòng thanh toán trong vòng 15 ngày kể từ ngày nhận hóa đơn.</p>
+  <!-- Nội dung hóa đơn -->
+  <div style="background: #f9fafb; padding: 25px; border-left: 5px solid #ec4899; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); margin-bottom: 25px;">
+    <!-- Thông tin hóa đơn -->
+    <div style="margin-bottom: 15px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="font-size: 16px; color: #374151; font-weight: 600;">Mã đơn hàng:</h3>
+        <p style="font-size: 16px; color: #6b7280;">${hoadon.ma_don_hang}</p>  
       </div>
-      <div style="width:50%">
-        <h4 style="font-size: 16px; color: #333; margin-bottom: 8px;">Chi tiết ngân hàng</h4>
-        <p style="margin: 5px 0;"><strong>Tên ngân hàng:</strong> MBbank</p>
-        <p style="margin: 5px 0;"><strong>Số tài khoản:</strong> 0367599057</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="font-size: 16px; color: #374151; font-weight: 600;">Người nhận:</h3>
+        <p style="font-size: 16px; color: #6b7280;">${user.username}</p>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="font-size: 16px; color: #374151; font-weight: 600;">Phòng:</h3>
+        <p style="font-size: 16px; color: #6b7280;">${hoadon.ma_phong}</p>  
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 16px; color: #374151; font-weight: 600;">Số tiền đặt cọc:</h3>
+        <p style="font-size: 16px; color: #6b7280;">${hoadon.so_tien} VND</p>
       </div>
     </div>
-      <div style="text-align: center; margin-top: 25px;">
-        <a href="${hopdonglink}" style="display: inline-block; padding: 12px 25px; background: #3498db; color: #fff; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; transition: background 0.3s ease;">📜 Xem hợp đồng của bạn</a>
+
+    <!-- Thông tin thanh toán và nút CTA -->
+    <div style="display: flex; justify-content: space-between; font-size: 14px; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 20px;">
+      <div style="width: 50%;">
+        <a href="${hopdonglink}" style="display: inline-block; padding: 12px 25px; background: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600; transition: background 0.3s ease; text-align: center;">📜 Xem hợp đồng</a>
+      </div>
+      <div style="width: 50%; text-align: right;">
+        <a href="${linkThanhToan}" style="display: inline-block; padding: 12px 25px; background: #10b981; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600; transition: background 0.3s ease; text-align: center;">💳 Thanh toán ngay</a>
       </div>
     </div>
+  </div>
+
+  <!-- CSS Responsive -->
+  <style>
+    @media (max-width: 480px) {
+      div[style*="max-width: 600px"] {
+        padding: 20px;
+        margin: 10px;
+      }
+      h2 {
+        font-size: 22px;
+      }
+      p, a {
+        font-size: 14px !important;
+      }
+      img {
+        width: 90px;
+      }
+      a[style*="display: inline-block"] {
+        padding: 10px 20px;
+        font-size: 14px !important;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      div[style*="display: flex; justify-content: space-between"] {
+        flex-direction: column;
+        gap: 15px;
+      }
+      div[style*="display: flex; justify-content: space-between"] > div {
+        width: 100% !important;
+        text-align: center !important;
+      }
+    }
+  </style>
 </div>
-
-<!-- CSS Responsive -->
-<style>
-  @media (max-width: 480px) {
-    div[style*="max-width: 600px"] {
-      padding: 15px;
-      margin: 10px;
-    }
-    h2 {
-      font-size: 20px;
-    }
-    p, a {
-      font-size: 14px !important;
-    }
-    img {
-      width: 80px;
-    }
-    a[style*="display: inline-block"] {
-      padding: 10px 20px;
-    }
-    div[style*="display: flex; justify-content: space-between"] {
-      flex-direction: column;
-    }
-    div[style*="display: flex; justify-content: space-between"] > div {
-      width: 100% !important;
-      margin-bottom: 15px;
-    }
-    table th, table td {
-      font-size: 12px;
-      padding: 8px;
-    }
-  }
-</style>
-    `,
+`,
   };
 
   await transporter.sendMail(mailOptions);

@@ -45,8 +45,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://phongtro.hoclaptrinhiz.com", 
-      "https://phongtro.hoclaptrinhiz.com", 
+      //"http://phongtro.hoclaptrinhiz.com", 
+      //"https://phongtro.hoclaptrinhiz.com", 
       "http://localhost:3000"], 
       // hoặc https nếu bạn bật SSL
     credentials: true, // Cho phép frontend gửi cookie, token
@@ -105,7 +105,7 @@ initSocket(server);
 app.use("/api", router);
 
 // Lưu dữ liệu cuối ngày
-schedule.scheduleJob("59 23 * * *", saveEndOfDayData);
+schedule.scheduleJob("10 22 * * *", saveEndOfDayData);
 //*:Phút (0 - 59) *:Giờ (0 - 23) *:Ngày trong (tháng (1 - 31)) *:Tháng (1 - 12)    *:Ngày trong tuần (0 - 7) (Chủ nhật có thể là 0 hoặc 7)
 
 

@@ -229,19 +229,69 @@ export const detailContract = async (req: Request, res: Response) => {
   }
 };
 
+const hopDongService = new HopDongService();
+
 export const updateHopDong = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data = req.body;
 
-    const hopDongService = new HopDongService();
     await hopDongService.updateHopDong(id, data)
+
+    res.status(200).json({
+      message: "Cập nhật hợp đồng thành công",
+      });
+
+  }catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+export const yeuCauHuyHD = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    await hopDongService.yeuCauHuyHD(id, data)
 
     res.status(200).json({
       message: "Yêu cầu hủy hợp đồng đã được gửi",
       });
 
   }catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+export const deleteHopDong = async (req: any, res: any) => {
+  const { id } = req.params;
+  try {
+    await hopDongService.deleteHopDong({ id });
+
+    res.status(200).json({
+      status: "200",
+      message: "Đã xóa thành công!",
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getHopDong = async (req: any, res: any) => {
+  try {
+    const data = await hopDongService.getDataHopDong();
+
+    res.status(200).json({
+      status: "200",
+      data: data,
+    });
+  } catch (error: any) {
     res.status(404).json({
       message: error.message,
     });
