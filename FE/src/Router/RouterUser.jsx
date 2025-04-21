@@ -12,6 +12,7 @@ import UserResendForgot from "../pages/Login/userResendForgot";
 import ResetPassword from "../pages/Login/ResetPassword";
 import { Route } from "react-router";
 import MyRoom from "../pages/profile/myroom";
+import ThanhToan from "../pages/ThanhToan/ThanhToan";
 
 const routerUser = (
   <Route path="/" element={<Layout />}>
@@ -27,6 +28,8 @@ const routerUser = (
     <Route path="yeuthich" element={<Favourite />} />
     <Route path="profile" element={<Profile />} />
     <Route path="/my-room" element={<MyRoom />} />
+
+    <Route path="/thanh-toan" element={<ThanhToan />} />
   </Route>
 );
 

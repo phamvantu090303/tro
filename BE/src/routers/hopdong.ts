@@ -2,9 +2,12 @@ import express from "express";
 import {
   createContract,
   customer,
+  deleteHopDong,
   detailContract,
   extendContract,
+  getHopDong,
   updateHopDong,
+  yeuCauHuyHD,
 } from "../controllers/hopDong";
 import { accessTokenValidatetor } from "../middlewares/user.middleware";
 const routerHopDong = express.Router();
@@ -13,7 +16,11 @@ routerHopDong.get("/customer", accessTokenValidatetor, customer);
 routerHopDong.post("/create", accessTokenValidatetor, createContract);
 routerHopDong.get("gia_han_hop_dong/:ma_phong", extendContract);
 routerHopDong.get("/detail", accessTokenValidatetor, detailContract);
-routerHopDong.put("/update/:id", updateHopDong);
 
+routerHopDong.post("/update/:id", updateHopDong);
+
+routerHopDong.post("/yeu_cau_huy_hd/:id", yeuCauHuyHD);
+routerHopDong.delete("/delete/:id", deleteHopDong);
+routerHopDong.get("/getAll", getHopDong);
 
 export default routerHopDong;

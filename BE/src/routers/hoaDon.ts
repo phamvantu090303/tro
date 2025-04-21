@@ -6,7 +6,6 @@ import {
   getAllHoaDon,
 } from "../controllers/hoaDon";
 import { accessTokenValidatetor } from "../middlewares/user.middleware";
-import { accessTokenAdmin } from "../middlewares/admin.middleware";
 const routeHoaDon = Router();
 
 routeHoaDon.post("/create", accessTokenValidatetor, CreateHoaDon);
