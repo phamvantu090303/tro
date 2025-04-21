@@ -127,13 +127,47 @@ export class AdminService {
   async getAdmin(user_id: string) {
     const user = await AdminModel.findOne({
       _id: new ObjectId(user_id),
-    }).select(" -createdAt -updatedAt -__v"); // Ẩn các trường không cần thiết
+    }).select(" -createdAt -updatedAt -__v");
 
     return user;
   }
 
   async getAdminAll() {
-    const user = await AdminModel.find().select(" -createdAt -updatedAt -__v"); // Ẩn các trường không cần thiết
+    const user = await AdminModel.aggregate([
+      {
+        $lookup: {
+          from: "quyens",
+          let: { id_quyen: "$id_quyen" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: [{ $toString: "$_id" }, "$$id_quyen"],
+                },
+              },
+            },
+          ],
+          as: "quyens",
+        },
+      },
+      {
+        $unwind: {
+          path: "$quyens",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          ten_quyen: "$quyens.ten_quyen", // đẩy field ra ngoài
+        },
+      },
+      {
+        $project: {
+          quyens: 0, // ẩn object "quyens" gốc
+        },
+      },
+    ]);
+
     return user;
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SearchBar from "../../../../component/admin/SearchBar";
 import RoomTable from "../../../../component/admin/RoomTable";
 import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
@@ -7,7 +7,7 @@ import {
   CloseModalForm,
   OpenModalForm,
 } from "../../../../Store/filterModalForm";
-
+import OptionDanhMuc from "../../../../component/admin/OptionDanhMuc";
 function DanhMucAdmin() {
   const [dataDanhmuc, setDataDanhmuc] = useState({
     ma_danh_muc: "",
@@ -25,7 +25,6 @@ function DanhMucAdmin() {
     DeleteData,
     DeleteAllData,
     UpdateData,
-    fetchData,
   } = useApiManagerAdmin("/danh-muc");
 
   const headers = [
@@ -46,10 +45,6 @@ function DanhMucAdmin() {
       <option value={0}>Không hoạt động</option>
     </select>
   );
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   // Cập nhật trạng thái sử dụng UpdateData từ hook
   const handleUpdateTrangThai = async (id, value) => {

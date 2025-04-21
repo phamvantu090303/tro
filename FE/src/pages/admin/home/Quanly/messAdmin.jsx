@@ -66,7 +66,7 @@ const ChatAdmin = () => {
   const fetchData = async () => {
     try {
       const [resUsers, resAdmin] = await Promise.all([
-        axiosInstance.get("/auth/AllUser"),
+        axiosInstance.get("/auth/getAll"),
         axiosInstance.get("/admin/getadmin"),
       ]);
       const users = resUsers.data.data;
