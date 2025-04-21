@@ -63,7 +63,6 @@ function RoomTable({
 
   // Render ô trong bảng
   const defaultRenderCell = (room, key) => {
-    console.log("room", room);
     if (key === "so_luong_nguoi") {
       return (
         <div className="flex items-center">

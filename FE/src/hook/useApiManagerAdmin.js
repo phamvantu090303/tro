@@ -26,7 +26,7 @@ const useApiManagerAdmin = (endpoint) => {
       fetchData();
       return true;
     } catch (error) {
-      toast.error("Tạo thất bại");
+      toast.error(error.response?.data?.message || "Tạo thất bại");
       return false;
     }
   };

@@ -29,7 +29,7 @@ function AccountAdmin() {
   });
 
   const headers = [
-    { label: "ID quyền", key: "id_quyen" },
+    { label: "Tên quyền", key: "ten_quyen" },
     { label: "UserName", key: "username" },
     { label: "Email", key: "email" },
     { label: "Họ và tên", key: "ho_va_ten" },

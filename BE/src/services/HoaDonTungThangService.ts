@@ -27,14 +27,16 @@ export class HoaDonThangService {
         chiSoDienThangNay = latestElectricity.energy;
         console.log("latestElectricity", latestElectricity);
       } else {
-        console.log(`Không có dữ liệu tiêu thụ điện trong tháng ${thang} cho phòng ${ma_phong}, sử dụng giá trị 0.`);
+        console.log(
+          `Không có dữ liệu tiêu thụ điện trong tháng ${thang} cho phòng ${ma_phong}, sử dụng giá trị 0.`
+        );
       }
 
       // Lấy dữ liệu dịch vụ
       const dichVu = await DichVuModel.findOne();
       if (!dichVu)
         throw new Error("Không tìm thấy thông tin dịch vụ cho phòng này");
-      
+
       const giaDien = dichVu.tien_dien ?? 0;
       const tienNuoc = dichVu.tien_nuoc ?? 0;
       const tienWifi = dichVu.tien_wifi ?? 0;
@@ -121,8 +123,15 @@ export class HoaDonThangService {
       {
         // Chỉ lấy các trường cần thiết
         $project: {
+          id_user: "$id_users._id",
           ho_va_ten: "$id_users.ho_va_ten",
           ma_phong: 1,
+          dich_vu: 1,
+          so_dien_tieu_thu: 1,
+          tien_dien: 1,
+          tien_phong: 1,
+          chi_so_dien_thang_nay: 1,
+          chi_so_dien_thang_truoc: 1,
           tong_tien: 1,
           trang_thai: 1,
           ngay_tao_hoa_don: 1,

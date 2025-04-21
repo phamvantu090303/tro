@@ -32,7 +32,7 @@ router.post("/reset-password", ResetPasswordValidator, verifypassword);
 router.get("/Detail/:id", getDetailUser);
 router.post("/update/:id", accessTokenValidatetor, updateUser);
 router.get("/me", accessTokenValidatetor, getMe);
-router.get("/AllUser", getAllUser);
+router.get("/getAll", getAllUser);
 router.delete("/delete/:id", deleteUser);
 
 router.post("/login-google", loginGoogle);

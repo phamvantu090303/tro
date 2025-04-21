@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
 import RoomTable from "../../../../component/admin/RoomTable";
 import SearchBar from "../../../../component/admin/SearchBar";
@@ -23,12 +23,8 @@ function DichvuAdmin() {
     createData,
     DeleteData,
     UpdateData,
-    fetchData,
   } = useApiManagerAdmin("/dich-vu");
 
-  useEffect(() => {
-    fetchData();
-  }, []);
   const headers = [
     { label: "ID", key: "_id" },
     { label: "Tiền điện", key: "tien_dien" },

@@ -1,23 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import UserAdminDetail from "./UserAdminDetail";
 import SearchBar from "../../../../../component/admin/SearchBar";
-import { axiosInstance } from "../../../../../../Axios";
 import RoomTable from "../../../../../component/admin/RoomTable";
+import useApiManagerAdmin from "../../../../../hook/useApiManagerAdmin";
 
 function UserAdmin() {
-  const [data, setData] = useState([]);
   const [step, setStep] = useState({
     page: 1,
     id: "",
   });
-  useEffect(() => {
-    const fetchAllUser = async () => {
-      const res = await axiosInstance.get("/auth/AllUser");
-      setData(res.data.data);
-    };
-    fetchAllUser();
-  }, []);
+
+  const { data: user, DeleteData } = useApiManagerAdmin("/auth");
+
   const headers = [
     { label: "UserName", key: "username" },
     { label: "Họ và tên", key: "ho_va_ten" },
@@ -26,16 +21,20 @@ function UserAdmin() {
     { label: "Quê quán", key: "que_quan" },
     { label: "Số điện thoại", key: "so_dien_thoai" },
   ];
+  const handleDelete = async (value) => {
+    await DeleteData(value._id);
+  };
   return (
     <div>
       <SearchBar />
       {step.page === 1 && (
         <RoomTable
           headers={headers}
-          displayedRooms={data}
+          displayedRooms={user}
           roomsPerPage={10}
           title={"Tất cả user khách hàng"}
           setStep={setStep}
+          handleDelete={handleDelete}
         />
       )}
       {step.page === 2 && <UserAdminDetail id={step.id} setStep={setStep} />}

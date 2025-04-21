@@ -88,7 +88,7 @@ export default function BillPayment() {
             selectedBill.trangThai ? "text-green-500" : "text-red-500"
           }`}
         >
-          {selectedBill.trangThai ? "✅ Đã thanh toán" : "❌ Chưa thanh toán"}
+          {selectedBill.trangThai ? "✅ đã thanh toán" : "❌ Chưa thanh toán"}
         </p>
       </div>
 
