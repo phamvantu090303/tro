@@ -32,7 +32,7 @@ export class TransactionService {
         PASSWORD: process.env.PASSWORD,
       };
       const response = await axios.post(
-        "http://transaction.prodevecode.com:9658",
+        "https://apimb.hoclaptrinhiz.com",
         payload
       );
       console.log("Dữ liệu trả về:", response.data);
@@ -49,18 +49,24 @@ export class TransactionService {
       console.log("Danh sách giao dịch:", transactions);
 
       let total = new Map<string, number>();
-      transactions.forEach((value, key) => {
-        if (value.addDescription.includes("HD")) {
-          if (total.has(value.addDescription)) {
-            total.set(
-              value.addDescription,
-              total.get(value.addDescription) + value.creditAmount
-            );
-          } else {
-            total.set(value.addDescription, value.creditAmount);
+      transactions.forEach((value) => {
+        const description = value.addDescription;
+      
+        if (description) {
+          const match = description.match(/(HD[\d\s]+)-/); // Lấy HD + số + khoảng trắng, trước dấu -, i = không phân biệt hoa thường
+      
+          if (match) {
+            const maHoaDon = match[1].replace(/\s/g, ""); // Xoá khoảng trắng giữa HD và số
+      
+            if (total.has(maHoaDon)) {
+              total.set(maHoaDon, total.get(maHoaDon)! + value.creditAmount);
+            } else {
+              total.set(maHoaDon, value.creditAmount);
+            }
           }
         }
       });
+      
       for (const [key, value] of total) { //value đây là số tiền
         // console.log("key: ", key, "value: ", value);
         const cleanedKey = key.trim();
@@ -87,11 +93,11 @@ export class TransactionService {
               console.log(`Updated PhongTro: ${updatephong}`);
             } else {
               console.log(
-                `No PhongTro found for ma_phong: ${foundHoaDon.ma_phong}`
+                `Không tìm thấy PhongTro cho ma_phong: ${foundHoaDon.ma_phong}`
               );
             }
           } else {
-            console.log(`No HoaDon found for ma_don_hang: ${cleanedKey}`);
+            console.log(`Không tìm thấy HoaDon cho ma_don_hang: ${cleanedKey}`);
           }
           console.log("foundHoaDon: ", foundHoaDon);
         }

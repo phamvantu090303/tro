@@ -86,9 +86,8 @@ const sendEmail = async (user: any, hoadon: any) => {
       </div>
       <div style="width:50%">
         <h4 style="font-size: 16px; color: #333; margin-bottom: 8px;">Chi tiết ngân hàng</h4>
-        <p style="margin: 5px 0;"><strong>Tên ngân hàng:</strong> Vietcombank</p>
-        <p style="margin: 5px 0;"><strong>Mã Swift:</strong> ABCDEFGH</p>
-        <p style="margin: 5px 0;"><strong>Số tài khoản:</strong> 1234 5678 9012 3456</p>
+        <p style="margin: 5px 0;"><strong>Tên ngân hàng:</strong> MBbank</p>
+        <p style="margin: 5px 0;"><strong>Số tài khoản:</strong> 0367599057</p>
       </div>
     </div>
       <div style="text-align: center; margin-top: 25px;">
