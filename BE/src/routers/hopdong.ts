@@ -4,12 +4,16 @@ import {
   customer,
   detailContract,
   extendContract,
+  updateHopDong,
 } from "../controllers/hopDong";
 import { accessTokenValidatetor } from "../middlewares/user.middleware";
-const router = express.Router();
+const routerHopDong = express.Router();
 
-router.get("/customer", accessTokenValidatetor, customer);
-router.post("/create", accessTokenValidatetor, createContract);
-router.get("gia_han_hop_dong/:ma_phong", extendContract);
-router.get("/detail", accessTokenValidatetor, detailContract);
-export default router;
+routerHopDong.get("/customer", accessTokenValidatetor, customer);
+routerHopDong.post("/create", accessTokenValidatetor, createContract);
+routerHopDong.get("gia_han_hop_dong/:ma_phong", extendContract);
+routerHopDong.get("/detail", accessTokenValidatetor, detailContract);
+routerHopDong.put("/update/:id", updateHopDong);
+
+
+export default routerHopDong;

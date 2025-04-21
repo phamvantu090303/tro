@@ -2,7 +2,6 @@ import DichVuModel from "../models/DichVuModel";
 import { ObjectId } from "mongodb";
 class DichVuService {
   async CreatDichVu(data: any) {
-    console.log("data service", data.tien_dien);
     const dichVu = new DichVuModel({
       tien_dien: data.tien_dien,
       tien_nuoc: data.tien_nuoc,

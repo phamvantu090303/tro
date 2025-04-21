@@ -33,7 +33,7 @@ export class HoaDonThangService {
       }
 
       // Lấy dữ liệu dịch vụ
-      const dichVu = await DichVuModel.findOne();
+      const dichVu = await DichVuModel.findOne({ trang_thai: 1 });
       if (!dichVu)
         throw new Error("Không tìm thấy thông tin dịch vụ cho phòng này");
 

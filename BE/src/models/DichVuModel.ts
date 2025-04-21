@@ -17,6 +17,10 @@ const DichVuScheme = new Schema(
             type: Number,
             require: true
         },
+        trang_thai: {
+            type: Number,
+            default: 1
+        }
         
     },
     { timestamps: true }
