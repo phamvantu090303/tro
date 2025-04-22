@@ -9,6 +9,7 @@ import HopDongModel from "../models/HopDongModel";
 import PhongtroModel from "../models/PhongTroModel";
 import cloudinary from "../config/cloudinary";
 import { v2 as cloudinaryV2 } from "cloudinary";
+import { HopDongService } from "../services/HopDongService";
 
 const generatePDF = async (htmlContent: string, email: string) => {
   const browser = await puppeteer.launch();
@@ -225,5 +226,74 @@ export const detailContract = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Lỗi máy chủ khi lấy thông tin hợp đồng" });
+  }
+};
+
+const hopDongService = new HopDongService();
+
+export const updateHopDong = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    await hopDongService.updateHopDong(id, data)
+
+    res.status(200).json({
+      message: "Cập nhật hợp đồng thành công",
+      });
+
+  }catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+export const yeuCauHuyHD = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    await hopDongService.yeuCauHuyHD(id, data)
+
+    res.status(200).json({
+      message: "Yêu cầu hủy hợp đồng đã được gửi",
+      });
+
+  }catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+export const deleteHopDong = async (req: any, res: any) => {
+  const { id } = req.params;
+  try {
+    await hopDongService.deleteHopDong({ id });
+
+    res.status(200).json({
+      status: "200",
+      message: "Đã xóa thành công!",
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getHopDong = async (req: any, res: any) => {
+  try {
+    const data = await hopDongService.getDataHopDong();
+
+    res.status(200).json({
+      status: "200",
+      data: data,
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
   }
 };

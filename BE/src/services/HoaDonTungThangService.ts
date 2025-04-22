@@ -33,7 +33,7 @@ export class HoaDonThangService {
       }
 
       // Lấy dữ liệu dịch vụ
-      const dichVu = await DichVuModel.findOne();
+      const dichVu = await DichVuModel.findOne({ trang_thai: 1 });
       if (!dichVu)
         throw new Error("Không tìm thấy thông tin dịch vụ cho phòng này");
 
@@ -311,9 +311,9 @@ export class HoaDonThangService {
     hoaDon.ma_phong = ma_phong ?? hoaDon.ma_phong;
     hoaDon.id_users = id_users ?? hoaDon.id_users;
     hoaDon.chi_so_dien_thang_nay =
-      chi_so_dien_thang_nay ?? hoaDon.chi_so_dien_thang_nay;
+    chi_so_dien_thang_nay ?? hoaDon.chi_so_dien_thang_nay;
     hoaDon.chi_so_dien_thang_truoc =
-      chi_so_dien_thang_truoc ?? hoaDon.chi_so_dien_thang_truoc;
+    chi_so_dien_thang_truoc ?? hoaDon.chi_so_dien_thang_truoc;
     hoaDon.so_dien_tieu_thu = so_dien_tieu_thu ?? hoaDon.so_dien_tieu_thu;
     hoaDon.tien_dien = tien_dien ?? hoaDon.tien_dien;
     hoaDon.tien_phong = tien_phong ?? hoaDon.tien_phong;

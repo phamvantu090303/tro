@@ -33,6 +33,7 @@ import {
 } from "./controllers/HoaDonTungThangController";
 import OtpRouter from "./routers/otp";
 import nganHangRouter from "./routers/nganHangRouter";
+import routerHopDong from "./routers/hopdong";
 
 dotenv.config();
 
@@ -47,10 +48,16 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
+
       "http://phongtro.hoclaptrinhiz.com",
       "https://phongtro.hoclaptrinhiz.com",
       "http://localhost:3000",
     ], // hoặc https nếu bạn bật SSL "https://phongtro.hoclaptrinhiz.com",
+
+      //"http://phongtro.hoclaptrinhiz.com", 
+      //"https://phongtro.hoclaptrinhiz.com", 
+      "http://localhost:3000"], 
+      // hoặc https nếu bạn bật SSL
     credentials: true, // Cho phép frontend gửi cookie, token
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Chỉ định rõ các method
     allowedHeaders: ["Content-Type", "Authorization"], // Headers cần thiết
@@ -86,6 +93,8 @@ app.use("/thong-ke", routerThongKe);
 app.use("/hoa-don-thang", routerThang);
 app.use("/Otp", OtpRouter);
 
+app.use("/hopdong", routerHopDong);
+
 app.use("/ngan-hang", nganHangRouter);
 
 //hợp đồng
@@ -105,7 +114,7 @@ initSocket(server);
 app.use("/api", router);
 
 // Lưu dữ liệu cuối ngày
-schedule.scheduleJob("59 23 * * *", saveEndOfDayData);
+schedule.scheduleJob("10 22 * * *", saveEndOfDayData);
 //*:Phút (0 - 59) *:Giờ (0 - 23) *:Ngày trong (tháng (1 - 31)) *:Tháng (1 - 12)    *:Ngày trong tuần (0 - 7) (Chủ nhật có thể là 0 hoặc 7)
 
 schedule.scheduleJob("59 23 * * *", () => {

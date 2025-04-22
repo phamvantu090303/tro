@@ -16,6 +16,7 @@ import SuachuaAdmin from "../../pages/admin/home/Quanly/SuachuaAdmin";
 import HoadonThangAdmin from "../../pages/admin/home/Quanly/HoadonThang";
 import HoadonCocAdmin from "../../pages/admin/home/Quanly/HoadonCocAdmin";
 import ThongKeYeuThich from "../../pages/admin/home/Chart/thongKeYeuthich";
+import HopDongAdmin from "../../pages/admin/home/Quanly/HopDongAdmin";
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
     switch (activeComponent) {
@@ -31,6 +32,8 @@ function AdminDashboard({ activeComponent }) {
         return <DichvuAdmin />;
       case "hoadoncoc":
         return <HoadonCocAdmin />;
+      case "hopdong":
+        return <HopDongAdmin />;
       case "hoadonthang":
         return <HoadonThangAdmin />;
       case "thietbi":

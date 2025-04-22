@@ -146,14 +146,20 @@ function Login() {
                 ĐĂNG NHẬP →
               </button>
 
-              <GoogleOAuthProvider clientId="752749487215-thp4udmogerl7g825rfnfvc33gfieq4t.apps.googleusercontent.com">
+              {/* <GoogleOAuthProvider clientId="752749487215-thp4udmogerl7g825rfnfvc33gfieq4t.apps.googleusercontent.com"> */}
+              <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
                 <GoogleLogin
                   onSuccess={handleSuccess}
                   onError={() => {
-                    console.log("Login Failed");
+                    console.log('Đăng nhập không thành công');
                   }}
+                  prompt="select_account"// Yêu cầu người dùng chọn tài khoản google đăng nhập
+                  auto_select={false} // Tắt tự động chọn tài khoản google
+                  useOneTap={false} // Tắt One Tap
+                  text="signin_with"
                 />
               </GoogleOAuthProvider>
+
             </form>
             <p className="mt-6 text-lg text-center text-gray-500 flex justify-center gap-5">
               Bạn chưa có tài khoản?{" "}
