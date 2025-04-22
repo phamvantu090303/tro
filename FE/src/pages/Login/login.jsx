@@ -8,6 +8,7 @@ import { login } from "../../Store/filterUser";
 import { toast } from "react-toastify";
 
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { Helmet } from "react-helmet";
 
 function Login() {
   const navigate = useNavigate();
@@ -72,6 +73,9 @@ function Login() {
   };
   return (
     <div className="relative flex">
+      <Helmet>
+        <title>Đăng nhập</title>
+      </Helmet>
       <div className="w-[45%] bg-gray-900 h-screen"></div>
       <div className="flex w-[55%]  items-center justify-center h-screen">
         <div className="absolute  top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full lg:w-[80%] lg:flex shadow-2xl lg:rounded-2xl overflow-hidden h-full lg:h-[85%]">

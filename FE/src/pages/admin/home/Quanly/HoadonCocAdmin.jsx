@@ -39,13 +39,13 @@ function HoadonCocAdmin() {
   const renderStatus = (status) => {
     return (
       <div>
-        {status.trang_thai === "đã thanh toán" ? (
-          <p className="px-2 py-2 text-white text-sm rounded-lg bg-green-500 w-[120px]">
-            Đã thanh toán
-          </p>
-        ) : (
+        {status.trang_thai === "Chưa thanh toán" ? (
           <p className="px-2 py-2 text-white text-sm rounded-lg bg-red-500 w-[120px]">
             Chưa thanh toán
+          </p>
+        ) : (
+          <p className="px-2 py-2 text-white text-sm rounded-lg bg-green-500 w-[120px]">
+            Đã thanh toán
           </p>
         )}
       </div>

@@ -6,6 +6,7 @@ import { FiPlus, FiMinus } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Spinner from "../../component/Loading";
 import debounce from "lodash/debounce";
+import { Helmet } from "react-helmet";
 
 function Search() {
   const [search, setSearch] = useState("");
@@ -58,6 +59,18 @@ function Search() {
 
   return (
     <div className="w-full">
+      <Helmet>
+        <title>Tìm kiếm phòng trọ</title>
+        <meta
+          name="description"
+          content="Tìm kiếm bộ sưu tập các phòng trọ cao cấp, đầy đủ tiện nghi, phù hợp cho mọi nhu cầu."
+        />
+
+        <meta
+          name="keywords"
+          content="phòng trọ, thuê phòng, nhà trọ, nhà cho thuê,tìm kiếm , mô tả về các sản phẩm, dịch vụ mà bạn cung cấp."
+        />
+      </Helmet>
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-[150px] mt-[40px] lg:mt-[78px] flex flex-col lg:flex-row gap-6 lg:gap-[59px] mb-[140px]">
         {/* Bộ lọc */}
         <div className="w-full lg:w-1/4 xl:sticky top-2 bg-white/50 md:bg-inherit">

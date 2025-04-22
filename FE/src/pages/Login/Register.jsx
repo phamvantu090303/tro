@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router";
 import { FaMapLocationDot } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import { axiosInstance } from "../../../Axios";
+import { Helmet } from "react-helmet";
 function Register() {
   const navigate = useNavigate();
   const [user, setUser] = useState({
@@ -90,10 +91,9 @@ function Register() {
     }
 
     try {
-
       setLoading(true);
       const res = await axiosInstance.post("/auth/register", {
-       email: user.email,
+        email: user.email,
         password: user.password,
         username: user.username,
         ho_va_ten: user.hovaten,
@@ -120,6 +120,18 @@ function Register() {
 
   return (
     <div className="relative flex">
+      <Helmet>
+        <title>Đăng ký</title>
+        <meta
+          name="description"
+          content="Khám phá bộ sưu tập chi tiết phòng trọ cao cấp, đầy đủ tiện nghi, phù hợp cho mọi nhu cầu."
+        />
+
+        <meta
+          name="keywords"
+          content="phòng trọ, thuê phòng, nhà trọ, nhà cho thuê, mô tả về các sản phẩm, dịch vụ mà bạn cung cấp."
+        />
+      </Helmet>
       <div className="w-[45%] bg-gray-900 h-screen"></div>
       <div className="flex w-[55%]  items-center justify-center h-screen">
         <div className="absolute  top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full lg:w-[80%] lg:flex shadow-2xl lg:rounded-2xl overflow-hidden h-full lg:h-[85%]">

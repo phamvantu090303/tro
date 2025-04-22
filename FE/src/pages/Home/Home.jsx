@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { axiosInstance } from "../../../Axios";
 import Slider from "react-slick";
 import { useNavigate } from "react-router";
+import { Helmet } from "react-helmet";
 
 const slideUpVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -83,6 +84,17 @@ function Homepage() {
 
   return (
     <div className="w-full">
+      <Helmet>
+        <title>Trang chủ</title>
+        <meta
+          name="description"
+          content="Chào mừng đến với cửa hàng của chúng tôi! Khám phá các phòng trọ chất lượng cao với giá tốt nhất."
+        />
+        <meta
+          name="keywords"
+          content="phòng trọ, thuê phòng, nhà trọ, nhà cho thuê, tìm phòng trọ, giá rẻ, sinh viên, nhà trọ tiện nghi"
+        />
+      </Helmet>
       {/* Ảnh bìa */}
       <img
         src={wallhome}
@@ -177,6 +189,7 @@ function Homepage() {
               data={listdata}
               limit={10}
               slide={false}
+              showAll={true}
             />
           </motion.section>
 

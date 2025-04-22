@@ -27,7 +27,10 @@ import routerSuaChua from "./routers/SuaChua";
 import routerSearch from "./routers/Search";
 import routerThongKe from "./routers/thongKe";
 import routerThang from "./routers/HoaDonThangRouter";
-import { tuDongTaoHoaDon, tuDongTaoHoaDonThang } from "./controllers/HoaDonTungThangController";
+import {
+  tuDongTaoHoaDon,
+  tuDongTaoHoaDonThang,
+} from "./controllers/HoaDonTungThangController";
 import OtpRouter from "./routers/otp";
 import nganHangRouter from "./routers/nganHangRouter";
 import routerHopDong from "./routers/hopdong";
@@ -45,6 +48,12 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
+
+      "http://phongtro.hoclaptrinhiz.com",
+      "https://phongtro.hoclaptrinhiz.com",
+      "http://localhost:3000",
+    ], // hoặc https nếu bạn bật SSL "https://phongtro.hoclaptrinhiz.com",
+
       //"http://phongtro.hoclaptrinhiz.com", 
       //"https://phongtro.hoclaptrinhiz.com", 
       "http://localhost:3000"], 
@@ -108,10 +117,8 @@ app.use("/api", router);
 schedule.scheduleJob("10 22 * * *", saveEndOfDayData);
 //*:Phút (0 - 59) *:Giờ (0 - 23) *:Ngày trong (tháng (1 - 31)) *:Tháng (1 - 12)    *:Ngày trong tuần (0 - 7) (Chủ nhật có thể là 0 hoặc 7)
 
-
-
 schedule.scheduleJob("59 23 * * *", () => {
- tuDongTaoHoaDonThang(), tuDongTaoHoaDon();
+  tuDongTaoHoaDonThang(), tuDongTaoHoaDon();
 });
 
 connectDB()

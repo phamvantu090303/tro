@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { Helmet } from "react-helmet";
+
 import anh3 from "../../assets/anh3.png";
 import {
   FaArrowsAlt,
@@ -175,6 +177,26 @@ function RoomDetails() {
   };
   return (
     <div className="w-full">
+      <Helmet>
+        <title>Chi thiết phòng trọ</title>
+        <meta
+          name="description"
+          content="Khám phá bộ sưu tập chi tiết phòng trọ cao cấp, đầy đủ tiện nghi, phù hợp cho mọi nhu cầu."
+        />
+
+        <meta
+          name="keywords"
+          content="phòng trọ, thuê phòng, nhà trọ, nhà cho thuê, mô tả về các sản phẩm, dịch vụ mà bạn cung cấp."
+        />
+
+        {/* Open Graph để chia sẻ mạng xã hội */}
+        <meta property="og:title" content="Chi tiết phòng trọ" />
+        <meta
+          property="og:description"
+          content="Xem chi tiết phòng trọ. Tìm hiểu về phòng trọ chất lượng cao và dịch vụ tốt nhất của chúng tôi."
+        />
+        <meta property="og:image" content="/thumbnail.jpg" />
+      </Helmet>
       {data ? (
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
           <div className="space-y-[33px]">
