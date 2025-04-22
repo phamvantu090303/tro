@@ -39,13 +39,13 @@ function HoadonCocAdmin() {
   const renderStatus = (status) => {
     return (
       <div>
-        {status.trang_thai === "Chưa thanh toán" ? (
+        {status.trang_thai === "chưa thanh toán" ? (
           <p className="px-2 py-2 text-white text-sm rounded-lg bg-red-500 w-[120px]">
-            Chưa thanh toán
+            chưa thanh toán
           </p>
         ) : (
           <p className="px-2 py-2 text-white text-sm rounded-lg bg-green-500 w-[120px]">
-            Đã thanh toán
+            đã thanh toán
           </p>
         )}
       </div>
@@ -72,7 +72,7 @@ function HoadonCocAdmin() {
             {/* Header */}
             <div className="text-center">
               <div className="flex justify-center mb-4">
-                {data.trang_thai === "Chưa thanh toán" ? (
+                {data.trang_thai === "chưa thanh toán" ? (
                   <div className="bg-red-100 p-4  rounded-full">
                     <div className="bg-red-500 rounded-full p-3">
                       <svg
@@ -109,8 +109,8 @@ function HoadonCocAdmin() {
                 )}
               </div>
               <h2 className="text-2xl font-bold text-gray-800">
-                {data.trang_thai === "Chưa thanh toán"
-                  ? "Chưa thanh toán!"
+                {data.trang_thai === "chưa thanh toán"
+                  ? "chưa thanh toán!"
                   : "Thanh toán thành công!"}
               </h2>
             </div>
@@ -129,7 +129,7 @@ function HoadonCocAdmin() {
                 </span>
                 <span
                   className={`px-3 py-1 rounded-full ${
-                    data.trang_thai === "Chưa thanh toán"
+                    data.trang_thai === "chưa thanh toán"
                       ? " text-red-500 bg-red-100"
                       : "text-green-500 bg-green-100"
                   }`}

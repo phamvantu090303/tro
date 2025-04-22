@@ -52,11 +52,7 @@ app.use(
       "http://phongtro.hoclaptrinhiz.com",
       "https://phongtro.hoclaptrinhiz.com",
       "http://localhost:3000",
-    ], // hoặc https nếu bạn bật SSL "https://phongtro.hoclaptrinhiz.com",
-
-      //"http://phongtro.hoclaptrinhiz.com", 
-      //"https://phongtro.hoclaptrinhiz.com", 
-      "http://localhost:3000"], 
+    ],
       // hoặc https nếu bạn bật SSL
     credentials: true, // Cho phép frontend gửi cookie, token
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Chỉ định rõ các method
@@ -114,10 +110,10 @@ initSocket(server);
 app.use("/api", router);
 
 // Lưu dữ liệu cuối ngày
-schedule.scheduleJob("10 22 * * *", saveEndOfDayData);
+schedule.scheduleJob("30 23 * * *", saveEndOfDayData);
 //*:Phút (0 - 59) *:Giờ (0 - 23) *:Ngày trong (tháng (1 - 31)) *:Tháng (1 - 12)    *:Ngày trong tuần (0 - 7) (Chủ nhật có thể là 0 hoặc 7)
 
-schedule.scheduleJob("59 23 * * *", () => {
+schedule.scheduleJob("46 23 * * *", () => {
   tuDongTaoHoaDonThang(), tuDongTaoHoaDon();
 });
 

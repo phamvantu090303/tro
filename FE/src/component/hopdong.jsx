@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";

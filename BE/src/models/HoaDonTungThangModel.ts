@@ -34,16 +34,22 @@ const HoaDonTungThangSchema = new Schema(
       type: Number,
       required: true,
     },
+
+    // Tham chiếu đến DichVuModel
     dich_vu: {
       type: Schema.Types.ObjectId,
       ref: "Dich_vu",
-    }, // Tham chiếu đến DichVuModel
+    }, 
+
+    // Tham chiếu danh sách dữ liệu điện
     electricity_data: [
       {
         type: Schema.Types.String,
         ref: "Electricity",
       },
-    ], // Tham chiếu danh sách dữ liệu điện
+    ], 
+
+    // Tổng tiền
     tong_tien: {
       type: Number,
       required: true,

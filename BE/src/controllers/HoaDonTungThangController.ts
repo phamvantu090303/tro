@@ -113,7 +113,7 @@ export const deleteHoaDonByID = async (req: any, res: any) => {
   }
 };
 
-// Hàm tự động tạo hóa đơn mới cho tháng tiếp theo
+  // Hàm tự động tạo hóa đơn mới cho tháng tiếp theo
 export const tuDongTaoHoaDonThang = async () => {
   try {
     // Lấy danh sách hóa đơn mới nhất cho từng phòng
@@ -133,7 +133,7 @@ export const tuDongTaoHoaDonThang = async () => {
     }
 
     const ngayHienTai = new Date();
-    const thangHienTai = ngayHienTai.toISOString().slice(0, 7); // Ví dụ: "2025-03"
+    const thangHienTai = ngayHienTai.toISOString().slice(0, 7); // Ví dụ: "2025-04"
     const ngayCuoiThang = new Date(
       ngayHienTai.getFullYear(),
       ngayHienTai.getMonth() + 1,
@@ -175,6 +175,41 @@ export const tuDongTaoHoaDonThang = async () => {
         .toISOString()
         .slice(0, 7);
 
+      // Tính ngày tạo hóa đơn mong muốn cho tháng hiện tại
+      const ngayCuoiThangHienTai = new Date(
+        ngayHienTai.getFullYear(),
+        ngayHienTai.getMonth() + 1,
+        0
+      ).getDate();
+      const ngayMongMuon = Math.min(ngayTaoCuoi.getDate(), ngayCuoiThangHienTai);
+      const ngayTaoMongMuon = new Date(
+        ngayHienTai.getFullYear(),
+        ngayHienTai.getMonth(),
+        ngayMongMuon,
+        ngayTaoCuoi.getHours(),
+        ngayTaoCuoi.getMinutes(),
+        ngayTaoCuoi.getSeconds()
+      );
+
+      // Kiểm tra nếu ngày hiện tại không đúng ngày tạo hóa đơn mong muốn
+      const ngayHienTaiChiLayNgay = new Date(
+        ngayHienTai.getFullYear(),
+        ngayHienTai.getMonth(),
+        ngayHienTai.getDate()
+      );
+      const ngayTaoMongMuonChiLayNgay = new Date(
+        ngayTaoMongMuon.getFullYear(),
+        ngayTaoMongMuon.getMonth(),
+        ngayTaoMongMuon.getDate()
+      );
+
+      if (ngayHienTaiChiLayNgay.getTime() !== ngayTaoMongMuonChiLayNgay.getTime()) {
+        console.log(
+          `Ngày hiện tại (${ngayHienTai.toISOString().slice(0, 10)}) không phải ngày tạo hóa đơn mong muốn (${ngayTaoMongMuon.toISOString().slice(0, 10)}) cho phòng ${ma_phong}, bỏ qua.`
+        );
+        continue;
+      }
+
       // Kiểm tra hóa đơn cho tháng hiện tại đã tồn tại chưa
       const hoaDonDaTonTai = await HoaDonTungThangModel.findOne({
         ma_phong,
@@ -199,7 +234,7 @@ export const tuDongTaoHoaDonThang = async () => {
         !hoaDonDaTonTai
       ) {
         console.log(
-          `Tự động tạo hóa đơn tháng tiến theo: ${thangHienTai} cho phòng ${ma_phong}`
+          `Tự động tạo hóa đơn tháng ${thangHienTai} cho phòng ${ma_phong} vào ngày ${ngayTaoMongMuon.toISOString().slice(0, 10)}`
         );
         const newHoaDon = await hoaDonThangService.taoHoaDon(
           ma_phong,
@@ -207,11 +242,15 @@ export const tuDongTaoHoaDonThang = async () => {
           thangHienTai
         );
 
+        // Cập nhật ngay_tao_hoa_don
+        newHoaDon.ngay_tao_hoa_don = ngayTaoMongMuon;
+        await newHoaDon.save();
+
         // Gửi email
         await sendEmail(ngươithue, newHoaDon);
 
         console.log(
-          `Hóa đơn tháng tiến theo: ${thangHienTai} cho phòng ${ma_phong} đã được tạo!`
+          `Hóa đơn tháng ${thangHienTai} cho phòng ${ma_phong} đã được tạo!`
         );
       } else if (hoaDonDaTonTai) {
         console.log(`Phòng ${ma_phong} đã có hóa đơn tháng ${thangHienTai}!`);
@@ -245,7 +284,7 @@ export const tuDongTaoHoaDon = async () => {
     }
 
     const ngayHienTai = new Date();
-    const thangHienTai = ngayHienTai.toISOString().slice(0, 7);
+    const thangHienTai = ngayHienTai.toISOString().slice(0, 7); // Ví dụ: "2025-04"
     const ngayCuoiThang = new Date(
       ngayHienTai.getFullYear(),
       ngayHienTai.getMonth() + 1,
@@ -285,6 +324,41 @@ export const tuDongTaoHoaDon = async () => {
         .toISOString()
         .slice(0, 7);
 
+      // Tính ngày tạo hóa đơn mong muốn cho tháng hiện tại
+      const ngayCuoiThangHienTai = new Date(
+        ngayHienTai.getFullYear(),
+        ngayHienTai.getMonth() + 1,
+        0
+      ).getDate();
+      const ngayMongMuon = Math.min(ngayChuyenKhoanCuoi.getDate(), ngayCuoiThangHienTai);
+      const ngayTaoMongMuon = new Date(
+        ngayHienTai.getFullYear(),
+        ngayHienTai.getMonth(),
+        ngayMongMuon,
+        ngayChuyenKhoanCuoi.getHours(),
+        ngayChuyenKhoanCuoi.getMinutes(),
+        ngayChuyenKhoanCuoi.getSeconds()
+      );
+
+      // Kiểm tra nếu ngày hiện tại không đúng ngày tạo hóa đơn mong muốn
+      const ngayHienTaiChiLayNgay = new Date(
+        ngayHienTai.getFullYear(),
+        ngayHienTai.getMonth(),
+        ngayHienTai.getDate()
+      );
+      const ngayTaoMongMuonChiLayNgay = new Date(
+        ngayTaoMongMuon.getFullYear(),
+        ngayTaoMongMuon.getMonth(),
+        ngayTaoMongMuon.getDate()
+      );
+
+      if (ngayHienTaiChiLayNgay.getTime() !== ngayTaoMongMuonChiLayNgay.getTime()) {
+        console.log(
+          `Ngày hiện tại (${ngayHienTai.toISOString().slice(0, 10)}) không phải ngày tạo hóa đơn mong muốn (${ngayTaoMongMuon.toISOString().slice(0, 10)}) cho phòng ${ma_phong}, bỏ qua.`
+        );
+        continue;
+      }
+
       const hoaDonDaTonTai = await HoaDonTungThangModel.findOne({
         ma_phong,
         ngay_tao_hoa_don: {
@@ -295,7 +369,7 @@ export const tuDongTaoHoaDon = async () => {
 
       if (trang_thai === "chưa thanh toán") {
         console.log(
-          `Phòng ${ma_phong} có hóa đơn thuê trọ chưa thanh toán. Yêu cầu thanh toán!.`
+          `Phòng ${ma_phong} có hóa đơn thuê trọ chưa thanh toán. Yêu cầu thanh toán!`
         );
         continue;
       }
@@ -306,13 +380,17 @@ export const tuDongTaoHoaDon = async () => {
         !hoaDonDaTonTai
       ) {
         console.log(
-          `Tự động tạo hóa đơn tháng đầu tiên: ${thangHienTai} cho phòng ${ma_phong}`
+          `Tự động tạo hóa đơn tháng đầu tiên: ${thangHienTai} cho phòng ${ma_phong} vào ngày ${ngayTaoMongMuon.toISOString().slice(0, 10)}`
         );
         const newHoaDon = await hoaDonThangService.taoHoaDon(
           ma_phong,
           id_users,
           thangHienTai
         );
+
+        // Cập nhật ngay_tao_hoa_don
+        newHoaDon.ngay_tao_hoa_don = ngayTaoMongMuon;
+        await newHoaDon.save();
 
         // Gửi email
         await sendEmail(ngươithue, newHoaDon);
@@ -352,6 +430,7 @@ const sendEmail = async (ngươithue: any, hoaDon: any) => {
     },
   });
 
+  const linkThanhToanThang = `${process.env.CLIENT_URL}/thanh-toan-thang`;
   const mailOptions = {
     from: process.env.MAIL_USERNAME,
     to: ngươithue.email,
@@ -365,17 +444,15 @@ const sendEmail = async (ngươithue: any, hoaDon: any) => {
 
       <!-- Tiêu đề -->
       <h2 style="text-align: center; color: #2c3e50; font-size: 24px; margin-bottom: 20px;">📄 HÓA ĐƠN THUÊ TRỌ THÁNG</h2>
-      <p style="text-align: center; color: #555; font-size: 16px; margin-bottom: 25px;">Chào <b>${
-        ngươithue.ho_va_ten || ngươithue.username || "Khách hàng"
+      <p style="text-align: center; color: #555; font-size: 16px; margin-bottom: 25px;">Chào <b>${ngươithue.ho_va_ten || ngươithue.username || "Khách hàng"
       }</b>, dưới đây là hóa đơn tháng mới của bạn.</p>
 
       <!-- Nội dung hóa đơn -->
       <div style="background: #fff; padding: 20px; border-left: 5px solid #e91e63; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h3 style="font-size: 16px; color: #333; margin-right:10px;">Mã hóa đơn:</h3>
-          <p style="font-size: 16px; color: #666;">${
-            hoaDon.ma_hoa_don_thang || "N/A"
-          }</p>  
+          <p style="font-size: 16px; color: #666;">${hoaDon.ma_hoa_don_thang || "N/A"
+      }</p>  
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h3 style="font-size: 16px; color: #333; margin-right:10px;">Mã phòng:</h3>
@@ -399,17 +476,14 @@ const sendEmail = async (ngươithue: any, hoaDon: any) => {
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h3 style="font-size: 16px; color: #333; margin-right:10px;">Tổng tiền:</h3>
-          <p style="font-size: 16px; color: #666;">${hoaDon.tong_tien} VND</p>
+          <p style="font-size: 16px; color: #666;">${Number(hoaDon.tong_tien).toFixed(0)} VND</p>
         </div>
-        <!-- Thông tin thanh toán -->
-        <div style="font-size: 13px; color: #555; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
-          <h4 style="font-size: 16px; color: #333; margin-bottom: 8px;">Thông tin thanh toán</h4>
-          <p style="margin: 5px 0;">Vui lòng thanh toán trong vòng 15 ngày kể từ ngày nhận hóa đơn.</p>
-          <h4 style="font-size: 16px; color: #333; margin-bottom: 8px; margin-top: 15px;">Chi tiết ngân hàng</h4>
-          <p style="margin: 5px 0;"><strong>Tên ngân hàng:</strong> Vietcombank</p>
-          <p style="margin: 5px 0;"><strong>Mã Swift:</strong> ABCDEFGH</p>
-          <p style="margin: 5px 0;"><strong>Số tài khoản:</strong> 1234 5678 9012 3456</p>
+        <!-- Thông tin thanh toán và nút CTA -->
+        <div style="display: flex; justify-content: space-between; font-size: 14px; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 20px;">
+        <div style="width: 50%; text-align: right;">
+          <a href="${linkThanhToanThang}" style="display: inline-block; padding: 12px 25px; background: #10b981; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600; transition: background 0.3s ease; text-align: center;">💳 Thanh toán ngay</a>
         </div>
+      </div>
       </div>
     </div>
 

@@ -16,14 +16,12 @@ export const TransactionController = async (req: Request, res: Response) => {
     
 };
 
-export const TransactionData = async (req: any, res: any) => {
+export const TransactionThang = async (req: Request, res: Response) => {
       try {
-        const transactionService = new TransactionService();
-        const result = await transactionService.getTransaction();
+        const result: string = await new TransactionService().TransactionDataThang();
   
         res.status(200).json({
-          message: 'Thành công',
-          data: result
+          message: result,
         });
       } catch (error: any) {
         res.status(500).json({ 

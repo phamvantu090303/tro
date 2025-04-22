@@ -26,7 +26,7 @@ export const CreateHoaDon = async (req: Request, res: Response) => {
         noi_dung: "thanh toán tiền phòng",
         ma_don_hang: "HD" + Math.floor(Math.random() * 1000000),
         ngay_chuyen_khoan: new Date(),
-        trang_thai: "Chưa thanh toán",
+        trang_thai: "chưa thanh toán",
       };
       const newHoaDon = new HoaDonThanhToanModel(hoadon);
       await newHoaDon.save();

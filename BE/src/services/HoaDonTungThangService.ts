@@ -41,10 +41,10 @@ export class HoaDonThangService {
       const tienNuoc = dichVu.tien_nuoc ?? 0;
       const tienWifi = dichVu.tien_wifi ?? 0;
 
-      // Tính tổng tiền
-      const phongTro = await PhongTroModel.findOne();
+      // Lấy dữ liệu phòng trọ dựa trên ma_phong
+      const phongTro = await PhongTroModel.findOne({ ma_phong: ma_phong });
       if (!phongTro) {
-        throw new Error("Không tìm thấy thông tin phòng trọ");
+        throw new Error(`Không tìm thấy thông tin phòng trọ với mã ${ma_phong}`);
       }
       const tienPhong = phongTro.gia_tien;
 
@@ -74,7 +74,7 @@ export class HoaDonThangService {
 
       // Tạo hóa đơn
       const hoaDon = new HoaDonTungThangModel({
-        ma_hoa_don_thang: "HD_T" + Math.floor(Math.random() * 1000000),
+        ma_hoa_don_thang: "HD" + Math.floor(Math.random() * 1000000),
         ma_phong,
         id_users,
         chi_so_dien_thang_nay: chiSoDienThangNay,
@@ -123,6 +123,7 @@ export class HoaDonThangService {
       {
         // Chỉ lấy các trường cần thiết
         $project: {
+          ma_hoa_don_thang: 1,
           id_user: "$id_users._id",
           ho_va_ten: "$id_users.ho_va_ten",
           ma_phong: 1,
