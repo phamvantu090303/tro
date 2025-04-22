@@ -2,8 +2,9 @@ import CardRoom from "./CardRoom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useNavigate } from "react-router";
 
-function ProductShowcase({ data, desc, limit, slide }) {
+function ProductShowcase({ data, desc, limit, slide, showAll }) {
   const settings = {
     dots: false,
     infinite: data.length > 1,
@@ -42,9 +43,9 @@ function ProductShowcase({ data, desc, limit, slide }) {
       },
     ],
   };
-
+  const navigate = useNavigate();
   return (
-    <div className="w-full">
+    <section className="w-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end">
         <div>
           <div className="flex gap-2 items-center">
@@ -98,12 +99,17 @@ function ProductShowcase({ data, desc, limit, slide }) {
         </div>
       )}
 
-      <div className="mt-6 md:mt-8 flex justify-center">
-        <button className="px-12 py-4 text-base font-medium bg-[#23284C] text-white rounded-lg hover:bg-[#2a306e]">
-          Xem toàn bộ
-        </button>
-      </div>
-    </div>
+      {showAll && (
+        <div className="mt-6 md:mt-8 flex justify-center">
+          <button
+            className="px-12 py-4 text-base font-medium bg-[#23284C] text-white rounded-lg hover:bg-[#2a306e]"
+            onClick={() => navigate("/ProductList")}
+          >
+            Xem toàn bộ
+          </button>
+        </div>
+      )}
+    </section>
   );
 }
 

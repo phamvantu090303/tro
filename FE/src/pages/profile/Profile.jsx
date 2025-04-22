@@ -9,6 +9,7 @@ import ModalConFirm from "../../component/ModalConfirm";
 import { openConfirmModal } from "../../Store/filterConfirmModal";
 import ElectricityInvoice from "./ThongKeDienUser";
 import OtpVerification from "../../component/Otp";
+import { Helmet } from "react-helmet";
 
 function Profile() {
   const { user } = useSelector((state) => state.auth);
@@ -94,6 +95,9 @@ function Profile() {
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
+      <Helmet>
+        <title>Trang cá nhân</title>
+      </Helmet>
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}

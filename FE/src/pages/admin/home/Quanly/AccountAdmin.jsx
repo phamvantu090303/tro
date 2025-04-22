@@ -10,7 +10,6 @@ function AccountAdmin() {
     createData,
     DeleteData,
     UpdateData,
-    fetchData,
   } = useApiManagerAdmin("/admin");
   const generateRandomId = () => Math.floor(Math.random() * 1000000).toString();
   const [adminData, setAdminData] = useState({
@@ -39,10 +38,6 @@ function AccountAdmin() {
     { label: "Căn cước công dân", key: "cccd" },
     { label: "Tài khoản bị khóa", key: "is_block" },
   ];
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (modal) {

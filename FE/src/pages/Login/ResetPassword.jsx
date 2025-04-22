@@ -1,25 +1,25 @@
-// ResetPassword.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { axiosInstance } from "../../../Axios";
+import { Helmet } from "react-helmet";
 
 const ResetPassword = ({ token: propToken }) => {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [token, setToken] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [token, setToken] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Lấy token từ props hoặc window.location khi component mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const urlToken = urlParams.get('token');
+    const urlToken = urlParams.get("token");
     const finalToken = propToken || urlToken;
 
     if (finalToken) {
       setToken(finalToken);
     } else {
-      setError('Không tìm thấy token. Vui lòng kiểm tra lại liên kết.');
+      setError("Không tìm thấy token. Vui lòng kiểm tra lại liên kết.");
     }
   }, [propToken]);
 
@@ -27,17 +27,17 @@ const ResetPassword = ({ token: propToken }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
-    setError('');
+    setMessage("");
+    setError("");
 
     if (!newPassword || !confirmPassword) {
-      setError('Vui lòng nhập đầy đủ mật khẩu mới và xác nhận mật khẩu.');
+      setError("Vui lòng nhập đầy đủ mật khẩu mới và xác nhận mật khẩu.");
       setLoading(false);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp.');
+      setError("Mật khẩu xác nhận không khớp.");
       setLoading(false);
       return;
     }
@@ -49,14 +49,18 @@ const ResetPassword = ({ token: propToken }) => {
         confirm_Password: confirmPassword,
       });
 
-      setMessage(response.data.message || 'Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');
+      setMessage(
+        response.data.message ||
+          "Đổi mật khẩu thành công! Vui lòng đăng nhập lại."
+      );
       // Chuyển trang sau 2 giây để người dùng có thời gian đọc thông báo
       setTimeout(() => {
-        window.location.href = '/login'; // Điều chỉnh đường dẫn đăng nhập của user
+        window.location.href = "/login"; // Điều chỉnh đường dẫn đăng nhập của user
       }, 2000);
     } catch (err) {
       setError(
-        err.response?.data?.message || 'Đã xảy ra lỗi khi đổi mật khẩu. Vui lòng thử lại.'
+        err.response?.data?.message ||
+          "Đã xảy ra lỗi khi đổi mật khẩu. Vui lòng thử lại."
       );
     } finally {
       setLoading(false);
@@ -65,10 +69,16 @@ const ResetPassword = ({ token: propToken }) => {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+      <Helmet>
+        <title>Đổi mật khẩu</title>
+      </Helmet>
       <h2 className="text-2xl font-bold text-center mb-6">Đặt lại mật khẩu</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="newPassword"
+            className="block text-sm font-medium text-gray-700"
+          >
             Mật khẩu mới
           </label>
           <input
@@ -82,7 +92,10 @@ const ResetPassword = ({ token: propToken }) => {
           />
         </div>
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-gray-700"
+          >
             Xác nhận mật khẩu
           </label>
           <input
@@ -95,20 +108,16 @@ const ResetPassword = ({ token: propToken }) => {
             disabled={loading}
           />
         </div>
-        {message && (
-          <p className="text-green-600 text-center">{message}</p>
-        )}
-        {error && (
-          <p className="text-red-600 text-center">{error}</p>
-        )}
+        {message && <p className="text-green-600 text-center">{message}</p>}
+        {error && <p className="text-red-600 text-center">{error}</p>}
         <button
           type="submit"
           className={`w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            loading ? 'opacity-50 cursor-not-allowed' : ''
+            loading ? "opacity-50 cursor-not-allowed" : ""
           }`}
           disabled={loading}
         >
-          {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
+          {loading ? "Đang xử lý..." : "Đổi mật khẩu"}
         </button>
       </form>
     </div>

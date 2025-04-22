@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import CardFavourite from "../../component/Favourite/CardFavourite";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
 function Favourite() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
@@ -23,6 +24,18 @@ function Favourite() {
 
   return (
     <div className="w-full">
+      <Helmet>
+        <title>Yêu thích phòng trọ</title>
+        <meta
+          name="description"
+          content="Khám phá bộ sưu tập chi tiết phòng trọ cao cấp, đầy đủ tiện nghi, phù hợp cho mọi nhu cầu."
+        />
+
+        <meta
+          name="keywords"
+          content="phòng trọ, thuê phòng, nhà trọ, nhà cho thuê, mô tả về các sản phẩm, yêu thích, dịch vụ mà bạn cung cấp."
+        />
+      </Helmet>
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
         <h1 className="text-3xl font-bold">Yêu thích</h1>
         <div className="space-y-5 min-h-[800px] mt-10">
