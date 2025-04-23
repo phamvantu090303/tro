@@ -39,6 +39,7 @@ function HoadonCocAdmin() {
   const renderStatus = (status) => {
     return (
       <div>
+
         {status.trang_thai === "chưa thanh toán" ? (
           <p className="px-2 py-2 text-white text-sm rounded-lg bg-red-500 w-[120px]">
             chưa thanh toán

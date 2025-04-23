@@ -7,7 +7,7 @@ function ThanhToan() {
     const [thanhToan, setThanhToan] = useState({
         ma_phong: "",
         id_users: "",
-        ma_hoa_don: "",
+        ma_don_hang: "",
         ho_va_ten: "",
         so_tien: 0,
         trang_thai: "",
@@ -67,6 +67,11 @@ function ThanhToan() {
         return amount.toLocaleString("vi-VN", { minimumFractionDigits: 0 });
     };
 
+    // tạo QR code URL
+    const qrCodeUrl = `https://img.vietqr.io/image/970422-0367599057-qr_only.png?amount=${thanhToan.so_tien}&addInfo=${encodeURIComponent(
+        thanhToan.ma_don_hang || "HD-Unknown"
+    )}&accountName=NGUYEN%20TRUNG%20HUNG`;
+
     return (
         <div className="flex flex-col md:flex-row p-4 gap-4 bg-gray-100 min-h-screen">
             {/* Phần thông tin hóa đơn */}
@@ -96,11 +101,10 @@ function ThanhToan() {
                 <div className="mb-4 flex justify-between">
                     <p className="text-lg font-semibold">Trạng thái:</p>
                     <p
-                        className={`text-lg ${
-                            thanhToan.trang_thai === "đã thanh toán"
+                        className={`text-lg ${thanhToan.trang_thai === "đã thanh toán"
                                 ? "text-green-600"
                                 : "text-red-600"
-                        }`}
+                            }`}
                     >
                         {thanhToan.trang_thai}
                     </p>
@@ -122,7 +126,7 @@ function ThanhToan() {
                         <strong>Số tài khoản:</strong> 0367599057
                     </p>
                     <p className="text-sm text-gray-600">
-                        <strong>Nội Dung chuyển khoản:</strong> Họ Tên {thanhToan.ma_don_hang}
+                        <strong>Nội Dung chuyển khoản:</strong> {thanhToan.ma_don_hang}
                     </p>
                 </div>
 
@@ -138,7 +142,15 @@ function ThanhToan() {
                 </h2>
 
                 <div className="w-48 h-48 bg-gray-200 flex items-center justify-center mb-4">
-                    <img src="/QR.png" alt="QR Code" className="w-full h-full object-contain" />
+                    {thanhToan.ma_don_hang ? (
+                        <img
+                            src={qrCodeUrl}
+                            alt="QR Code"
+                            className="w-full h-full object-contain"
+                        />
+                    ) : (
+                        <p className="text-red-600">Chưa có mã đơn hàng để tạo QR code</p>
+                    )}
                 </div>
 
                 <p className="text-gray-600">Quét mã QR để thanh toán</p>

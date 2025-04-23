@@ -116,15 +116,9 @@ export const deleteHoaDonByID = async (req: any, res: any) => {
 // Hàm tự động tạo hóa đơn mới cho tháng tiếp theo
 export const tuDongTaoHoaDonThang = async () => {
   try {
-    // Lấy danh sách hóa đơn mới nhất cho từng phòng
     const danhSachHoaDonMoiNhat = await HoaDonTungThangModel.aggregate([
-      { $sort: { ngay_tao_hoa_don: -1 } }, // Sắp xếp theo ngày tạo, mới nhất trước
-      {
-        $group: {
-          _id: "$ma_phong",
-          hoaDonMoiNhat: { $first: "$$ROOT" }, // Lấy hóa đơn mới nhất của mỗi phòng
-        },
-      },
+      { $sort: { ngay_tao_hoa_don: -1 } },
+      { $group: { _id: "$ma_phong", hoaDonMoiNhat: { $first: "$$ROOT" } } },
     ]);
 
     if (!danhSachHoaDonMoiNhat?.length) {
@@ -133,96 +127,90 @@ export const tuDongTaoHoaDonThang = async () => {
     }
 
     const ngayHienTai = new Date();
-    const thangHienTai = ngayHienTai.toISOString().slice(0, 7); // Ví dụ: "2025-03"
-    const ngayCuoiThang = new Date(
-      ngayHienTai.getFullYear(),
-      ngayHienTai.getMonth() + 1,
-      0,
-      23,
-      59,
-      59,
-      999
-    );
+    const thangHienTai = ngayHienTai.toISOString().slice(0, 7);
+    const ngayCuoiThang = new Date(ngayHienTai.getFullYear(), ngayHienTai.getMonth() + 1, 0, 23, 59, 59, 999);
 
-    const ngươithue = await UserModel.findOne({
-      _id: danhSachHoaDonMoiNhat[0].hoaDonMoiNhat.id_users,
-    });
-    if (ngươithue) {
-      console.log(ngươithue.email);
-    } else {
+    const ngươithue = await UserModel.findOne({ _id: danhSachHoaDonMoiNhat[0].hoaDonMoiNhat.id_users });
+    if (!ngươithue) {
       console.log("Người thuê không tồn tại.");
     }
 
-    // Duyệt qua từng hóa đơn mới nhất của mỗi phòng
     for (const { hoaDonMoiNhat } of danhSachHoaDonMoiNhat) {
-      const { ma_phong, id_users, trang_thai, ngay_tao_hoa_don } =
-        hoaDonMoiNhat;
+      const { ma_phong, id_users, trang_thai, ngay_tao_hoa_don } = hoaDonMoiNhat;
 
       if (!ma_phong || !id_users) {
+        console.log(`Hóa đơn của phòng ${ma_phong} thiếu mã phòng hoặc ID người dùng, bỏ qua.`);
+        continue;
+      }
+
+      const ngayTaoCuoi = new Date(ngay_tao_hoa_don);
+      const thangTruoc = ngayTaoCuoi.toISOString().slice(0, 7);
+
+      // Kiểm tra tháng cách nhau 1 tháng
+      const thangHienTaiDate = new Date(`${thangHienTai}-01`);
+      const thangTruocDate = new Date(`${thangTruoc}-01`);
+      const thangCachBiet =
+        (thangHienTaiDate.getFullYear() - thangTruocDate.getFullYear()) * 12 +
+        thangHienTaiDate.getMonth() - thangTruocDate.getMonth();
+
+      if (thangCachBiet !== 1) {
         console.log(
-          `Hóa đơn của phòng ${ma_phong} thiếu mã phòng hoặc ID người dùng, bỏ qua.`
+          `Hóa đơn phòng ${ma_phong} có ngày tạo ${ngay_tao_hoa_don} không cách tháng hiện tại (${thangHienTai}) đúng 1 tháng, bỏ qua.`
         );
         continue;
       }
 
-      // Xác định tháng của hóa đơn mới nhất
-      const ngayTaoCuoi = new Date(ngay_tao_hoa_don);
-      const thangTruoc = new Date(
-        ngayTaoCuoi.getFullYear(),
-        ngayTaoCuoi.getMonth(),
-        1
-      )
-        .toISOString()
-        .slice(0, 7);
+      // Tính ngày tạo hóa đơn mong muốn
+      const ngayCuoiThangHienTai = new Date(ngayHienTai.getFullYear(), ngayHienTai.getMonth() + 1, 0).getDate();
+      const ngayMongMuon = Math.min(ngayTaoCuoi.getDate(), ngayCuoiThangHienTai);
+      const ngayTaoMongMuon = new Date(
+        ngayHienTai.getFullYear(),
+        ngayHienTai.getMonth(),
+        ngayMongMuon,
+        ngayTaoCuoi.getHours(),
+        ngayTaoCuoi.getMinutes(),
+        ngayTaoCuoi.getSeconds()
+      );
 
-      // Kiểm tra hóa đơn cho tháng hiện tại đã tồn tại chưa
-      const hoaDonDaTonTai = await HoaDonTungThangModel.findOne({
-        ma_phong,
-        ngay_tao_hoa_don: {
-          $gte: new Date(`${thangHienTai}-01T00:00:00Z`),
-          $lte: ngayCuoiThang,
-        },
-      });
+      // Kiểm tra ngày hiện tại khớp ngày mong muốn
+      const ngayHienTaiChiLayNgay = new Date(ngayHienTai.getFullYear(), ngayHienTai.getMonth(), ngayHienTai.getDate());
+      const ngayTaoMongMuonChiLayNgay = new Date(
+        ngayTaoMongMuon.getFullYear(),
+        ngayTaoMongMuon.getMonth(),
+        ngayTaoMongMuon.getDate()
+      );
 
-      // Kiểm tra trạng thái thanh toán và xử lý
-      if (trang_thai === "chưa thanh toán") {
+      if (ngayHienTaiChiLayNgay.getTime() !== ngayTaoMongMuonChiLayNgay.getTime()) {
         console.log(
-          `Phòng ${ma_phong} có hóa đơn tháng ${thangTruoc} chưa thanh toán. Yêu cầu thanh toán!`
+          `Ngày hiện tại (${ngayHienTai.toISOString().slice(0, 10)}) không phải ngày tạo hóa đơn mong muốn (${ngayTaoMongMuon.toISOString().slice(0, 10)}) cho phòng ${ma_phong}, bỏ qua.`
         );
-        continue; // Bỏ qua nếu chưa thanh toán
+        continue;
       }
 
-      // So sánh và tạo hóa đơn nếu cần
-      if (
-        trang_thai === "đã thanh toán" &&
-        thangTruoc < thangHienTai &&
-        !hoaDonDaTonTai
-      ) {
-        console.log(
-          `Tự động tạo hóa đơn tháng tiến theo: ${thangHienTai} cho phòng ${ma_phong}`
-        );
-        const newHoaDon = await hoaDonThangService.taoHoaDon(
-          ma_phong,
-          id_users,
-          thangHienTai
-        );
+      // Kiểm tra hóa đơn đã tồn tại
+      const hoaDonDaTonTai = await HoaDonTungThangModel.findOne({
+        ma_phong,
+        ngay_tao_hoa_don: { $gte: new Date(`${thangHienTai}-01T00:00:00Z`), $lte: ngayCuoiThang },
+      });
 
-        // Gửi email
-        await sendEmail(ngươithue, newHoaDon);
+      if (trang_thai === "chưa thanh toán") {
+        console.log(`Phòng ${ma_phong} có hóa đơn tháng ${thangTruoc} chưa thanh toán. Yêu cầu thanh toán!`);
+        continue;
+      }
 
-        console.log(
-          `Hóa đơn tháng tiến theo: ${thangHienTai} cho phòng ${ma_phong} đã được tạo!`
-        );
+      if (trang_thai === "đã thanh toán" && !hoaDonDaTonTai) {
+        console.log(`Tự động tạo hóa đơn tháng ${thangHienTai} cho phòng ${ma_phong} vào ngày ${ngayTaoMongMuon.toISOString().slice(0, 10)}`);
+        const newHoaDon = await hoaDonThangService.taoHoaDon(ma_phong, id_users, thangHienTai);
+        newHoaDon.ngay_tao_hoa_don = ngayTaoMongMuon;
+        await newHoaDon.save();
+        if (ngươithue) await sendEmail(ngươithue, newHoaDon);
+        console.log(`Hóa đơn tháng ${thangHienTai} cho phòng ${ma_phong} đã được tạo!`);
       } else if (hoaDonDaTonTai) {
         console.log(`Phòng ${ma_phong} đã có hóa đơn tháng ${thangHienTai}!`);
-      } else {
-        console.log(
-          `Đã có hóa đơn mới nhất của phòng ${ma_phong} là tháng ${thangTruoc}`
-        );
       }
     }
   } catch (error) {
-    console.error("Lỗi khi tự động tạo hóa đơn tháng tiến theo:", error);
+    console.error("Lỗi khi tự động tạo hóa đơn tháng:", error);
   }
 };
 
@@ -245,7 +233,7 @@ export const tuDongTaoHoaDon = async () => {
     }
 
     const ngayHienTai = new Date();
-    const thangHienTai = ngayHienTai.toISOString().slice(0, 7);
+    const thangHienTai = ngayHienTai.toISOString().slice(0, 7); // Ví dụ: "2025-04"
     const ngayCuoiThang = new Date(
       ngayHienTai.getFullYear(),
       ngayHienTai.getMonth() + 1,
@@ -277,13 +265,56 @@ export const tuDongTaoHoaDon = async () => {
       }
 
       const ngayChuyenKhoanCuoi = new Date(ngay_chuyen_khoan);
-      const thangTruoc = new Date(
-        ngayChuyenKhoanCuoi.getFullYear(),
-        ngayChuyenKhoanCuoi.getMonth(),
-        1
-      )
-        .toISOString()
-        .slice(0, 7);
+      const thangChuyenKhoan = ngayChuyenKhoanCuoi.toISOString().slice(0, 7); // Ví dụ: "2025-03"
+
+      // Kiểm tra nếu tháng hiện tại không cách tháng chuyển khoản đúng 1 tháng
+      const thangHienTaiDate = new Date(thangHienTai + "-01");
+      const thangChuyenKhoanDate = new Date(thangChuyenKhoan + "-01");
+      const thangCachBiet =
+        (thangHienTaiDate.getFullYear() - thangChuyenKhoanDate.getFullYear()) * 12 +
+        thangHienTaiDate.getMonth() - thangChuyenKhoanDate.getMonth();
+
+      if (thangCachBiet !== 1) {
+        console.log(
+          `Hóa đơn phòng ${ma_phong} có ngày chuyển khoản ${ngay_chuyen_khoan} không cách tháng hiện tại (${thangHienTai}) đúng 1 tháng, bỏ qua.`
+        );
+        continue;
+      }
+
+      // Tính ngày tạo hóa đơn mong muốn cho tháng hiện tại
+      const ngayCuoiThangHienTai = new Date(
+        ngayHienTai.getFullYear(),
+        ngayHienTai.getMonth() + 1,
+        0
+      ).getDate();
+      const ngayMongMuon = Math.min(ngayChuyenKhoanCuoi.getDate(), ngayCuoiThangHienTai);
+      const ngayTaoMongMuon = new Date(
+        ngayHienTai.getFullYear(),
+        ngayHienTai.getMonth(),
+        ngayMongMuon,
+        ngayChuyenKhoanCuoi.getHours(),
+        ngayChuyenKhoanCuoi.getMinutes(),
+        ngayChuyenKhoanCuoi.getSeconds()
+      );
+
+      // Kiểm tra nếu ngày hiện tại không đúng ngày tạo hóa đơn mong muốn
+      const ngayHienTaiChiLayNgay = new Date(
+        ngayHienTai.getFullYear(),
+        ngayHienTai.getMonth(),
+        ngayHienTai.getDate()
+      );
+      const ngayTaoMongMuonChiLayNgay = new Date(
+        ngayTaoMongMuon.getFullYear(),
+        ngayTaoMongMuon.getMonth(),
+        ngayTaoMongMuon.getDate()
+      );
+
+      if (ngayHienTaiChiLayNgay.getTime() !== ngayTaoMongMuonChiLayNgay.getTime()) {
+        console.log(
+          `Ngày hiện tại (${ngayHienTai.toISOString().slice(0, 10)}) không phải ngày tạo hóa đơn mong muốn (${ngayTaoMongMuon.toISOString().slice(0, 10)}) cho phòng ${ma_phong}, bỏ qua.`
+        );
+        continue;
+      }
 
       const hoaDonDaTonTai = await HoaDonTungThangModel.findOne({
         ma_phong,
@@ -295,24 +326,24 @@ export const tuDongTaoHoaDon = async () => {
 
       if (trang_thai === "chưa thanh toán") {
         console.log(
-          `Phòng ${ma_phong} có hóa đơn thuê trọ chưa thanh toán. Yêu cầu thanh toán!.`
+          `Phòng ${ma_phong} có hóa đơn thuê trọ chưa thanh toán. Yêu cầu thanh toán!`
         );
         continue;
       }
 
-      if (
-        trang_thai === "đã thanh toán" &&
-        thangTruoc < thangHienTai &&
-        !hoaDonDaTonTai
-      ) {
+      if (trang_thai === "đã thanh toán" && !hoaDonDaTonTai) {
         console.log(
-          `Tự động tạo hóa đơn tháng đầu tiên: ${thangHienTai} cho phòng ${ma_phong}`
+          `Tự động tạo hóa đơn tháng đầu tiên: ${thangHienTai} cho phòng ${ma_phong} vào ngày ${ngayTaoMongMuon.toISOString().slice(0, 10)}`
         );
         const newHoaDon = await hoaDonThangService.taoHoaDon(
           ma_phong,
           id_users,
           thangHienTai
         );
+
+        // Cập nhật ngay_tao_hoa_don
+        newHoaDon.ngay_tao_hoa_don = ngayTaoMongMuon;
+        await newHoaDon.save();
 
         // Gửi email
         await sendEmail(ngươithue, newHoaDon);
@@ -322,16 +353,13 @@ export const tuDongTaoHoaDon = async () => {
         );
       } else if (hoaDonDaTonTai) {
         console.log(`Phòng ${ma_phong} đã có hóa đơn tháng đầu tiên.`);
-      } else {
-        console.log(
-          `Đã có hóa đơn của phòng ${ma_phong} là tháng ${thangTruoc}.`
-        );
       }
     }
   } catch (error) {
     console.error("Lỗi khi tự động tạo hóa đơn tháng đầu tiên:", error);
   }
 };
+
 
 // Hàm gửi email
 const sendEmail = async (ngươithue: any, hoaDon: any) => {
@@ -352,6 +380,7 @@ const sendEmail = async (ngươithue: any, hoaDon: any) => {
     },
   });
 
+  const linkThanhToanThang = `${process.env.CLIENT_URL}/thanh-toan-thang`;
   const mailOptions = {
     from: process.env.MAIL_USERNAME,
     to: ngươithue.email,
@@ -403,12 +432,9 @@ const sendEmail = async (ngươithue: any, hoaDon: any) => {
         </div>
         <!-- Thông tin thanh toán -->
         <div style="font-size: 13px; color: #555; border-top: 1px solid #eee; padding-top: 15px; margin-top: 15px;">
-          <h4 style="font-size: 16px; color: #333; margin-bottom: 8px;">Thông tin thanh toán</h4>
-          <p style="margin: 5px 0;">Vui lòng thanh toán trong vòng 15 ngày kể từ ngày nhận hóa đơn.</p>
-          <h4 style="font-size: 16px; color: #333; margin-bottom: 8px; margin-top: 15px;">Chi tiết ngân hàng</h4>
-          <p style="margin: 5px 0;"><strong>Tên ngân hàng:</strong> Vietcombank</p>
-          <p style="margin: 5px 0;"><strong>Mã Swift:</strong> ABCDEFGH</p>
-          <p style="margin: 5px 0;"><strong>Số tài khoản:</strong> 1234 5678 9012 3456</p>
+          <div style="width: 50%; text-align: right;">
+            <a href="${linkThanhToanThang}" style="display: inline-block; padding: 12px 25px; background: #10b981; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600; transition: background 0.3s ease; text-align: center;">💳 Thanh toán ngay</a>
+          </div>
         </div>
       </div>
     </div>

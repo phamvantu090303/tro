@@ -15,6 +15,7 @@ import MyRoom from "../pages/profile/myroom";
 import ProductList from "../pages/ProductList/ProductList";
 
 import ThanhToan from "../pages/ThanhToan/ThanhToan";
+import ThanhToanThang from "../pages/ThanhToan/ThanhToanThang";
 
 const routerUser = (
   <Route path="/" element={<Layout />}>
@@ -32,6 +33,7 @@ const routerUser = (
     <Route path="/my-room" element={<MyRoom />} />
     <Route path="/ProductList" element={<ProductList />} />
     <Route path="/thanh-toan" element={<ThanhToan />} />
+    <Route path="/thanh-toan-thang" element={<ThanhToanThang />} />
   </Route>
 );
 

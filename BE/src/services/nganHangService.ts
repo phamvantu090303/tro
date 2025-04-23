@@ -2,7 +2,6 @@ import axios from "axios";
 import dotenv from "dotenv";
 import HoaDonThanhToanModel from "../models/HoaDonThanhToanModel";
 import PhongTroModel from "../models/PhongTroModel";
-import NganHangModel from "../models/nganHangModel";
 import HoaDonTungThangModel from "../models/HoaDonTungThangModel";
 
 dotenv.config();
@@ -54,16 +53,20 @@ export class TransactionService {
         const description = value.addDescription;
       
         if (description) {
-          // Biểu thức chính quy để khớp với HD + các số, bỏ qua khoảng trắng
-          const match = description.match(/HD[\d\s]*\d+/i); // Khớp HD + các số, có thể có khoảng trắng
+          // Biểu thức chính quy để khớp với HD (không phân biệt hoa thường) + các số, có thể có khoảng trắng
+          const match = description.match(/HD[\d\s]*\d+/i); // Khớp HD + số, bỏ qua khoảng trắng, không phân biệt hoa/thường
       
           if (match) {
-            // Xóa tất cả khoảng trắng trong mã hóa đơn và chuẩn hóa
+            // Xóa tất cả khoảng trắng trong mã hóa đơn để chuẩn hóa
             const maHoaDon = match[0].replace(/\s/g, "");
-            if (total.has(maHoaDon)) {
-              total.set(maHoaDon, total.get(maHoaDon)! + value.creditAmount);
-            } else {
-              total.set(maHoaDon, value.creditAmount);
+      
+            // Kiểm tra định dạng mã hóa đơn hợp lệ (chỉ chứa HD + số)
+            if (/^HD\d+$/i.test(maHoaDon)) {
+              if (total.has(maHoaDon)) {
+                total.set(maHoaDon, total.get(maHoaDon)! + value.creditAmount);
+              } else {
+                total.set(maHoaDon, value.creditAmount);
+              }
             }
           }
         }
@@ -88,7 +91,7 @@ export class TransactionService {
             const updatephong = await PhongTroModel.findOneAndUpdate(
               { ma_phong: foundHoaDon.ma_phong },
               { id_users: foundHoaDon.id_users },
-              { new: true } // Return the updated document
+              { new: true }
             );
 
             if (updatephong) {
@@ -113,7 +116,8 @@ export class TransactionService {
     }
   }
 
-  async TransactionDataThang(): Promise<string> {
+
+  async TransactionThang(): Promise<string> {
     // Lấy ngày hiện tại
     const currentDate = new Date();
 
@@ -158,22 +162,25 @@ export class TransactionService {
         const description = value.addDescription;
       
         if (description) {
-          // Biểu thức chính quy để khớp với HD + các số, bỏ qua khoảng trắng
-          const match = description.match(/HD[\d\s]*\d+/i); // Khớp HD + các số, có thể có khoảng trắng
+          // Biểu thức chính quy để khớp với HD (không phân biệt hoa thường) + các số, có thể có khoảng trắng
+          const match = description.match(/HD[\d\s]*\d+/i); // Khớp HD + số, bỏ qua khoảng trắng, không phân biệt hoa/thường
       
           if (match) {
-            // Xóa tất cả khoảng trắng trong mã hóa đơn và chuẩn hóa
+            // Xóa tất cả khoảng trắng trong mã hóa đơn để chuẩn hóa
             const maHoaDon = match[0].replace(/\s/g, "");
       
-            if (total.has(maHoaDon)) {
-              total.set(maHoaDon, total.get(maHoaDon)! + value.creditAmount);
-            } else {
-              total.set(maHoaDon, value.creditAmount);
+            // Kiểm tra định dạng mã hóa đơn hợp lệ (chỉ chứa HD + số)
+            if (/^HD\d+$/i.test(maHoaDon)) {
+              if (total.has(maHoaDon)) {
+                total.set(maHoaDon, total.get(maHoaDon)! + value.creditAmount);
+              } else {
+                total.set(maHoaDon, value.creditAmount);
+              }
             }
           }
         }
       });
-
+      
       for (const [key, value] of total) { //value đây là số tiền
         // console.log("key: ", key, "value: ", value);
         const cleanedKey = key.trim();
@@ -196,7 +203,6 @@ export class TransactionService {
               { new: true } // Return the updated document
             );
 
-
             if (updatephong) {
               console.log(`Updated PhongTro: ${updatephong}`);
             } else {
@@ -205,12 +211,11 @@ export class TransactionService {
               );
             }
           } else {
-            console.log(`Không tìm thấy HoaDon cho ma_hoa_don_thang: ${cleanedKey}`);
+            console.log(`Không tìm thấy HoaDon cho ma_don_hang: ${cleanedKey}`);
           }
           console.log("foundHoaDon: ", foundHoaDon);
         }
       }
-
       return "Đã cập nhật thanh toán thành công!";
     } catch (error: any) {
       console.error("Lỗi trong quá trình xử lý giao dịch:", error.message);
