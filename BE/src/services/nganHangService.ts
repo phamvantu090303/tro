@@ -91,7 +91,7 @@ export class TransactionService {
             const updatephong = await PhongTroModel.findOneAndUpdate(
               { ma_phong: foundHoaDon.ma_phong },
               { id_users: foundHoaDon.id_users },
-              { new: true } // Return the updated document
+              { new: true }
             );
 
             if (updatephong) {
