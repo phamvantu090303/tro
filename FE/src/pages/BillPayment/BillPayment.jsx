@@ -54,7 +54,7 @@ export default function BillPayment() {
       >
         {bills.map((bill, index) => (
           <option key={index} value={index}>
-            Tháng {bill.thang} {bill.trangThai ? "(Đã thanh toán)" : ""}
+            Tháng {bill.thang} {bill.trangThai ? "(đã thanh toán)" : ""}
           </option>
         ))}
       </select>
@@ -88,7 +88,7 @@ export default function BillPayment() {
             selectedBill.trangThai ? "text-green-500" : "text-red-500"
           }`}
         >
-          {selectedBill.trangThai ? "✅ đã thanh toán" : "❌ Chưa thanh toán"}
+          {selectedBill.trangThai ? "✅ đã thanh toán" : "❌ chưa thanh toán"}
         </p>
       </div>
 

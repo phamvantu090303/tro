@@ -1,9 +1,10 @@
 import {Router} from 'express'
-import { TransactionController, TransactionData } from '../controllers/nganHangController'
+import { TransactionController, TransactionThang } from '../controllers/nganHangController'
 const nganHangRouter=Router()
 
 
 nganHangRouter.post('/transaction', TransactionController)
-nganHangRouter.get('/transactionData', TransactionData)
+nganHangRouter.post('/transactionThang', TransactionThang)
+
 
 export default nganHangRouter

@@ -2,15 +2,23 @@ import { useEffect, useState } from "react";
 import useApiManagerAdmin from "../../hook/useApiManagerAdmin";
 import { axiosInstance } from "../../../Axios";
 
-function ThanhToan() {
-    const { data: hoaDonData, fetchData: fetchHoaDonData } = useApiManagerAdmin("/hoadon");
-    const [thanhToan, setThanhToan] = useState({
+function ThanhToanThang() {
+    const { data: hoaDonData, fetchData: fetchHoaDonData } = useApiManagerAdmin("/hoa-don-thang");
+    const { data: dichVuData } = useApiManagerAdmin("/dich-vu");
+    const [thanhToanThang, setThanhToanThang] = useState({
         ma_phong: "",
         id_users: "",
-        ma_don_hang: "",
+        ma_hoa_don_thang: "",
         ho_va_ten: "",
-        so_tien: 0,
+        tien_phong: 0,
+        so_dien_tieu_thu: 0,
+        tong_tien: 0,
         trang_thai: "",
+    });
+    const [dichVu, setDichVu] = useState({
+        gia_dien: 0,
+        tien_nuoc: 0,
+        tien_wifi: 0,
     });
     const [message, setMessage] = useState("");
 
@@ -18,22 +26,40 @@ function ThanhToan() {
     useEffect(() => {
         if (hoaDonData && hoaDonData.length > 0) {
             const latestHoaDon = hoaDonData[hoaDonData.length - 1];
-            setThanhToan({
+            setThanhToanThang({
                 ma_phong: latestHoaDon.ma_phong || "",
                 id_users: latestHoaDon.id_users || "",
-                ma_don_hang: latestHoaDon.ma_don_hang || "HD-Unknown",
+                ma_hoa_don_thang: latestHoaDon.ma_hoa_don_thang || "HD-Unknown",
                 ho_va_ten: latestHoaDon.ho_va_ten || "Khách",
-                so_tien: latestHoaDon.so_tien || 0,
+                tien_phong: latestHoaDon.tien_phong || 0,
+                so_dien_tieu_thu: latestHoaDon.so_dien_tieu_thu || 0,
+                tong_tien: latestHoaDon.tong_tien || 0,
                 trang_thai: latestHoaDon.trang_thai || "chưa thanh toán",
             });
         }
     }, [hoaDonData]);
 
+    // Lấy thông tin dịch vụ
+    useEffect(() => {
+        if (dichVuData) {
+            const activeDichVu = dichVuData.find((dv) => dv.trang_thai === 1);
+            if (activeDichVu) {
+                setDichVu({
+                    gia_dien: activeDichVu.tien_dien || 0,
+                    tien_nuoc: activeDichVu.tien_nuoc || 0,
+                    tien_wifi: activeDichVu.tien_wifi || 0,
+                });
+            } else {
+                setMessage("Không tìm thấy thông tin dịch vụ cho phòng này");
+            }
+        }
+    }, [dichVuData]);
+
     // Hàm gọi API kiểm tra giao dịch
     const handleCheckTransaction = async () => {
         setMessage("");
         try {
-            const { data } = await axiosInstance.post("/ngan-hang/transaction");
+            const { data } = await axiosInstance.post("/ngan-hang/transactionThang");
             setMessage(data.message);
             await fetchHoaDonData();
         } catch (error) {
@@ -44,69 +70,92 @@ function ThanhToan() {
 
     // Tự động kiểm tra giao dịch khi vào trang và lặp lại cho đến khi trạng thái là "đã thanh toán"
     useEffect(() => {
-        // Gọi ngay lần đầu tiên khi vào trang
         handleCheckTransaction();
-
-        // Thiết lập interval để kiểm tra định kỳ mỗi 1 phút
         const intervalId = setInterval(() => {
-            if (thanhToan.trang_thai !== "đã thanh toán") {
+            if (thanhToanThang.trang_thai !== "đã thanh toán") {
                 handleCheckTransaction();
             }
         }, 60000);
 
-        // Dừng interval khi trạng thái là "đã thanh toán" hoặc khi component unmount
-        if (thanhToan.trang_thai === "đã thanh toán") {
+        if (thanhToanThang.trang_thai === "đã thanh toán") {
             clearInterval(intervalId);
             setMessage("Giao dịch đã được xác nhận thành công!");
         }
 
-        return () => clearInterval(intervalId); // Cleanup interval khi component unmount
-    }, [thanhToan.trang_thai]);
+        return () => clearInterval(intervalId);
+    }, [thanhToanThang.trang_thai]);
 
     const formatCurrency = (amount) => {
-        return amount.toLocaleString("vi-VN", { minimumFractionDigits: 0 });
+        // Kiểm tra nếu amount là undefined hoặc null, trả về "0"
+        return (amount ?? 0).toLocaleString("vi-VN", { minimumFractionDigits: 0 });
     };
 
     // tạo QR code URL
-    const qrCodeUrl = `https://img.vietqr.io/image/970422-0367599057-qr_only.png?amount=${thanhToan.so_tien}&addInfo=${encodeURIComponent(
-        thanhToan.ma_don_hang || "HD-Unknown"
+    const qrCodeUrl = `https://img.vietqr.io/image/970422-0367599057-qr_only.png?amount=${thanhToanThang.tong_tien}&addInfo=${encodeURIComponent(
+        thanhToanThang.ma_hoa_don_thang || "HD-Unknown"
     )}&accountName=NGUYEN%20TRUNG%20HUNG`;
 
     return (
         <div className="flex flex-col md:flex-row p-4 gap-4 bg-gray-100 min-h-screen">
             {/* Phần thông tin hóa đơn */}
             <div className="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-bold mb-4">Hóa đơn đặt cọc</h2>
+                <h2 className="text-xl font-bold mb-4">Hóa đơn Tháng</h2>
 
                 <div className="mb-4 flex justify-between">
-                    <p className="text-lg font-semibold">Mã đơn hàng:</p>
-                    <p className="text-lg">{thanhToan.ma_don_hang}</p>
+                    <p className="text-lg font-semibold">Mã hóa đơn tháng:</p>
+                    <p className="text-lg">{thanhToanThang.ma_hoa_don_thang}</p>
                 </div>
 
                 <div className="mb-4 flex justify-between">
                     <p className="text-lg font-semibold">Người thuê:</p>
-                    <p className="text-lg">{thanhToan.ho_va_ten}</p>
+                    <p className="text-lg">{thanhToanThang.ho_va_ten}</p>
                 </div>
 
                 <div className="mb-4 flex justify-between">
                     <p className="text-lg font-semibold">Phòng:</p>
-                    <p className="text-lg">{thanhToan.ma_phong}</p>
+                    <p className="text-lg">{thanhToanThang.ma_phong}</p>
                 </div>
 
                 <div className="mb-4 flex justify-between">
-                    <p className="text-lg font-semibold">Số tiền đặt cọc:</p>
-                    <p className="text-lg">{formatCurrency(thanhToan.so_tien)} VND</p>
+                    <p className="text-lg font-semibold">Số tiền phòng:</p>
+                    <p className="text-lg">{formatCurrency(thanhToanThang.tien_phong)} VND</p>
+                </div>
+
+                <div className="mb-4 flex justify-between">
+                    <p className="text-lg font-semibold">Số điện tiêu thụ:</p>
+                    <p className="text-lg">{formatCurrency(thanhToanThang.so_dien_tieu_thu)} WH</p>
+                </div>
+
+
+                <div className="mb-4 flex justify-between">
+                    <p className="text-lg font-semibold">Số tiền điện:</p>
+                    <p className="text-lg">{formatCurrency(dichVu.gia_dien)} VND</p>
+                </div>
+
+                <div className="mb-4 flex justify-between">
+                    <p className="text-lg font-semibold">Số tiền nước:</p>
+                    <p className="text-lg">{formatCurrency(dichVu.tien_nuoc)} VND</p>
+                </div>
+
+                <div className="mb-4 flex justify-between">
+                    <p className="text-lg font-semibold">Số tiền Wifi:</p>
+                    <p className="text-lg">{formatCurrency(dichVu.tien_wifi)} VND</p>
+                </div>
+
+                <div className="mb-4 flex justify-between">
+                    <p className="text-lg font-semibold">Tổng tiền:</p>
+                    <p className="text-lg font-bold text-blue-600">{formatCurrency(thanhToanThang.tong_tien)} VND</p>
                 </div>
 
                 <div className="mb-4 flex justify-between">
                     <p className="text-lg font-semibold">Trạng thái:</p>
                     <p
-                        className={`text-lg ${thanhToan.trang_thai === "đã thanh toán"
+                        className={`text-lg ${thanhToanThang.trang_thai === "đã thanh toán"
                                 ? "text-green-600"
                                 : "text-red-600"
                             }`}
                     >
-                        {thanhToan.trang_thai}
+                        {thanhToanThang.trang_thai}
                     </p>
                 </div>
 
@@ -126,7 +175,7 @@ function ThanhToan() {
                         <strong>Số tài khoản:</strong> 0367599057
                     </p>
                     <p className="text-sm text-gray-600">
-                        <strong>Nội Dung chuyển khoản:</strong> {thanhToan.ma_don_hang}
+                        <strong>Nội dung chuyển khoản:</strong> {thanhToanThang.ma_hoa_don_thang}
                     </p>
                 </div>
 
@@ -142,7 +191,7 @@ function ThanhToan() {
                 </h2>
 
                 <div className="w-48 h-48 bg-gray-200 flex items-center justify-center mb-4">
-                    {thanhToan.ma_don_hang ? (
+                    {thanhToanThang.ma_hoa_don_thang ? (
                         <img
                             src={qrCodeUrl}
                             alt="QR Code"
@@ -159,4 +208,4 @@ function ThanhToan() {
     );
 }
 
-export default ThanhToan;
+export default ThanhToanThang;

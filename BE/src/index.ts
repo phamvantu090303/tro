@@ -48,12 +48,6 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-
-      "http://phongtro.hoclaptrinhiz.com",
-      "https://phongtro.hoclaptrinhiz.com",
-      "http://localhost:3000",
-    ], // hoặc https nếu bạn bật SSL "https://phongtro.hoclaptrinhiz.com",
-
       //"http://phongtro.hoclaptrinhiz.com", 
       //"https://phongtro.hoclaptrinhiz.com", 
       "http://localhost:3000"], 
