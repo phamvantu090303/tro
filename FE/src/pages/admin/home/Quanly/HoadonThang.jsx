@@ -91,11 +91,11 @@ function HoadonThangAdmin() {
       <div>
         {status.trang_thai === "đã thanh toán" ? (
           <p className="px-2 py-2 text-white text-sm rounded-lg bg-green-500 w-[120px]">
-            Đã thanh toán
+            đã thanh toán
           </p>
         ) : (
           <p className="px-2 py-2 text-white text-sm rounded-lg bg-red-500 w-[120px]">
-            Chưa thanh toán
+            chưa thanh toán
           </p>
         )}
       </div>
@@ -249,8 +249,8 @@ function HoadonThangAdmin() {
                   }
                   className="w-full border-gray-500 border p-1"
                 >
-                  <option value="đã thanh toán">Đã thanh toán</option>
-                  <option value="chưa thanh toán">Chưa thanh toán</option>
+                  <option value="đã thanh toán">đã thanh toán</option>
+                  <option value="chưa thanh toán">chưa thanh toán</option>
                 </select>
               </div>
 
