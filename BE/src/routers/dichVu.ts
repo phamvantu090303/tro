@@ -29,8 +29,6 @@ routeDichVu.post(
 );
 routeDichVu.get(
   "/getAll",
-  accessTokenAdmin,
-  authorize("67b1dfa48631e4849450bbb8"),
   GetAllDichVu
 );
 

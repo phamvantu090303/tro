@@ -19,7 +19,7 @@ export const TransactionController = async (req: Request, res: Response) => {
 export const TransactionData = async (req: any, res: any) => {
       try {
         const transactionService = new TransactionService();
-        const result = await transactionService.getTransaction();
+        const result = await transactionService.TransactionDataThang();
   
         res.status(200).json({
           message: 'Thành công',
