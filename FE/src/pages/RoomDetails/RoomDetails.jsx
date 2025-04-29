@@ -52,7 +52,7 @@ function RoomDetails() {
 
   const fetchYeuthich = async () => {
     const favourite = await axiosInstance.get(
-      `/yeu-thich/getThichPhong/${user.id}?ma_phong=${id}`
+      `/yeu-thich/getThichPhong/${user._id}?ma_phong=${id}`
     );
     setYeuthich(favourite.data.isFavourite);
   };
@@ -167,7 +167,7 @@ function RoomDetails() {
 
     setIsProcessing(true);
     try {
-      await axiosInstance.delete(`/yeu-thich/delete/${user.id}`);
+      await axiosInstance.delete(`/yeu-thich/delete/${user._id}`);
       fetchYeuthich();
     } catch (error) {
       console.log(error);
@@ -301,7 +301,7 @@ function RoomDetails() {
                       className="border border-gray-500 p-3"
                       onClick={() =>
                         user
-                          ? handleHeart(user.id, id)
+                          ? handleHeart(user._id, id)
                           : alert("Vui lòng đăng nhập!")
                       }
                       disabled={isProcessing}

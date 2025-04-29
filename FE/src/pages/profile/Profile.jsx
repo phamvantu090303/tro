@@ -10,6 +10,11 @@ import { openConfirmModal } from "../../Store/filterConfirmModal";
 import ElectricityInvoice from "./ThongKeDienUser";
 import OtpVerification from "../../component/Otp";
 import { Helmet } from "react-helmet";
+import { useMasking } from "../../hook/useMasking";
+import { FaRegUserCircle } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { login } from "../../Store/filterUser";
+import Spinner from "../../component/Loading";
 
 function Profile() {
   const { user } = useSelector((state) => state.auth);
@@ -21,17 +26,23 @@ function Profile() {
     maphong: "",
     lydo: "",
   });
+  const [users, setUsers] = useState({
+    username: "",
+    ngay_sinh: "",
+    email: "",
+    password: "",
+    oldPassword: "",
+    que_quan: "",
+    ho_va_ten: "",
+    so_dien_thoai: "",
+    cccd: "",
+  });
+
+  const { maskEmail, maskPhone, maskCCCD, formatDate } = useMasking();
   const { isOpen } = useSelector((state) => state.ModalForm);
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
 
   const menuItems = [
     { title: "Thông tin cá nhân", icon: "👤" },
@@ -57,6 +68,21 @@ function Profile() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      setUsers({
+        username: user.username || "",
+        ngay_sinh: user.ngay_sinh || "",
+        email: user.email || "",
+
+        que_quan: user.que_quan || "",
+        ho_va_ten: user.ho_va_ten || "",
+        so_dien_thoai: user.so_dien_thoai?.toString() || "",
+        cccd: user.cccd?.toString() || "",
+      });
+    }
+  }, [user]);
+
   const handleConfirmModal = (id) => {
     dispatch(openConfirmModal({ modalType: "Repair", id }));
   };
@@ -71,7 +97,6 @@ function Profile() {
     dispatch(OpenModalForm({ modalType: "RepairEdit", id }));
   };
   useEffect(() => {
-    console.log("isOpen", isOpen);
     if (!isOpen) {
       setRepairData((prev) => ({
         ...prev,
@@ -80,6 +105,41 @@ function Profile() {
       }));
     }
   }, [isOpen]);
+
+  const handleUpdateUser = async () => {
+    try {
+      setIsLoading(true);
+
+      const payload = {
+        username: users.username || user.username,
+        ngay_sinh: users.ngay_sinh || user.ngay_sinh,
+        email: users.email || user.email,
+        oldPassword: users.oldPassword,
+        password: users.password || "",
+        que_quan: users.que_quan || user.que_quan,
+        ho_va_ten: users.ho_va_ten || user.ho_va_ten,
+        so_dien_thoai: users.so_dien_thoai || user.so_dien_thoai,
+        cccd: users.cccd || user.cccd,
+      };
+
+      const res = await axiosInstance.post(`/auth/update/${user._id}`, payload);
+
+      if (res) {
+        const updateUser = await axiosInstance.get("/auth/me");
+        dispatch(
+          login({
+            user: updateUser.data.data,
+          })
+        );
+      }
+      toast.success(res.data.message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const sendOtp = async () => {
     try {
@@ -95,8 +155,10 @@ function Profile() {
 
   const handleYeuCauHuyHD = async () => {
     await axiosInstance.post(`/hopdong/yeu_cau_huy_hd/${dataContract._id}`);
-};
-
+  };
+  if (!user) {
+    return <Spinner />;
+  }
   return (
     <div className="min-h-screen w-full bg-gray-50">
       <Helmet>
@@ -109,33 +171,13 @@ function Profile() {
             <div className="bg-white rounded-2xl shadow-sm p-6">
               {/* Avatar Section */}
               <div className="flex flex-col items-center pb-6 border-b border-gray-200">
-                <div className="relative">
-                  <img
-                    src={user.avatar || "/default-avatar.png"}
-                    alt="Avatar"
-                    className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
-                  />
-                  <button
-                    className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full text-white hover:bg-blue-600 transition-all duration-200"
-                    onClick={() =>
-                      dispatch(OpenModalForm({ modalType: "avatar" }))
-                    }
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                    </svg>
-                  </button>
-                </div>
+                <FaRegUserCircle className="w-32 h-32" />
+
                 <h3 className="mt-4 text-xl font-semibold text-gray-800">
                   {user.username}
                 </h3>
                 <p className="text-gray-500 text-sm">
-                  Ngày sinh: {formatDate(user.ngaysinh)}
+                  Ngày sinh: {formatDate(user.ngay_sinh)}
                 </p>
               </div>
 
@@ -175,7 +217,13 @@ function Profile() {
                           <p className="font-medium text-base">Tên tài khoản</p>
                           <input
                             type="text"
-                            placeholder={user.username}
+                            value={user.username}
+                            onChange={(e) =>
+                              setUsers((prev) => ({
+                                ...prev,
+                                username: e.target.value,
+                              }))
+                            }
                             className="text-base px-5 py-4 placeholder:text-gray-500 font-medium  bg-slate-200 mt-3 w-full"
                           />
                         </div>
@@ -183,8 +231,14 @@ function Profile() {
                           <p className="font-medium text-base">Họ và Tên</p>
                           <input
                             type="text"
+                            value={user.ho_va_ten}
+                            onChange={(e) =>
+                              setUsers((prev) => ({
+                                ...prev,
+                                ho_va_ten: e.target.value,
+                              }))
+                            }
                             className=" text-base px-5 py-4 mt-3 w-full bg-slate-200 placeholder:text-gray-500 font-medium"
-                            placeholder={user.hovaten}
                           />
                         </div>
                       </div>
@@ -193,16 +247,29 @@ function Profile() {
                           <p className="font-medium text-base">Quê quán</p>
                           <input
                             type="text"
-                            placeholder={user.quequan}
-                            className="text-base px-5 py-4 placeholder:text-gray-500 font-medium  bg-slate-200 mt-3 w-full"
+                            placeholder={user.que_quan}
+                            value={users.que_quan}
+                            className="text-base px-5 py-4 placeholder:text-gray-500 font-medium bg-slate-200 mt-3 w-full"
+                            onChange={(e) =>
+                              setUsers((prev) => ({
+                                ...prev,
+                                que_quan: e.target.value,
+                              }))
+                            }
                           />
                         </div>
                         <div className="w-full">
                           <p className="font-medium text-base">Ngày sinh</p>
                           <input
-                            type="text"
-                            className=" text-base px-5 py-4 mt-3 w-full bg-slate-200 placeholder:text-gray-500 font-medium"
-                            placeholder={formatDate(user.ngaysinh)}
+                            type="date"
+                            value={users.ngay_sinh.slice(0, 10)}
+                            onChange={(e) =>
+                              setUsers((prev) => ({
+                                ...prev,
+                                ngay_sinh: e.target.value,
+                              }))
+                            }
+                            className="text-base px-5 py-4 mt-3 w-full bg-slate-200 placeholder:text-gray-500 font-medium"
                           />
                         </div>
                       </div>
@@ -211,13 +278,71 @@ function Profile() {
                   <div>
                     <h3 className="font-bold text-xl mb-6">Bảo mật</h3>
                     <div className="space-y-4 w-full">
-                      <div>
-                        <p className="font-medium text-base">Email</p>
-                        <input
-                          type="text"
-                          placeholder={user.email}
-                          className="text-base px-5 py-4 placeholder:text-gray-500  text-gray-500 bg-slate-200 mt-3 w-full font-medium"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-5 ">
+                        <div className="w-full">
+                          <p className="font-medium text-base">Email</p>
+                          <input
+                            type="text"
+                            placeholder={maskEmail(user.email)}
+                            value={
+                              users.email === user.email.toString()
+                                ? ""
+                                : users.email
+                            }
+                            onChange={(e) =>
+                              setUsers((prev) => ({
+                                ...prev,
+                                email: e.target.value,
+                              }))
+                            }
+                            className="text-base px-5 py-4 placeholder:text-gray-500   bg-slate-200 mt-3 w-full font-medium"
+                          />
+                        </div>
+                        <div className="w-full">
+                          <p className="font-medium text-base">
+                            Căn cước công dân
+                          </p>
+                          <input
+                            type="text"
+                            placeholder={maskCCCD(user.cccd.toString())}
+                            maxLength={12}
+                            value={
+                              users.cccd === user.cccd.toString()
+                                ? ""
+                                : users.cccd
+                            }
+                            onChange={(e) =>
+                              setUsers((prev) => ({
+                                ...prev,
+                                cccd: e.target.value,
+                              }))
+                            }
+                            className="text-base px-5 py-4 placeholder:text-gray-500   bg-slate-200 mt-3 w-full font-medium"
+                          />
+                        </div>
+                        <div className="w-full">
+                          <p className="font-medium text-base">Số điện thoại</p>
+                          <input
+                            type="text"
+                            placeholder={maskPhone(
+                              user.so_dien_thoai.toString()
+                            )}
+                            maxLength={10}
+                            value={
+                              users.so_dien_thoai ===
+                              user.so_dien_thoai.toString()
+                                ? ""
+                                : users.so_dien_thoai
+                            }
+                            onChange={(e) =>
+                              setUsers((prev) => ({
+                                ...prev,
+                                so_dien_thoai: e.target.value,
+                              }))
+                            }
+                            className="text-base px-5 py-4 placeholder:text-gray-500 bg-slate-200 mt-3 w-full font-medium"
+                          />
+                        </div>
                       </div>
                       <div>
                         <p className="font-medium text-base placeholder:text-gray-500  ">
@@ -225,6 +350,13 @@ function Profile() {
                         </p>
                         <input
                           type="password"
+                          onChange={(e) =>
+                            setUsers((prev) => ({
+                              ...prev,
+                              oldPassword: e.target.value,
+                            }))
+                          }
+                          placeholder="Nhập mật khẩu cũ"
                           className=" text-base px-5 py-4 mt-3 w-full bg-slate-200 font-medium"
                         />
                       </div>
@@ -232,6 +364,12 @@ function Profile() {
                         <p className="font-medium text-base">Mật khẩu mới</p>
                         <input
                           type="password"
+                          onChange={(e) =>
+                            setUsers((prev) => ({
+                              ...prev,
+                              password: e.target.value,
+                            }))
+                          }
                           className=" text-base px-5 py-4 placeholder:text-gray-500  mt-3 w-full bg-slate-200 font-medium"
                           placeholder="Nhập mật khẩu mới"
                         />
@@ -239,9 +377,7 @@ function Profile() {
                     </div>
                   </div>
                   <button
-                    onClick={() =>
-                      dispatch(OpenModalForm({ modalType: "profile" }))
-                    }
+                    onClick={handleUpdateUser}
                     className="w-full sm:w-auto px-6 py-3 bg-customBg text-white rounded-lg hover:bg-blue-600 transition-all duration-200"
                   >
                     Cập nhật thông tin
@@ -283,14 +419,26 @@ function Profile() {
                                 {item.issue}
                               </td>
                               <td className="px-6 py-4 text-center">
-                                <span className="px-4 py-1 text-xs md:text-sm font-medium rounded-full bg-red-500 text-white">
-                                  {item.status}
-                                </span>
+                                {item.status === "Chờ xử lý" ? (
+                                  <span className="px-4 py-1 text-xs md:text-sm font-medium rounded-full bg-red-500 text-white">
+                                    {item.status}
+                                  </span>
+                                ) : (
+                                  <span className="px-4 py-1 text-xs md:text-sm font-medium rounded-full bg-green-500 text-white">
+                                    {item.status}
+                                  </span>
+                                )}
                               </td>
                               <td className="px-6 py-4 text-center">
-                                <span className="px-4 py-1 text-xs md:text-sm font-medium rounded-full bg-red-500 text-white">
-                                  {item.approved}
-                                </span>
+                                {item.approved === "Chưa phê duyệt" ? (
+                                  <span className="px-4 py-1 text-xs md:text-sm font-medium rounded-full bg-red-500 text-white">
+                                    {item.approved}
+                                  </span>
+                                ) : (
+                                  <span className="px-4 py-1 text-xs md:text-sm font-medium rounded-full bg-green-500 text-white">
+                                    {item.approved}
+                                  </span>
+                                )}
                               </td>
                               <td className="px-6 py-4 text-center">
                                 <div className="flex justify-center items-center gap-4">
@@ -356,9 +504,15 @@ function Profile() {
                             <span className="text-sm font-medium text-black">
                               Trạng thái
                             </span>
-                            <span className="mt-1 block px-2 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800 w-fit">
-                              Đang hiệu lực
-                            </span>
+                            {dataContract.trang_thai === "da_ky" ? (
+                              <span className="mt-1 block px-2 py-1 text-sm font-medium rounded-full bg-green-100 text-green-800 w-fit">
+                                Đang hiệu lực
+                              </span>
+                            ) : (
+                              <span className="mt-1 block px-2 py-1 text-sm font-medium rounded-full bg-green-100 text-red-500 w-fit">
+                                Hết hạn hợp đồng
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div className="mt-4">
@@ -428,7 +582,10 @@ function Profile() {
                                 </a>
                               </div>
                               <div className="mt-10 flex flex-col sm:flex-row gap-4">
-                                <button onClick={handleYeuCauHuyHD} className="w-full px-4 py-2 bg-customBlue text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm sm:text-base">
+                                <button
+                                  onClick={handleYeuCauHuyHD}
+                                  className="w-full px-4 py-2 bg-customBlue text-white rounded-lg hover:bg-red-600 transition-all duration-200 text-sm sm:text-base"
+                                >
                                   Yêu cầu hủy hợp đồng
                                 </button>
                                 <button
