@@ -75,7 +75,7 @@ const ElectricityInvoice = () => {
     const fetchInvoices = async () => {
       try {
         const response = await axiosInstance.get(
-          `/hoa-don-thang/getHDUser/${user.id}`
+          `/hoa-don-thang/getHDUser/${user._id}`
         );
         const data = response.data;
 
@@ -134,7 +134,6 @@ const ElectricityInvoice = () => {
 
   const handlePayment = async () => {
     try {
-
       await axiosInstance.post("/hoa-don-thang/updateStatus", {
         id: selectedInvoice._id,
         trang_thai: "đã thanh toán",

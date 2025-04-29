@@ -12,7 +12,7 @@ function Favourite() {
 
   const fetchDataFavourite = async () => {
     try {
-      const res = await axiosInstance.get(`/yeu-thich/getdata/${user.id}`);
+      const res = await axiosInstance.get(`/yeu-thich/getdata/${user._id}`);
       setData(res.data.data);
     } catch (error) {
       console.log(error);

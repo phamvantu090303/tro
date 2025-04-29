@@ -79,6 +79,7 @@ export class UserService {
       id_quyen,
       email,
       password,
+      oldPassword,
       username,
       ho_va_ten,
       ngay_sinh,
@@ -96,6 +97,20 @@ export class UserService {
     }
 
     if (password) {
+      if (!oldPassword) {
+        throw new Error("Vui lòng nhập mật khẩu cũ để xác nhận thay đổi");
+      }
+
+      if (!update.password) {
+        throw new Error("Tài khoản chưa có mật khẩu để kiểm tra");
+      }
+
+      const isMatch = await bcrypt.compare(oldPassword, update.password);
+
+      if (!isMatch) {
+        throw new Error("Mật khẩu cũ không đúng");
+      }
+
       const salt = await bcrypt.genSalt(10);
       update.password = await bcrypt.hash(password, salt);
     }
@@ -125,7 +140,7 @@ export class UserService {
 
   async getMe(user_id: string) {
     const user = await UserModel.findOne({ _id: new ObjectId(user_id) }).select(
-      " -createdAt -updatedAt -__v"
+      " -createdAt -updatedAt -__v -verify"
     ); // Ẩn các trường không cần thiết
 
     return user;

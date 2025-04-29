@@ -3,10 +3,12 @@ import logo from "../../assets/logo/logo.svg";
 import { CiHeart } from "react-icons/ci";
 import { FaRegUser } from "react-icons/fa";
 import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import { logout } from "../../Store/filterUser";
+import { setLoading, login, logout } from "../../Store/filterUser";
 import { motion, AnimatePresence } from "framer-motion";
+import { axiosInstance } from "../../../Axios";
+import Spinner from "../../component/Loading";
 
 const Item = [
   {
@@ -26,18 +28,47 @@ const Item = [
 ];
 
 function Header() {
-  const { user } = useSelector((state) => state.auth);
+  const { user, isLoading } = useSelector((state) => state.auth);
+  console.log("user", user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [modal, setModal] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      dispatch(setLoading(true));
+      try {
+        const res = await axiosInstance.get("/auth/me");
+        dispatch(
+          login({
+            user: res.data.data,
+          })
+        );
+      } catch (error) {
+        console.log(
+          "Không thể lấy thông tin user:",
+          error.response?.data?.message
+        );
+        if (error.response?.status === 401) {
+          dispatch(logout());
+          navigate("/login");
+        }
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleLogout = async () => {
     dispatch(logout());
     navigate("/");
   };
 
-  return (
+  return isLoading ? (
+    <Spinner /> // Hiển thị Spinner khi isLoading là true
+  ) : (
     <nav className="w-full bg-[#1c203d] text-white py-5 top-0 sticky z-50">
       <div className="max-w-[1920px] mx-auto px-6 md:px-[100px] flex items-center justify-between">
         {/* Logo */}

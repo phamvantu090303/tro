@@ -5,6 +5,7 @@ import userRouter from "./routers/user";
 import danhMucRouter from "./routers/danhMuc";
 import thietBiRouter from "./routers/thietBi";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import YeuThichRouter from "./routers/yeuThich";
 import contractRoutes from "./routers/hopdong";
 import routeImage from "./routers/Image";
@@ -43,15 +44,16 @@ const dbURL = `mongodb+srv://phamtu090303:gSPppVILdD2EJl4g@quanlyphongtro.k5jir.
 const app = express();
 
 const server = createServer(app);
-
+app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
     origin: [
-      //"http://phongtro.hoclaptrinhiz.com", 
-      //"https://phongtro.hoclaptrinhiz.com", 
-      "http://localhost:3000"], 
-      // hoặc https nếu bạn bật SSL
+      //"http://phongtro.hoclaptrinhiz.com",
+      //"https://phongtro.hoclaptrinhiz.com",
+      "http://localhost:3000",
+    ],
+    // hoặc https nếu bạn bật SSL
     credentials: true, // Cho phép frontend gửi cookie, token
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Chỉ định rõ các method
     allowedHeaders: ["Content-Type", "Authorization"], // Headers cần thiết

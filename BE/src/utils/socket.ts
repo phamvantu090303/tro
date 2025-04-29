@@ -4,7 +4,7 @@ import { verifyToken } from "./getAccesstoken";
 import MessagerModel from "../models/MessagerModel";
 import QuyensModel from "../models/QuyenModel";
 import AdminModel from "../models/AdminModel";
-
+import { parse } from "cookie";
 class SocketMessager {
   private io: Server;
   private users: Record<string, string> = {};
@@ -26,7 +26,12 @@ class SocketMessager {
 
   // Hàm xác thực token từ client
   private async verifyAuthToken(socket: Socket): Promise<void> {
-    const token = socket.handshake.auth.Authorization;
+    const rawCookie = socket.handshake.headers.cookie;
+    if (!rawCookie) throw new Error("Không có cookie");
+
+    const cookies = parse(rawCookie); // ✅ parse cookie string thành object
+    const token = cookies.token; // ✅ lấy cookie token
+
     if (!token) throw new Error("Không có accessToken");
 
     let decodedAdmin, decodedUser;

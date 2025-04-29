@@ -62,7 +62,7 @@ const Chatbox = () => {
       setInput("");
       setMessages((prevMessages) => [
         ...prevMessages,
-        { noi_dung: input, nguoi_gui: user.id },
+        { noi_dung: input, nguoi_gui: user._id },
       ]);
     } catch (error) {
       console.log("Lỗi khi gửi tin nhắn:", error);
@@ -91,12 +91,12 @@ const Chatbox = () => {
               <div
                 key={i}
                 className={`flex ${
-                  msg.nguoi_gui === user.id ? "justify-end" : "justify-start"
+                  msg.nguoi_gui === user._id ? "justify-end" : "justify-start"
                 }`}
               >
                 <p
                   className={`p-2 rounded-md text-sm sm:text-base md:text-lg break-words max-w-[80%] sm:max-w-[75%] md:max-w-[70%] lg:max-w-[65%] ${
-                    msg.nguoi_gui === user.id
+                    msg.nguoi_gui === user._id
                       ? "bg-blue-500 self-end ml-auto text-right text-white"
                       : "bg-gray-200 self-start mr-auto"
                   }`}

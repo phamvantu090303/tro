@@ -50,7 +50,7 @@ function CardFavourite({
 
   const handleDelete = async () => {
     try {
-      await axiosInstance.delete(`/yeu-thich/delete/${user.id}`);
+      await axiosInstance.delete(`/yeu-thich/delete/${user._id}`);
       reloadData();
     } catch (error) {
       console.log(error);

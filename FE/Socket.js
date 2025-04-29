@@ -2,18 +2,11 @@ import { io } from "socket.io-client";
 
 let socket;
 
-export const connectSocket = (token) => {
-  const socketOptions = {
+export const connectSocket = () => {
+  socket = io("http://localhost:5000", {
     transports: ["websocket"],
-  };
-
-  if (typeof token === "string" && token.trim() !== "") {
-    socketOptions.auth = {
-      Authorization: token,
-    };
-  }
-
-  socket = io("http://localhost:5000", socketOptions);
+    withCredentials: true,
+  });
 
   return socket;
 };

@@ -4,7 +4,8 @@ import { verifyToken } from "../utils/getAccesstoken";
 
 export const accessTokenValidatetor = async (req: any, res: any, next: any) => {
   try {
-    const authHeader = req.headers["authorization"];
+    const authHeader = req.cookies.token;
+
     if (!authHeader) {
       return res.status(401).json({ message: "Bạn Chưa đăng nhập" });
     }

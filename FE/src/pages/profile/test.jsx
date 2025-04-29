@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -76,7 +76,7 @@ const ElectricityInvoice = () => {
     const fetchInvoices = async () => {
       try {
         const response = await axiosInstance.get(
-          `/hoa-don-thang/getHDUser/${user.id}`
+          `/hoa-don-thang/getHDUser/${user._id}`
         );
         const data = response.data;
 
@@ -135,10 +135,13 @@ const ElectricityInvoice = () => {
 
   const handlePayment = async () => {
     try {
-      await axios.post("https://bephongtro.hoclaptrinhiz.com/api/hoa-don-thang/updateStatus", {
-        id: selectedInvoice._id,
-        trang_thai: "đã thanh toán",
-      });
+      await axios.post(
+        "https://bephongtro.hoclaptrinhiz.com/api/hoa-don-thang/updateStatus",
+        {
+          id: selectedInvoice._id,
+          trang_thai: "đã thanh toán",
+        }
+      );
 
       setSelectedInvoice((prev) => ({
         ...prev,
