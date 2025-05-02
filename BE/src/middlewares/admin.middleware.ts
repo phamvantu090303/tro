@@ -6,13 +6,18 @@ import { config } from "dotenv";
 config();
 export const accessTokenAdmin = async (req: any, res: any, next: any) => {
   try {
+
     const authHeader = req.cookies.tokenAdmin;
 
     if (!authHeader) {
       return res.status(401).json({ message: "Token không hợp lệ." });
     }
+
+    // Tách token từ chuỗi "Bearer <token>"
+    const token = authHeader.replace("Bearer ", "");
+    
     const decoded = await verifyToken(
-      authHeader,
+      token,
       process.env.JWT_SECRET_ACCESS_TOKEN_ADMIN as string
     );
     const admin = await AdminModel.findById(decoded._id);

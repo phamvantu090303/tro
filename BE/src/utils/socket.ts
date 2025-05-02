@@ -162,6 +162,7 @@ class SocketMessager {
         nguoi_gui,
         nguoi_nhan,
         noi_dung,
+        is_read: false,
       }).save();
       // Gửi lại tin nhắn tới người nhận (admin)
       const receiverSocketId = this.admins[nguoi_nhan];

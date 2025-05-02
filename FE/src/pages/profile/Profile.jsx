@@ -305,11 +305,9 @@ function Profile() {
                           <p className="font-medium text-base">Email</p>
                           <input
                             type="text"
-                            placeholder={maskEmail(user.email)}
+                            placeholder={maskEmail(String(user.email || ""))}
                             value={
-                              users.email === user.email.toString()
-                                ? ""
-                                : users.email
+                              users.email === String(user.email || "") ? "" : users.email
                             }
                             onChange={(e) =>
                               setUsers((prev) => ({
@@ -326,12 +324,10 @@ function Profile() {
                           </p>
                           <input
                             type="text"
-                            placeholder={maskCCCD(user.cccd.toString())}
+                            placeholder={maskCCCD(String(user.cccd || ""))}
                             maxLength={12}
                             value={
-                              users.cccd === user.cccd.toString()
-                                ? ""
-                                : users.cccd
+                              users.cccd === String(user.cccd || "") ? "" : users.cccd
                             }
                             onChange={(e) =>
                               setUsers((prev) => ({
@@ -346,15 +342,10 @@ function Profile() {
                           <p className="font-medium text-base">Số điện thoại</p>
                           <input
                             type="text"
-                            placeholder={maskPhone(
-                              user.so_dien_thoai.toString()
-                            )}
+                            placeholder={maskPhone(String(user.so_dien_thoai || ""))}
                             maxLength={10}
                             value={
-                              users.so_dien_thoai ===
-                              user.so_dien_thoai.toString()
-                                ? ""
-                                : users.so_dien_thoai
+                              users.so_dien_thoai === String(user.so_dien_thoai || "") ? "" : users.so_dien_thoai
                             }
                             onChange={(e) =>
                               setUsers((prev) => ({
