@@ -5,6 +5,7 @@ import MessagerModel from "../models/MessagerModel";
 import QuyensModel from "../models/QuyenModel";
 import AdminModel from "../models/AdminModel";
 import { parse } from "cookie";
+import SuachuaModel from "../models/SuaChuaModel";
 class SocketMessager {
   private io: Server;
   private users: Record<string, string> = {};
@@ -29,27 +30,41 @@ class SocketMessager {
     const rawCookie = socket.handshake.headers.cookie;
     if (!rawCookie) throw new Error("Không có cookie");
 
-    const cookies = parse(rawCookie); // ✅ parse cookie string thành object
-    const token = cookies.token; // ✅ lấy cookie token
+    const cookies = parse(rawCookie);
+    const token = cookies.token;
+    const tokenAdmin = cookies.tokenAdmin;
 
-    if (!token) throw new Error("Không có accessToken");
+    if (!token && !tokenAdmin) {
+      throw new Error("Không có accessToken hoặc accessTokenAdmin");
+    }
 
-    let decodedAdmin, decodedUser;
+    let decodedAdmin: any = null;
+    let decodedUser: any = null;
 
-    try {
-      decodedAdmin = await verifyToken(
-        token,
-        process.env.JWT_SECRET_ACCESS_TOKEN_ADMIN!
-      );
-    } catch (err) {
+    if (tokenAdmin) {
+      try {
+        decodedAdmin = await verifyToken(
+          tokenAdmin,
+          process.env.JWT_SECRET_ACCESS_TOKEN_ADMIN!
+        );
+      } catch (err) {
+        console.warn("Token admin không hợp lệ");
+      }
+    }
+
+    if (!decodedAdmin && token) {
       try {
         decodedUser = await verifyToken(
           token,
           process.env.JWT_SECRET_ACCESS_TOKEN!
         );
       } catch (err) {
-        throw new Error("Token không hợp lệ!");
+        console.warn("Token user không hợp lệ");
       }
+    }
+
+    if (!decodedAdmin && !decodedUser) {
+      throw new Error("Token không hợp lệ!");
     }
 
     socket.data = {
@@ -65,10 +80,6 @@ class SocketMessager {
     if (decodedUser?._id) {
       this.users[decodedUser._id] = socket.id;
       console.log("User kết nối:", decodedUser._id);
-    }
-
-    if (!decodedAdmin?._id && !decodedUser?._id) {
-      throw new Error("Token không hợp lệ!");
     }
   }
 
@@ -95,6 +106,16 @@ class SocketMessager {
         "admin_gui_tin_nhan",
         (data: { payload: { nguoi_nhan: string; noi_dung: string } }) => {
           this.handleMessageAdmin(socket, data.payload);
+        }
+      );
+      socket.on(
+        "notification_Admin",
+        (data: {
+          payload: {
+            id_user: string;
+          };
+        }) => {
+          this.notification(socket, data.payload);
         }
       );
       // Lắng nghe sự kiện ngắt kết nối
@@ -193,6 +214,39 @@ class SocketMessager {
       socket.emit("nhan_tin_nhan_admin", { payload: message });
     } catch (error) {
       console.error("Lỗi khi lưu và gửi tin nhắn:", error);
+    }
+  }
+  private async notification(
+    socket: Socket,
+    payload: {
+      id_user: string;
+    }
+  ): Promise<void> {
+    if (!payload) {
+      console.error("Payload không hợp lệ");
+      return;
+    }
+
+    const { id_user } = payload;
+    const { admin_id } = socket.data;
+    const nguoi_gui = admin_id;
+
+    if (!nguoi_gui || !id_user) {
+      console.error("Dữ liệu không đầy đủ để tạo yêu cầu sửa chữa");
+      return;
+    }
+
+    try {
+      // Gửi tới người nhận (user)
+      const receiverSocketId = this.users[id_user];
+      if (receiverSocketId) {
+        this.io.to(receiverSocketId).emit("cap_nhat_suachua");
+      }
+
+      // Gửi lại cho admin đã gửi
+      socket.emit("cap_nhat_suachua");
+    } catch (error) {
+      console.error("Lỗi khi lưu và gửi yêu cầu sửa chữa:", error);
     }
   }
 

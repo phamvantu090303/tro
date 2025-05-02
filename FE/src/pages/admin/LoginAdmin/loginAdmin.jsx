@@ -22,7 +22,6 @@ function LoginAdmin() {
       dispatch(
         loginAdmin({
           admin: res.data.data.admin,
-          token: res.data.data.token,
         })
       );
       navigate("/admin/home");

@@ -15,6 +15,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { login } from "../../Store/filterUser";
 import Spinner from "../../component/Loading";
+import { connectSocket } from "../../../Socket";
 
 function Profile() {
   const { user } = useSelector((state) => state.auth);
@@ -43,7 +44,7 @@ function Profile() {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [socket, setSocket] = useState(null);
   const menuItems = [
     { title: "Thông tin cá nhân", icon: "👤" },
     { title: "Sửa chữa", icon: "🔧" },
@@ -66,7 +67,28 @@ function Profile() {
   };
   useEffect(() => {
     fetchData();
+    const s = connectSocket();
+    console.log(s);
+    setSocket(s);
+    return () => {
+      s.disconnect();
+    };
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNotification = () => {
+      console.log("Nhận được tín hiệu cập nhật từ Admin");
+      fetchData(); // Gọi lại API để cập nhật UI
+    };
+
+    socket.on("cap_nhat_suachua", handleNotification);
+
+    return () => {
+      socket.off("cap_nhat_suachua", handleNotification);
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (user) {

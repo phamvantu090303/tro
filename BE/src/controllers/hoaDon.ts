@@ -12,27 +12,47 @@ export const CreateHoaDon = async (req: Request, res: Response) => {
   try {
     const { user }: any = req;
     const { ma_phong } = req.body;
+
     const check = await PhongTroModel.findOne({ id_users: user._id });
     if (check) {
       return res.status(400).json({ message: "Bạn đã thuê phòng rồi" });
-    } else {
-      const data = await PhongTroModel.findOne({ ma_phong: ma_phong });
-      if (!data)
-        return res.status(404).json({ message: "Phòng không tồn tại" });
-      const hoadon = {
-        ma_phong: data.ma_phong,
-        id_users: user._id,
-        so_tien: data.gia_tien,
-        noi_dung: "thanh toán tiền phòng",
-        ma_don_hang: "HD" + Math.floor(Math.random() * 1000000),
-        ngay_chuyen_khoan: new Date(),
-        trang_thai: "chưa thanh toán",
-      };
-      const newHoaDon = new HoaDonThanhToanModel(hoadon);
-      await newHoaDon.save();
-      await sendEmail(user, newHoaDon);
-      res.status(201).json(newHoaDon);
     }
+
+    const latestInvoice = await HoaDonThanhToanModel.findOne({
+      id_users: user._id,
+    }).sort({ ngay_chuyen_khoan: -1 });
+
+    if (latestInvoice) {
+      const FIFTEEN_MINUTES = 15 * 60 * 1000;
+      const now = new Date().getTime();
+      const last = new Date(latestInvoice.ngay_chuyen_khoan).getTime();
+
+      if (now - last < FIFTEEN_MINUTES) {
+        const waitMinutes = Math.ceil((FIFTEEN_MINUTES - (now - last)) / 60000);
+        return res.status(429).json({
+          message: `Vui lòng chờ thêm ${waitMinutes} phút nữa để tạo hóa đơn mới hoặc thanh toán hóa đơn cũ`,
+        });
+      }
+    }
+
+    const data = await PhongTroModel.findOne({ ma_phong: ma_phong });
+    if (!data) return res.status(404).json({ message: "Phòng không tồn tại" });
+
+    const hoadon = {
+      ma_phong: data.ma_phong,
+      id_users: user._id,
+      so_tien: data.gia_tien,
+      noi_dung: "thanh toán tiền phòng",
+      ma_don_hang: "HD" + Math.floor(Math.random() * 1000000),
+      ngay_chuyen_khoan: new Date(),
+      trang_thai: "chưa thanh toán",
+    };
+
+    const newHoaDon = new HoaDonThanhToanModel(hoadon);
+    await newHoaDon.save();
+    await sendEmail(user, newHoaDon);
+
+    res.status(201).json(newHoaDon);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

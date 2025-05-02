@@ -8,6 +8,7 @@ import { FaMap } from "react-icons/fa";
 import { FaBars } from "react-icons/fa";
 import { IoChevronDown, IoChevronUp } from "react-icons/io5";
 import { logoutAdmin } from "../../Store/filterAdmin";
+import { axiosInstance } from "../../../Axios";
 
 export default function AdminSidebar({ setActiveComponent, activeComponent }) {
   const { admin } = useSelector((state) => state.authAdmin);
@@ -26,7 +27,8 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
       [key]: !prev[key],
     }));
   };
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await axiosInstance.post("/admin/logout");
     dispatch(logoutAdmin());
     navigate("/admin/login");
   };

@@ -20,11 +20,22 @@ export const loginAdmin = async (req: Request, res: Response) => {
     const { admin } = req as any;
 
     const token = await adminService.loginAdminService(admin._id, admin.verify);
+    res.clearCookie("tokenAdmin", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.cookie("tokenAdmin", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+    });
 
     return res.json({
       message: "Login thành công!",
       data: {
-        token,
         admin: {
           id_quyen: admin.id_quyen,
           email: admin.email,
@@ -42,6 +53,23 @@ export const loginAdmin = async (req: Request, res: Response) => {
     return res.status(500).json({
       message: "Đã xảy ra lỗi khi đăng nhập.",
       error: error.message,
+    });
+  }
+};
+
+export const logoutAdmin = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("tokenAdmin", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+    res.status(200).json({
+      message: "Logout successfully!!!",
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
     });
   }
 };

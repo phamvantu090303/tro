@@ -113,4 +113,9 @@ export class PhongtroService {
   async getPhongTroByMap(ma_map: string) {
     return await PhongTroModel.find({ ma_map });
   }
+  async checkPhongTro(id_user: string) {
+    const phongTro = await PhongTroModel.findOne({ id_users: id_user });
+
+    return !!phongTro;
+  }
 }
