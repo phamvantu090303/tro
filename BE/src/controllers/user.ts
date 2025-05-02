@@ -274,6 +274,21 @@ export const loginGoogle = async (req: any, res: any) => {
       throw new Error("Không tìm thấy người dùng!");
     }
 
+    // Xóa cookie cũ nếu có
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    // Thiết lập cookie mới chứa authToken
+    res.cookie("token", authToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+    });
+
     return res.status(200).json({
       message: "Đăng nhập Google thành công!",
       data: {
@@ -281,8 +296,13 @@ export const loginGoogle = async (req: any, res: any) => {
           id: user._id,
           email: user.email,
           username: user.username,
+          hovaten: user.ho_va_ten,
+          ngaysinh: user.ngay_sinh,
+          sdt: user.so_dien_thoai,
+          gioi_tinh: user.gioi_tinh,
+          cccd: user.cccd,
         },
-        token: authToken,
+        //token: authToken,
       },
     });
   } catch (error) {

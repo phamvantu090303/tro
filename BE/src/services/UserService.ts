@@ -303,11 +303,11 @@ export class UserService {
     }
 
     if (!payload) {
-      throw new Error("Invalid or unverifiable token");
+      throw new Error("Mã thông báo không hợp lệ hoặc không thể xác minh");
     }
 
     if (payload.aud !== process.env.GG_CLIENT_ID) {
-      throw new Error("Invalid token: Audience mismatch");
+      throw new Error("Mã thông báo không hợp lệ: Đối tượng không khớp");
     }
 
     const { email, name, given_name } = payload;

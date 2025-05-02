@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import MessagersService from "../services/messagerServiec";
 import AdminModel from "../models/AdminModel";
 import QuyensModel from "../models/QuyenModel";
+import MessagersModel from "../models/MessagerModel";
 
 const messService = new MessagersService();
 
@@ -69,3 +70,20 @@ export const getAllMessAdmin = async (req: Request, res: Response) => {
     });
   }
 };
+
+//đếm tin nhắn chưa đọc của admin
+export const getUnreadMessCountAdmin =async (req: Request, res: Response) => {
+  try{
+   const {id_nguoi_nhan} = req.params
+   const count = await MessagersModel.countDocuments({
+    nguoi_nhan: id_nguoi_nhan,
+    is_read: false,
+  });
+  return res.status(200).json({
+    message: "Get unread message count successfully",
+    unreadCount: count,
+  });
+  }catch (error: any) {
+      return res.status(500).json({ success: false, message: error.message });
+  }
+}
