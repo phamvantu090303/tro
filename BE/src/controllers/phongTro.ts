@@ -134,6 +134,18 @@ const getPhongTroByMap = async (req: Request, res: Response) => {
   }
 };
 
+const checkPhong = async (req: Request, res: Response) => {
+  try {
+    const { id_user } = req.params;
+    const data = await phongTroService.checkPhongTro(id_user);
+    res.status(200).json({ data });
+  } catch (error) {
+    res.status(500).json({
+      message: "Lỗi khi kiểm tra phòng trọ.",
+    });
+  }
+};
+
 export {
   storePhongTro,
   updatePhongTro,
@@ -142,4 +154,5 @@ export {
   deleteById,
   detailRoom,
   getPhongTroByMap,
+  checkPhong,
 };

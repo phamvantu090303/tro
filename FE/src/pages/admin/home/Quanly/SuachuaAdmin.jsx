@@ -2,15 +2,26 @@ import RoomTable from "../../../../component/admin/RoomTable";
 import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
 import SearchBar from "../../../../component/admin/SearchBar";
 import { axiosInstance } from "../../../../../Axios";
+import { connectSocket } from "../../../../../Socket";
+import { useEffect, useState } from "react";
 
 function SuachuaAdmin() {
   const {
     data: suachua,
-
     DeleteData,
     fetchData,
   } = useApiManagerAdmin("/sua_chua");
 
+  const [socket, setSocket] = useState(null);
+  useEffect(() => {
+    const s = connectSocket();
+    console.log(s);
+    setSocket(s);
+
+    return () => {
+      s.disconnect();
+    };
+  }, []);
   const headers = [
     { label: "Tên", key: "userName" },
     { label: "Mã phòng", key: "ma_phong" },
@@ -19,10 +30,13 @@ function SuachuaAdmin() {
     { label: "Phê duyệt", key: "approved" },
     { label: "Ngày báo cáo", key: "createdAt" },
   ];
-  const handleUpdateTrangThai = async (id, value) => {
-    await axiosInstance.post(`/sua_chua/UpdateStatus/${id}`, {
+
+  const handleUpdateTrangThai = async (status, value) => {
+    console.log("status", status);
+    await axiosInstance.post(`/sua_chua/UpdateStatus/${status._id}`, {
       status: value,
     });
+    socket.emit("notification_Admin", { payload: { id_user: status.userId } });
     fetchData();
   };
 
@@ -34,7 +48,7 @@ function SuachuaAdmin() {
       <select
         value={status.status}
         className="p-1 border rounded"
-        onChange={(e) => handleUpdateTrangThai(status._id, e.target.value)}
+        onChange={(e) => handleUpdateTrangThai(status, e.target.value)}
       >
         {["Chờ xử lý", "Đang xử lý", "Hoàn thành"].map((option) => (
           <option key={option} value={option}>

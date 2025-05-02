@@ -6,7 +6,7 @@ import { config } from "dotenv";
 config();
 export const accessTokenAdmin = async (req: any, res: any, next: any) => {
   try {
-    const authHeader = req.headers["authorization"];
+    const authHeader = req.cookies.tokenAdmin;
 
     if (!authHeader) {
       return res.status(401).json({ message: "Token không hợp lệ." });

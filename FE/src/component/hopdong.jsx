@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
@@ -7,7 +7,8 @@ import { toast } from "react-toastify";
 import Spinner from "./Loading";
 
 const Contract = () => {
-  const { token, user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
+  console.log(user);
   const [modal, setModal] = useState(false);
   const [signed, setSigned] = useState(false);
   const [signature, setSignature] = useState(null);
@@ -16,13 +17,7 @@ const Contract = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hopdong, setHopdong] = useState(null);
   const { maphong } = useParams();
-
-  useEffect(() => {
-    if (token) {
-      fetchhopdongFromAPI();
-    }
-  }, []);
-
+  const [check, setCheck] = useState(false);
   const fetchhopdongFromAPI = async () => {
     try {
       const res = await axiosInstance.get("/api/contracts/customer/", {
@@ -35,6 +30,29 @@ const Contract = () => {
       console.error("Lỗi lấy hopdong:", error);
     }
   };
+  const fetchCheck = async () => {
+    try {
+      setIsLoading(true);
+      const res = await axiosInstance.get(
+        `/api/contracts/checkStatus/${user._id}`
+      );
+      if (res.data.status === "da_ky") {
+        setCheck(true);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && user._id) {
+      fetchCheck();
+    }
+    fetchhopdongFromAPI();
+  }, [user]);
+
   if (!user) {
     return (
       <div className="h-screen w-full flex justify-center items-center">
@@ -239,37 +257,40 @@ const Contract = () => {
           />
 
           {/* Phần chữ ký */}
-          <div className="">
-            <SignatureCanvas
-              ref={sigCanvas}
-              penColor="black"
-              onEnd={handleEnd}
-              canvasProps={{
-                className:
-                  "signature-canvas xl:w-[300px] md:w-[250px] w-[150px] h-32 sm:h-40 md:h-48 bg-gray-100 rounded-md absolute bottom-[3%] right-0   sm:bottom-[3%] sm:right-[10%]",
-              }}
-            />
-            {/* Nút điều khiển */}
-            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 mb-10">
-              <button
-                onClick={signed ? () => setModal(true) : saveSignature}
-                disabled={!isSigned}
-                className={`w-full sm:w-auto px-6 py-3 rounded-lg text-white font-medium transition-colors ${
-                  isSigned
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-gray-400 cursor-not-allowed"
-                }`}
-              >
-                {signed ? "Gửi hợp đồng" : "Lưu chữ ký"}
-              </button>
-              <button
-                onClick={clearSignature}
-                className="w-full sm:w-auto px-6 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors"
-              >
-                Xóa chữ ký
-              </button>
+          {!check ? (
+            <div className="">
+              <SignatureCanvas
+                ref={sigCanvas}
+                penColor="black"
+                onEnd={handleEnd}
+                canvasProps={{
+                  className:
+                    "signature-canvas xl:w-[300px] md:w-[250px] w-[150px] h-32 sm:h-40 md:h-48 bg-gray-100 rounded-md absolute bottom-[3%] right-0   sm:bottom-[3%] sm:right-[10%]",
+                }}
+              />
+              {/* Nút điều khiển */}
+
+              <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 mb-10">
+                <button
+                  onClick={signed ? () => setModal(true) : saveSignature}
+                  disabled={!isSigned}
+                  className={`w-full sm:w-auto px-6 py-3 rounded-lg text-white font-medium transition-colors ${
+                    isSigned
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  {signed ? "Gửi hợp đồng" : "Lưu chữ ký"}
+                </button>
+                <button
+                  onClick={clearSignature}
+                  className="w-full sm:w-auto px-6 py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors"
+                >
+                  Xóa chữ ký
+                </button>
+              </div>
             </div>
-          </div>
+          ) : null}
 
           {/* Modal xác nhận */}
           {modal && (

@@ -37,6 +37,7 @@ function RoomDetails() {
   const [anh, setAnh] = useState([]);
   const [toado, setToado] = useState(null);
   const [yeuthich, setYeuthich] = useState(false);
+  const [checkCoc, setCheckCoc] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [thietbi, setThietbi] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,44 +50,6 @@ function RoomDetails() {
     4: { text: "Đã được đặt", color: "blue" },
     5: { text: "Không cho thuê", color: "gray" },
   };
-
-  const fetchYeuthich = async () => {
-    const favourite = await axiosInstance.get(
-      `/yeu-thich/getThichPhong/${user._id}?ma_phong=${id}`
-    );
-    setYeuthich(favourite.data.isFavourite);
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axiosInstance.post(`/phongTro/detail/${id}`);
-        setData(res.data.data);
-        setAnh(res.data.data.anh);
-        setThietbi(res.data.data?.thietBi);
-        const result = res.data.data.mapDetail;
-        setToado([result.latitude, result.longitude]);
-        const status = res.data.data.trang_thai;
-        const statusInfo = statusMapping[status] || {
-          text: "Trạng thái không xác định",
-          color: "black",
-        };
-        const filteredProducts = phongTro.filter(
-          (product) => product.ma_danh_muc === res.data.data.ma_danh_muc
-        );
-        setRoomSame(filteredProducts);
-        setTrangthai(statusInfo.text);
-        setStatusColor(statusInfo.color);
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-
-    fetchData();
-    if (user) {
-      fetchYeuthich();
-    }
-  }, [id, user]);
 
   const [nut, setNut] = useState("Tổng quan");
   // Tạo các ref cho từng phần nội dung
@@ -128,6 +91,51 @@ function RoomDetails() {
     "Địa chỉ",
     "Đánh giá",
   ];
+
+  const fetchYeuthich = async () => {
+    const favourite = await axiosInstance.get(
+      `/yeu-thich/getThichPhong/${user._id}?ma_phong=${id}`
+    );
+    setYeuthich(favourite.data.isFavourite);
+  };
+
+  const fetchCheck = async () => {
+    const res = await axiosInstance.get(`/phongTro/checkCoc/${user._id}`);
+    setCheckCoc(res.data.data);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axiosInstance.post(`/phongTro/detail/${id}`);
+        setData(res.data.data);
+        setAnh(res.data.data.anh);
+        setThietbi(res.data.data?.thietBi);
+        const result = res.data.data.mapDetail;
+        setToado([result.latitude, result.longitude]);
+        const status = res.data.data.trang_thai;
+        const statusInfo = statusMapping[status] || {
+          text: "Trạng thái không xác định",
+          color: "black",
+        };
+        const filteredProducts = phongTro.filter(
+          (product) => product.ma_danh_muc === res.data.data.ma_danh_muc
+        );
+        setRoomSame(filteredProducts);
+        setTrangthai(statusInfo.text);
+        setStatusColor(statusInfo.color);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+
+    fetchData();
+    if (user) {
+      fetchYeuthich();
+      fetchCheck();
+    }
+  }, [id, user]);
+
   const handlePile = async (e) => {
     if (!user) return alert("Vui lòng đăng nhập,đăng ký để được đặt cọc");
     try {
@@ -137,7 +145,7 @@ function RoomDetails() {
       });
       toast.success("Đã gửi hợp đồng đặt cọc hãy kiểm tra email của bạn");
     } catch (error) {
-      console.log(error);
+      toast.error(error.response.data.message);
     } finally {
       setIsLoading(false);
     }
@@ -314,13 +322,17 @@ function RoomDetails() {
                     </button>
                   )}
 
-                  <button
-                    className="bg-[#23284C] font-medium py-3 px-8 text-white rounded-md"
-                    onClick={() => handlePile(id)}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Đang xử lý..." : "Đặc cọc"}
-                  </button>
+                  {!checkCoc ? (
+                    <button
+                      className="bg-[#23284C] font-medium py-3 px-8 text-white rounded-md"
+                      onClick={() => handlePile(id)}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Đang xử lý..." : "Đặc cọc"}
+                    </button>
+                  ) : (
+                    <div></div>
+                  )}
                 </div>
               </div>
             </motion.section>

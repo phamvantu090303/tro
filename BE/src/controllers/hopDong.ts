@@ -236,13 +236,12 @@ export const updateHopDong = async (req: Request, res: Response) => {
     const { id } = req.params;
     const data = req.body;
 
-    await hopDongService.updateHopDong(id, data)
+    await hopDongService.updateHopDong(id, data);
 
     res.status(200).json({
       message: "Cập nhật hợp đồng thành công",
-      });
-
-  }catch (error: any) {
+    });
+  } catch (error: any) {
     res.status(404).json({
       message: error.message,
     });
@@ -254,13 +253,12 @@ export const yeuCauHuyHD = async (req: Request, res: Response) => {
     const { id } = req.params;
     const data = req.body;
 
-    await hopDongService.yeuCauHuyHD(id, data)
+    await hopDongService.yeuCauHuyHD(id, data);
 
     res.status(200).json({
       message: "Yêu cầu hủy hợp đồng đã được gửi",
-      });
-
-  }catch (error: any) {
+    });
+  } catch (error: any) {
     res.status(404).json({
       message: error.message,
     });
@@ -294,6 +292,18 @@ export const getHopDong = async (req: any, res: any) => {
   } catch (error: any) {
     res.status(404).json({
       message: error.message,
+    });
+  }
+};
+
+export const checkStatusHopDong = async (req: any, res: any) => {
+  const { id } = req.params;
+  try {
+    const status = await HopDongService.getContractStatus(id);
+    res.status(200).json({ status });
+  } catch (error) {
+    res.status(404).json({
+      message: "Lỗi máy chủ khi lấy thông tin hợp đồng",
     });
   }
 };

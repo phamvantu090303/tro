@@ -5,6 +5,7 @@ import {
   getAdmin,
   getAllAdmin,
   loginAdmin,
+  logoutAdmin,
   resetPasswordAdmin,
   sendPasswordAdmin,
   updateAdmin,
@@ -30,6 +31,7 @@ routerAdmin.post(
   sendPasswordAdmin
 );
 routerAdmin.post("/reset-password", ResetPasswordAdmin, resetPasswordAdmin);
+routerAdmin.post("/logout", logoutAdmin);
 
 routerAdmin.get("/getadmin", accessTokenAdmin, getAdmin);
 routerAdmin.get("/getAll", getAllAdmin);

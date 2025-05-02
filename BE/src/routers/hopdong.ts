@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  checkStatusHopDong,
   createContract,
   customer,
   deleteHopDong,
@@ -16,7 +17,11 @@ routerHopDong.get("/customer", accessTokenValidatetor, customer);
 routerHopDong.post("/create", accessTokenValidatetor, createContract);
 routerHopDong.get("gia_han_hop_dong/:ma_phong", extendContract);
 routerHopDong.get("/detail", accessTokenValidatetor, detailContract);
-
+routerHopDong.get(
+  "/checkStatus/:id",
+  accessTokenValidatetor,
+  checkStatusHopDong
+);
 routerHopDong.post("/update/:id", updateHopDong);
 
 routerHopDong.post("/yeu_cau_huy_hd/:id", yeuCauHuyHD);

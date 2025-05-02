@@ -29,7 +29,6 @@ const Item = [
 
 function Header() {
   const { user, isLoading } = useSelector((state) => state.auth);
-  console.log("user", user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -62,6 +61,7 @@ function Header() {
   }, []);
 
   const handleLogout = async () => {
+    await axiosInstance.post("/auth/logout");
     dispatch(logout());
     navigate("/");
   };

@@ -2,11 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { axiosInstance } from "../../../../../Axios";
 import { motion } from "framer-motion";
 import { FaRegUserCircle } from "react-icons/fa";
-import { useSelector } from "react-redux";
+
 import { connectSocket } from "../../../../../Socket";
 
 const ChatAdmin = () => {
-  const { token } = useSelector((state) => state.authAdmin);
   const [userName, setUserName] = useState("");
   const [DanhsachUser, setDanhsachUser] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -34,13 +33,13 @@ const ChatAdmin = () => {
     setSelectedUser(null);
   };
   useEffect(() => {
-    const s = connectSocket(token);
+    const s = connectSocket();
     setSocket(s);
 
     return () => {
       s.disconnect();
     };
-  }, [token]); // Chỉ khi token thay đổi thì mới kết nối lại
+  }, []); // Chỉ khi token thay đổi thì mới kết nối lại
 
   useEffect(() => {
     if (!selectedUser) return;
