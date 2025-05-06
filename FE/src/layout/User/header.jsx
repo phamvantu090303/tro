@@ -49,10 +49,10 @@ function Header() {
           "Không thể lấy thông tin user:",
           error.response?.data?.message
         );
-        if (error.response?.status === 401) {
-          dispatch(logout());
-          navigate("/login");
-        }
+        // if (error.response?.status === 401) {
+        //   dispatch(logout());
+        //   navigate("/login");
+        // }
       } finally {
         dispatch(setLoading(false));
       }
