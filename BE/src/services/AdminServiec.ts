@@ -1,6 +1,7 @@
 import { createAdmin, updateAdmin } from "./../controllers/adminController";
 import { ObjectId } from "mongodb";
 import {
+  AdminSignTokenRestPassWord,
   getAccesstoken,
   getAccesstokenAdmin,
   SignTokenRestPassWord,
@@ -98,7 +99,7 @@ export class AdminService {
     user_id: any,
     verify: UserVerifyStatus
   ): Promise<string> {
-    const forgot_password_token = await SignTokenRestPassWord({
+    const forgot_password_token = await AdminSignTokenRestPassWord({
       _id: user_id,
       verify: verify,
     });
@@ -111,7 +112,7 @@ export class AdminService {
   ): Promise<{ message: string }> {
     const admin = await AdminModel.findById(user_id);
     if (!admin) {
-      throw new Error(`User không Tồn Tại!!!`);
+      throw new Error(`Admin không Tồn Tại!!!`);
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
