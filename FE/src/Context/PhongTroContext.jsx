@@ -8,9 +8,14 @@ export const PhongTroProvider = ({ children, isAdmin = false }) => {
   const fetchPhongTro = async () => {
     try {
       const { data } = await axiosInstance.get("/phongTro/getAll");
-      setPhongTro(
-        isAdmin ? data.data : data.data.filter((dm) => dm.trang_thai === 1)
+      const list = isAdmin
+        ? data.data
+        : data.data.filter((dm) => dm.trang_thai === 1 && !dm.id_users);
+
+      const sortedList = list.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
+      setPhongTro(sortedList);
     } catch (error) {
       console.error("Lỗi khi tải danh mục:", error);
     }

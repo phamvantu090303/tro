@@ -49,10 +49,6 @@ function Header() {
           "Không thể lấy thông tin user:",
           error.response?.data?.message
         );
-        // if (error.response?.status === 401) {
-        //   dispatch(logout());
-        //   navigate("/login");
-        // }
       } finally {
         dispatch(setLoading(false));
       }
@@ -70,7 +66,7 @@ function Header() {
     <Spinner /> // Hiển thị Spinner khi isLoading là true
   ) : (
     <nav className="w-full bg-[#1c203d] text-white py-5 top-0 sticky z-50">
-      <div className="max-w-[1920px] mx-auto px-6 md:px-[100px] flex items-center justify-between">
+      <div className="max-w-[1920px] mx-auto px-6 lg:px-[150px] flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
           <img
