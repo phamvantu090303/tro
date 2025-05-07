@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { axiosInstance } from "../../../Axios";
 
 function ModalUser({ reload, repairData }) {
-  console.log("repairData", repairData);
   const [formData, setFormData] = useState({
     maphong: "",
     lydo: "",

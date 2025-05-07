@@ -29,7 +29,6 @@ const Item = [
 
 function Header() {
   const { user, isLoading } = useSelector((state) => state.auth);
-  console.log("user", user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -40,28 +39,21 @@ function Header() {
       dispatch(setLoading(true));
       try {
         const res = await axiosInstance.get("/auth/me");
-        dispatch(
-          login({
-            user: res.data.data,
-          })
-        );
-      } catch (error) {
-        console.log(
-          "Không thể lấy thông tin user:",
-          error.response?.data?.message
-        );
-        if (error.response?.status === 401) {
-          dispatch(logout());
-          navigate("/login");
+        dispatch(login({ user: res.data.data }));
+      } catch (err) {
+        if (err.response?.status !== 401) {
+          console.error("Lỗi xác thực người dùng:", err);
         }
       } finally {
         dispatch(setLoading(false));
       }
     };
+
     fetchUser();
   }, []);
 
   const handleLogout = async () => {
+    await axiosInstance.post("/auth/logout");
     dispatch(logout());
     navigate("/");
   };
@@ -70,7 +62,7 @@ function Header() {
     <Spinner /> // Hiển thị Spinner khi isLoading là true
   ) : (
     <nav className="w-full bg-[#1c203d] text-white py-5 top-0 sticky z-50">
-      <div className="max-w-[1920px] mx-auto px-6 md:px-[100px] flex items-center justify-between">
+      <div className="max-w-[1920px] mx-auto px-6 lg:px-[150px] flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
           <img

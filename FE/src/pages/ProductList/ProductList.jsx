@@ -1,14 +1,15 @@
 import ProductShowcase from "../../component/ProductShowcase";
-import useApiManagerAdmin from "../../hook/useApiManagerAdmin";
+import { usePhongTro } from "../../Context/PhongTroContext";
 
 const ProductList = () => {
-  const { data: phongtro } = useApiManagerAdmin("phongTro");
+  const { phongTro } = usePhongTro();
+
   return (
     <div className="w-full">
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] mt-10 mb-20">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-[150px] mt-10 mb-20">
         <ProductShowcase
           desc="Tất cả phòng trọ"
-          data={phongtro}
+          data={phongTro}
           slide={false}
         />
       </div>

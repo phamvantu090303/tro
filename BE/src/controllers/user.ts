@@ -274,3 +274,13 @@ export const loginGoogle = async (req: any, res: any) => {
     });
   }
 };
+export const logout = async (req: any, res: any) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  res.status(200).json({
+    message: "Logout successful",
+  });
+};

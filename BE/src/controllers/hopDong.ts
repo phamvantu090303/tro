@@ -175,8 +175,7 @@ export const customer = async (req: Request, res: Response) => {
 export const extendContract = async (req: Request, res: Response) => {
   try {
     const { user }: any = req;
-    const { ma_phong } = req.query;
-
+    const { ma_phong } = req.params;
     const hopDong = await HopDongModel.findOne({
       ma_phong,
       id_users: user._id,
@@ -185,24 +184,22 @@ export const extendContract = async (req: Request, res: Response) => {
     if (!hopDong) {
       return res.status(404).json({ message: "Không tìm thấy hợp đồng!" });
     }
-
-    const today = new Date();
-    const contractEndDate = new Date(hopDong.end_date);
-
-    if (contractEndDate >= today) {
-      return res.status(400).json({ message: "Hợp đồng vẫn còn hiệu lực!" });
+    if (!["da_ky", "het_han"].includes(hopDong.trang_thai)) {
+      return res.status(400).json({
+        message: "Hợp đồng không thể gia hạn trong trạng thái hiện tại!",
+      });
     }
-
-    // Cộng thêm 1 năm vào ngày kết thúc hợp đồng
-    hopDong.end_date = new Date(
-      contractEndDate.setFullYear(contractEndDate.getFullYear() + 1)
+    const currentEndDate = new Date(hopDong.end_date);
+    const newEndDate = new Date(
+      currentEndDate.setFullYear(currentEndDate.getFullYear() + 1)
     );
+    hopDong.end_date = newEndDate;
+    hopDong.trang_thai = "da_ky";
 
     await hopDong.save();
 
     res.json({
       message: "Hợp đồng đã được gia hạn thêm 1 năm!",
-      updatedContract: hopDong,
     });
   } catch (error) {
     res.status(500).json({ message: "Lỗi xử lý gia hạn hợp đồng." });
@@ -236,13 +233,12 @@ export const updateHopDong = async (req: Request, res: Response) => {
     const { id } = req.params;
     const data = req.body;
 
-    await hopDongService.updateHopDong(id, data)
+    await hopDongService.updateHopDong(id, data);
 
     res.status(200).json({
       message: "Cập nhật hợp đồng thành công",
-      });
-
-  }catch (error: any) {
+    });
+  } catch (error: any) {
     res.status(404).json({
       message: error.message,
     });
@@ -254,13 +250,12 @@ export const yeuCauHuyHD = async (req: Request, res: Response) => {
     const { id } = req.params;
     const data = req.body;
 
-    await hopDongService.yeuCauHuyHD(id, data)
+    await hopDongService.yeuCauHuyHD(id, data);
 
     res.status(200).json({
       message: "Yêu cầu hủy hợp đồng đã được gửi",
-      });
-
-  }catch (error: any) {
+    });
+  } catch (error: any) {
     res.status(404).json({
       message: error.message,
     });

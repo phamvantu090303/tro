@@ -12,6 +12,7 @@ import {
   getDetailUser,
   loginGoogle,
   deleteUser,
+  logout,
 } from "../controllers/user";
 import { userRegisterRequest } from "../request/user.requet";
 import {
@@ -34,7 +35,7 @@ router.post("/update/:id", accessTokenValidatetor, updateUser);
 router.get("/me", accessTokenValidatetor, getMe);
 router.get("/getAll", getAllUser);
 router.delete("/delete/:id", deleteUser);
-
+router.post("/logout", logout);
 router.post("/login-google", loginGoogle);
 
 export default router;
