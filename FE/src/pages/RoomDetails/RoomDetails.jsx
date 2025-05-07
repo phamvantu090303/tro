@@ -206,7 +206,7 @@ function RoomDetails() {
         <meta property="og:image" content="/thumbnail.jpg" />
       </Helmet>
       {data ? (
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-[150px] mt-10 mb-20">
           <div className="space-y-[33px]">
             {/*ảnh chi tiết phòng */}
             <motion.section

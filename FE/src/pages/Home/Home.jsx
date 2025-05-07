@@ -102,7 +102,7 @@ function Homepage() {
         className="w-full h-auto max-h-[400px] md:max-h-[500px] object-cover"
       />
 
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] mt-10 mb-20">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6  lg:px-[150px] mt-10 mb-20">
         <div className="space-y-10">
           {/* Phòng trọ được yêu thích */}
           <motion.section

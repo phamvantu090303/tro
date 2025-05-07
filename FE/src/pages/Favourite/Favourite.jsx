@@ -36,7 +36,7 @@ function Favourite() {
           content="phòng trọ, thuê phòng, nhà trọ, nhà cho thuê, mô tả về các sản phẩm, yêu thích, dịch vụ mà bạn cung cấp."
         />
       </Helmet>
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 md:px-[100px] lg:px-[150px] mt-10 mb-20">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6  lg:px-[150px] mt-10 mb-20">
         <h1 className="text-3xl font-bold">Yêu thích</h1>
         <div className="space-y-5 min-h-[800px] mt-10">
           {data.length > 0 ? (

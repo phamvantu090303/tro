@@ -51,15 +51,15 @@ export class TransactionService {
       let total = new Map<string, number>();
       transactions.forEach((value) => {
         const description = value.addDescription;
-      
+
         if (description) {
           // Biểu thức chính quy để khớp với HD (không phân biệt hoa thường) + các số, có thể có khoảng trắng
           const match = description.match(/HD[\d\s]*\d+/i); // Khớp HD + số, bỏ qua khoảng trắng, không phân biệt hoa/thường
-      
+
           if (match) {
             // Xóa tất cả khoảng trắng trong mã hóa đơn để chuẩn hóa
             const maHoaDon = match[0].replace(/\s/g, "");
-      
+
             // Kiểm tra định dạng mã hóa đơn hợp lệ (chỉ chứa HD + số)
             if (/^HD\d+$/i.test(maHoaDon)) {
               if (total.has(maHoaDon)) {
@@ -71,8 +71,9 @@ export class TransactionService {
           }
         }
       });
-      
-      for (const [key, value] of total) { //value đây là số tiền
+
+      for (const [key, value] of total) {
+        //value đây là số tiền
         // console.log("key: ", key, "value: ", value);
         const cleanedKey = key.trim();
 
@@ -90,7 +91,7 @@ export class TransactionService {
 
             const updatephong = await PhongTroModel.findOneAndUpdate(
               { ma_phong: foundHoaDon.ma_phong },
-              { id_users: foundHoaDon.id_users },
+              { id_users: foundHoaDon.id_users, trang_thai: 0 },
               { new: true }
             );
 
@@ -115,7 +116,6 @@ export class TransactionService {
       );
     }
   }
-
 
   async TransactionThang(): Promise<string> {
     // Lấy ngày hiện tại
@@ -160,15 +160,15 @@ export class TransactionService {
       let total = new Map<string, number>();
       transactions.forEach((value) => {
         const description = value.addDescription;
-      
+
         if (description) {
           // Biểu thức chính quy để khớp với HD (không phân biệt hoa thường) + các số, có thể có khoảng trắng
           const match = description.match(/HD[\d\s]*\d+/i); // Khớp HD + số, bỏ qua khoảng trắng, không phân biệt hoa/thường
-      
+
           if (match) {
             // Xóa tất cả khoảng trắng trong mã hóa đơn để chuẩn hóa
             const maHoaDon = match[0].replace(/\s/g, "");
-      
+
             // Kiểm tra định dạng mã hóa đơn hợp lệ (chỉ chứa HD + số)
             if (/^HD\d+$/i.test(maHoaDon)) {
               if (total.has(maHoaDon)) {
@@ -180,8 +180,9 @@ export class TransactionService {
           }
         }
       });
-      
-      for (const [key, value] of total) { //value đây là số tiền
+
+      for (const [key, value] of total) {
+        //value đây là số tiền
         // console.log("key: ", key, "value: ", value);
         const cleanedKey = key.trim();
 

@@ -102,8 +102,8 @@ export default function RoomReview({ id }) {
   );
 }
 
-// Component hiển thị một đánh giá và xử lý trả lời + thu hồi
 function ReviewItem({ review, fetchReviews }) {
+  const { user } = useSelector((state) => state.auth);
   const [reply, setReply] = useState("");
   const [isReplying, setIsReplying] = useState(false);
 
@@ -115,7 +115,7 @@ function ReviewItem({ review, fetchReviews }) {
       await axiosInstance.post("/danh_gia/createdanhgia", {
         ma_phong: review.ma_phong,
         noi_dung: reply,
-        repcomment: review._id, // Gán ID bình luận cha
+        repcomment: review._id,
       });
 
       setReply("");
@@ -155,22 +155,26 @@ function ReviewItem({ review, fetchReviews }) {
               className="text-gray-600 hover:underline flex items-center gap-1"
               onClick={() => setIsReplying(!isReplying)}
             >
-              {isReplying ? (
-                "Hủy"
-              ) : (
-                <>
-                  <FaComment />
-                  Trả lời
-                </>
-              )}
+              {user ? (
+                isReplying ? (
+                  "Hủy"
+                ) : (
+                  <>
+                    <FaComment />
+                    Trả lời
+                  </>
+                )
+              ) : null}
             </button>
 
-            <button
-              className="text-red-600 hover:underline"
-              onClick={handleDelete}
-            >
-              Thu hồi
-            </button>
+            {user && review.user._id === user._id && (
+              <button
+                className="text-red-600 hover:underline"
+                onClick={handleDelete}
+              >
+                Thu hồi
+              </button>
+            )}
           </div>
         </div>
       </div>

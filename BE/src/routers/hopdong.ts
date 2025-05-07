@@ -15,7 +15,11 @@ const routerHopDong = express.Router();
 
 routerHopDong.get("/customer", accessTokenValidatetor, customer);
 routerHopDong.post("/create", accessTokenValidatetor, createContract);
-routerHopDong.get("gia_han_hop_dong/:ma_phong", extendContract);
+routerHopDong.post(
+  "/gia_han_hop_dong/:ma_phong",
+  accessTokenValidatetor,
+  extendContract
+);
 routerHopDong.get("/detail", accessTokenValidatetor, detailContract);
 routerHopDong.get(
   "/checkStatus/:id",
