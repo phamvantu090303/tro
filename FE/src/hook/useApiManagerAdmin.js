@@ -53,7 +53,7 @@ const useApiManagerAdmin = (endpoint) => {
 
   const UpdateData = async (id, payload) => {
     try {
-      await axiosInstance.post(`${endpoint}/update/${id}`, payload);
+      await axiosInstance.post(`${endpoint}/is_block/${id}`, payload);
       toast.success("Cập nhật thành công");
       fetchData();
     } catch (error) {
