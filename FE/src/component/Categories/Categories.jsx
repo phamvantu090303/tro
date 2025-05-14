@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { axiosInstance } from "../../../Axios";
 import CitySelector from "./CitySelector";
 import CardRoom from "../CardRoom";
 import { usePhongTro } from "../../Context/PhongTroContext";
@@ -30,8 +29,8 @@ function Category() {
       </div>
 
       {/* Danh sách sản phẩm */}
-      <div className="mt-8 min-h-[00px]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-6">
+      <div className="mt-8 min-h-[200px]">
+        <div className="max-w-full mt-[33px] grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6">
           {products.length > 0 ? (
             products.slice(0, 5).map((product, index) => (
               <div key={index}>

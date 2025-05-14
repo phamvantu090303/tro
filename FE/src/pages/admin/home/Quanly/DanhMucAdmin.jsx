@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "../../../../component/admin/SearchBar";
 import RoomTable from "../../../../component/admin/RoomTable";
 import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
@@ -26,7 +26,12 @@ function DanhMucAdmin() {
     DeleteAllData,
     UpdateData,
   } = useApiManagerAdmin("/danh-muc");
-
+  const [dsDanhMucHienThi, setDsDanhMucHienThi] = useState([]);
+  useEffect(() => {
+    if (danhMuc) {
+      setDsDanhMucHienThi(danhMuc); // reset về dữ liệu gốc mỗi lần fetch lại
+    }
+  }, [danhMuc]);
   const headers = [
     { label: "Mã danh mục", key: "ma_danh_muc" },
     { label: "Mô tả", key: "mo_ta" },
@@ -98,10 +103,23 @@ function DanhMucAdmin() {
     }
     resetData();
   };
+
+  const handleSearchDanhMuc = (keyword) => {
+    const tuKhoa = keyword.toLowerCase();
+    const filtered = danhMuc.filter(
+      (item) =>
+        item.ten_danh_muc.toLowerCase().includes(tuKhoa) ||
+        item.ma_danh_muc.toLowerCase().includes(tuKhoa) ||
+        item.mo_ta?.toLowerCase().includes(tuKhoa)
+    );
+
+    setDsDanhMucHienThi(filtered);
+  };
+
   return (
     <div className="">
       <div className="flex gap-5">
-        <SearchBar />
+        <SearchBar onSearch={handleSearchDanhMuc} />
         <button
           className="bg-customBlue text-white p-3 rounded-lg hover:bg-sky-600"
           onClick={() => {
@@ -120,7 +138,7 @@ function DanhMucAdmin() {
       <RoomTable
         headers={headers}
         title={"Danh mục"}
-        displayedRooms={danhMuc}
+        displayedRooms={dsDanhMucHienThi}
         roomsPerPage={10}
         renderStatus={renderStatus}
         handleDelete={handleDelete}

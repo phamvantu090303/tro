@@ -25,25 +25,25 @@ function Homepage() {
     slidesToShow: 5,
     slidesToScroll: 3,
     autoplay: true,
-    autoplaySpeed: 1000,
+    autoplaySpeed: 50000,
     rtl: true,
     responsive: [
       {
         breakpoint: 1600, // Laptop màn lớn
         settings: {
-          slidesToShow: 3,
+          slidesToShow: 4,
         },
       },
       {
         breakpoint: 1280, // Laptop phổ thông
         settings: {
-          slidesToShow: 3,
+          slidesToShow: 4,
         },
       },
       {
         breakpoint: 1024, // Laptop nhỏ hơn (13 inch)
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 3,
         },
       },
       {
@@ -221,7 +221,7 @@ function Homepage() {
                   <img
                     src={item.phong_info.anh_phong}
                     alt=""
-                    className="mt-4 w-[400px] h-[200px] object-cover"
+                    className="mt-4 w-[300px] h-[180px] object-cover"
                   />
                   <p className="text-gray-700 text-sm mt-4">{item.noi_dung}</p>
                 </div>

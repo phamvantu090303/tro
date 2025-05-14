@@ -24,18 +24,18 @@ function CardRoom({
   };
   return (
     <div
-      className="w-full md:max-w-[300px] min-h-[470px] shadow-xl flex flex-col justify-between bg-white p-4 rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105"
+      className="w-full md:max-w-[300px]  min-h-[430px] flex flex-col justify-between shadow-xl  bg-white p-4 rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105"
       onClick={() => handleCard(id)}
     >
-      <div className="w-full min-h-[200px] md:h-[220px] flex items-center justify-center">
+      <div className="w-full min-h-[200px] md:h-[200px] flex items-center justify-center">
         <img
           src={img || test}
           alt="room"
           className="w-full h-full object-cover rounded-md"
         />
       </div>
-      <div className="mt-4">
-        <p className="2xl:text-lg text-base font-bold text-[#23284C]">
+      <div>
+        <p className="2xl:text-lg text-base font-bold text-[#23284C] mt-2">
           {title}
         </p>
         <p className="mt-2 2xl:text-lg text-base text-[#FEBB02] font-bold">
@@ -44,18 +44,18 @@ function CardRoom({
       </div>
       <div className="mt-4">
         {address && ward && district && (
-          <p className="flex items-center gap-2 2xl:text-base text-sm">
+          <p className="flex items-center gap-2 lg:text-base text-sm">
             {address}, {ward}, {district}, {province}
           </p>
         )}
       </div>
       <div className="flex justify-between mt-4">
-        <p className="flex items-center gap-2 xl:text-xl text-lg">
-          <FaUserFriends className="2xl:text-2xl text-lg text-gray-600" />
+        <p className="flex items-center gap-2 xl:text-xl text-base">
+          <FaUserFriends className="2xl:text-2xl text-base text-gray-600" />
           {number}
         </p>
-        <p className="flex items-center gap-2 xl:text-xl text-lg">
-          <FaArrowsAlt className="2xl:text-2xl text-lg text-gray-600" />
+        <p className="flex items-center gap-2 xl:text-xl text-base">
+          <FaArrowsAlt className="2xl:text-2xl text-base text-gray-600" />
           {dien_tich}
         </p>
       </div>

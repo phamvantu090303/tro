@@ -124,7 +124,9 @@ function Search() {
                               handleCheckboxChange(priceRange, setTamgia)
                             }
                           />
-                          <p className="text-sm sm:text-base">{priceRange}</p>
+                          <p className="text-sm sm:text-base">
+                            {priceRange} VND
+                          </p>
                         </div>
                       )
                     )}
