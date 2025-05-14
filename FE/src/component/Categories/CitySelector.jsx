@@ -7,8 +7,8 @@ function CitySelector({ onSelectCity }) {
 
   useEffect(() => {
     if (danhMuc.length > 0) {
-      setSelectedCity(danhMuc[0].ma_danh_muc);
-      onSelectCity(danhMuc[0].ma_danh_muc);
+      setSelectedCity(danhMuc[1].ma_danh_muc);
+      onSelectCity(danhMuc[1].ma_danh_muc);
     }
   }, [danhMuc, onSelectCity]);
 

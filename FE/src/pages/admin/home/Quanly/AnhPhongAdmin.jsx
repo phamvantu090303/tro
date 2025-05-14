@@ -29,6 +29,13 @@ function AnhPhongAdmin() {
     fetchData,
   } = useApiManagerAdmin("/Image-phong");
 
+  const [dsHienThi, setDsHienThi] = useState([]);
+  useEffect(() => {
+    if (anhphong) {
+      setDsHienThi(anhphong); // reset về dữ liệu gốc mỗi lần fetch lại
+    }
+  }, [anhphong]);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -110,7 +117,7 @@ function AnhPhongAdmin() {
     });
   };
   const handleOpenModalEdit = (value) => {
-    dispatch(OpenModalForm({ modalType: "edit", id: value.ma_phong ?? null }));
+    dispatch(OpenModalForm({ modalType: "edit", id: value._id ?? null }));
     setMaphong(value.ma_phong);
     setImg(value.image_url);
     setHienthiAnh(value.image_url);
@@ -125,20 +132,43 @@ function AnhPhongAdmin() {
     await DeleteData(room._id);
   };
   const handleUpdateAnh = async (id) => {
-    const urlsImg = await upload(img);
-    if (!urlsImg.length) {
-      toast.error("Không có ảnh để cập nhật phòng!");
+    let imageUrl;
+
+    // Nếu là ảnh mới (File list), upload lên Cloudinary
+    if (img && typeof img[0] === "object") {
+      const urlsImg = await upload(img);
+      if (!urlsImg.length) {
+        toast.error("Không có ảnh để cập nhật phòng!");
+        return;
+      }
+      imageUrl = urlsImg.join(",");
+    } else if (typeof img === "string") {
+      // Nếu là URL cũ, giữ nguyên
+      imageUrl = img;
+    } else {
+      toast.error("Ảnh không hợp lệ!");
       return;
     }
-    const imageUrl = urlsImg.join(",");
+
     await UpdateData(id, {
       image_url: imageUrl,
+      ma_phong: maphong,
     });
+  };
+  console.log(maphong);
+
+  const handleSearch = (keyword) => {
+    const tuKhoa = keyword.toLowerCase();
+    const filtered = anhphong.filter((item) =>
+      item.ma_phong.toLowerCase().includes(tuKhoa)
+    );
+
+    setDsHienThi(filtered);
   };
   return (
     <div>
       <div className="flex gap-5 ">
-        <SearchBar />
+        <SearchBar onSearch={handleSearch} />
         <button
           className="bg-customBlue text-white p-3 rounded-lg hover:bg-sky-600"
           onClick={() =>
@@ -157,7 +187,7 @@ function AnhPhongAdmin() {
       <RoomTable
         title={"Ảnh phòng"}
         headers={headers}
-        displayedRooms={anhphong}
+        displayedRooms={dsHienThi}
         roomsPerPage={5}
         handleDelete={handleDelete}
         handleOpenModalEdit={handleOpenModalEdit}
@@ -187,7 +217,7 @@ function AnhPhongAdmin() {
                 >
                   <option value="">Chọn mã phòng</option>
                   {phongTro.map((dm) => (
-                    <option key={dm.ma_phong} value={dm.ma_phong}>
+                    <option key={dm.index} value={dm.ma_phong}>
                       {dm.ma_phong}
                     </option>
                   ))}
@@ -228,7 +258,7 @@ function AnhPhongAdmin() {
               onClick={handleCreate}
               className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
             >
-              Tạo
+              {modalType === "create" ? "Thêm" : "Chỉnh sửa"}
             </button>
           </div>
         </div>

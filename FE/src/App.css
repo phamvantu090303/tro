@@ -6,8 +6,15 @@ html {
   display: none !important;
 }
 .slick-slide {
-  max-width: 100% !important;
-  flex: 0 0 300px !important; /* Đảm bảo slide không co giãn */
+  max-height: 430px !important;
+}
+
+.slick-slide > div {
+  height: 90%;
+}
+
+.slick-cloned {
+  height: 700px !important;
 }
 .slick-slide {
   flex: 1 0 auto !important;

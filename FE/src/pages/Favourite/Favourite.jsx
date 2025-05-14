@@ -18,9 +18,12 @@ function Favourite() {
       console.log(error);
     }
   };
+
   useEffect(() => {
-    fetchDataFavourite();
-  }, []);
+    if (user && user._id) {
+      fetchDataFavourite();
+    }
+  }, [user]);
 
   return (
     <div className="w-full">

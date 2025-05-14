@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
 import RoomTable from "../../../../component/admin/RoomTable";
 import SearchBar from "../../../../component/admin/SearchBar";
@@ -67,11 +67,28 @@ function DichvuAdmin() {
       tien_wifi: 0,
     });
   };
+  const [dsHienThi, setDsHienThi] = useState([]);
+  useEffect(() => {
+    if (dichvu) {
+      setDsHienThi(dichvu); // reset về dữ liệu gốc mỗi lần fetch lại
+    }
+  }, [dichvu]);
+
+  const handleSearch = (keyword) => {
+    const tuKhoa = keyword.toLowerCase();
+    const filtered = dichvu.filter(
+      (item) =>
+        String(item.tien_dien).toLowerCase().includes(tuKhoa) ||
+        String(item.tien_nuoc).toLowerCase().includes(tuKhoa) ||
+        String(item.tien_wifi).toLowerCase().includes(tuKhoa)
+    );
+    setDsHienThi(filtered);
+  };
   const handleDeleteAll = () => {};
   return (
     <div className="min-h-screen">
       <div className="flex gap-5 ">
-        <SearchBar />
+        <SearchBar onSearch={handleSearch} />
         <button
           className="bg-customBlue text-white p-3 rounded-lg hover:bg-sky-600"
           onClick={() => {
@@ -90,7 +107,7 @@ function DichvuAdmin() {
       <RoomTable
         title={"Dịch vụ"}
         headers={headers}
-        displayedRooms={dichvu}
+        displayedRooms={dsHienThi}
         roomsPerPage={5}
         handleDelete={handleDelete}
         handleOpenModalEdit={handleOpenModalEdit}

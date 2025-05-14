@@ -5,7 +5,7 @@ import { useMasking } from "../../hook/useMasking";
 import OtpVerification from "../../component/Otp";
 
 function HopDongUser() {
-  const [dataContract, setDataContract] = useState({});
+  const [dataContract, setDataContract] = useState(null);
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +40,7 @@ function HopDongUser() {
   const handleYeuCauHuyHD = async () => {
     await axiosInstance.post(`/hopdong/yeu_cau_huy_hd/${dataContract._id}`);
   };
-
+  console.log("dataContract", dataContract);
   const handleGiaHanHD = async () => {
     try {
       const res = await axiosInstance.post(
@@ -193,7 +193,9 @@ function HopDongUser() {
         </div>
       ) : (
         <div className="text-center py-6">
-          <p className="text-gray-600">Bạn chưa có hợp đồng nào</p>
+          <p className="text-red-600 text-lg font-medium">
+            Bạn chưa có hợp đồng nào
+          </p>
         </div>
       )}
     </div>

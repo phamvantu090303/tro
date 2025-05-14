@@ -4,18 +4,23 @@ import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
 import SearchBar from "../../../../component/admin/SearchBar";
 import { axiosInstance } from "../../../../../Axios";
 import { toast } from "react-toastify";
-
+import {
+  CloseModalForm,
+  OpenModalForm,
+} from "../../../../Store/filterModalForm";
+import { useDispatch, useSelector } from "react-redux";
 function AccountAdmin() {
-  const [modal, setModal] = useState(false);
   const {
     data: admin,
     createData,
     DeleteData,
     UpdateData,
   } = useApiManagerAdmin("/admin");
-  const generateRandomId = () => Math.floor(Math.random() * 1000000).toString();
-    const [roles, setRoles] = useState([]);
-
+  const [roles, setRoles] = useState([]);
+  const { modalType, idModal, isOpen } = useSelector(
+    (state) => state.ModalForm
+  );
+  const dispatch = useDispatch();
   const [adminData, setAdminData] = useState({
     id_quyen: "",
     email: "",
@@ -31,13 +36,11 @@ function AccountAdmin() {
     is_block: false,
   });
 
-
-   // Fetch roles from /phan_quyen/AllQuyen
   useEffect(() => {
     const fetchRoles = async () => {
       try {
         const res = await axiosInstance.get("/phan_quyen/AllQuyen");
-        setRoles(res.data.data || []); // Adjust based on API response structure
+        setRoles(res.data.data || []);
       } catch (error) {
         toast.error("Lỗi khi tải danh sách quyền");
         console.log(error);
@@ -45,6 +48,13 @@ function AccountAdmin() {
     };
     fetchRoles();
   }, []);
+
+  const [dsHienThi, setDsHienThi] = useState([]);
+  useEffect(() => {
+    if (admin) {
+      setDsHienThi(admin); // reset về dữ liệu gốc mỗi lần fetch lại
+    }
+  }, [admin]);
 
   const headers = [
     { label: "Tên quyền", key: "ten_quyen" },
@@ -58,17 +68,38 @@ function AccountAdmin() {
     { label: "Trạng thái", key: "is_block" },
   ];
 
-  useEffect(() => {
-    if (modal) {
-      setAdminData((prev) => ({ ...prev, id_quyen: generateRandomId() }));
-    }
-  }, [modal]);
-
-  const handleCreate = async () => {
+  const handleCreateAccountAdmin = async () => {
     const success = await createData({ ...adminData });
 
     if (success) {
-      setModal(false);
+      resetData();
+    }
+  };
+
+  const handleOpenModalEdit = (room) => {
+    dispatch(OpenModalForm({ modalType: "edit", id: room._id ?? null }));
+    setAdminData({
+      id_quyen: room.id_quyen,
+      email: room.email,
+      password: room.password,
+      username: room.username,
+      ho_va_ten: room.ho_va_ten,
+      ngay_sinh: room.ngay_sinh,
+      que_quan: room.que_quan,
+      so_dien_thoai: room.so_dien_thoai,
+      gioi_tinh: room.gioi_tinh,
+      cccd: room.cccd,
+      verify: 1,
+      is_block: room.is_block,
+    });
+  };
+
+  const handleCreate = async () => {
+    if (modalType === "create") {
+      await handleCreateAccountAdmin();
+    } else if (modalType === "edit") {
+      await UpdateData(idModal, adminData);
+      resetData();
     }
   };
 
@@ -92,176 +123,223 @@ function AccountAdmin() {
     </p>
   );
 
+  const resetData = () => {
+    setAdminData({
+      id_quyen: "",
+      email: "",
+      password: "",
+      username: "",
+      ho_va_ten: "",
+      ngay_sinh: "",
+      que_quan: "",
+      so_dien_thoai: "",
+      gioi_tinh: "",
+      cccd: "",
+      verify: 1,
+      is_block: false,
+    });
+    dispatch(CloseModalForm());
+  };
+
+  const handleSearch = (keyword) => {
+    const tuKhoa = keyword.toLowerCase();
+    const filtered = admin.filter(
+      (item) =>
+        item.username.toLowerCase().includes(tuKhoa) ||
+        item.ho_va_ten.toLowerCase().includes(tuKhoa) ||
+        item.email.toLowerCase().includes(tuKhoa) ||
+        item.que_quan.toLowerCase().includes(tuKhoa) ||
+        String(item.so_dien_thoai).toLowerCase().includes(tuKhoa) ||
+        item.ten_quyen.toLowerCase().includes(tuKhoa)
+    );
+
+    setDsHienThi(filtered);
+  };
   return (
     <div>
       <div className="flex gap-5 ">
-        <SearchBar />
+        <SearchBar onSearch={handleSearch} />
         <button
           className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
-          onClick={() => setModal(true)}
+          onClick={() => {
+            dispatch(OpenModalForm({ modalType: "create", id: null }));
+          }}
         >
           Thêm tài khoản admin
         </button>
       </div>
       <RoomTable
-        displayedRooms={admin}
+        displayedRooms={dsHienThi}
         headers={headers}
         roomsPerPage={5}
         title={"Account Admin"}
         renderStatus={renderStatus}
         handleDelete={handleDelete}
         updateTrangthai={handleUpdateBlock}
+        handleOpenModalEdit={handleOpenModalEdit}
       />
-      {modal && (
+      {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
-          <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] w-[500px]">
+          <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] w-2/3">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold mb-4">
-                Thêm tài khoản admin
+                {modalType === "edit"
+                  ? "Chỉnh sửa tài khoản"
+                  : "Thêm tài khoản"}
               </h2>
               <button
                 className="bg-red-500 text-white p-2 rounded-lg"
-                onClick={() => setModal(false)}
+                onClick={resetData}
               >
                 Close
               </button>
             </div>
             <div className="space-y-4 mt-4">
-              <div>
-                <label className="block font-medium">Email</label>
-                <input
-                  type="text"
-                  placeholder="Nhập email"
-                  value={adminData.email}
-                  onChange={(e) =>
-                    setAdminData({ ...adminData, email: e.target.value })
-                  }
-                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-medium">Email</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập email"
+                    value={adminData.email}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, email: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">Mật khẩu</label>
+                  <input
+                    type="password"
+                    placeholder="Nhập mật khẩu"
+                    value={adminData.password}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, password: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block font-medium">Mật khẩu</label>
-                <input
-                  type="password"
-                  placeholder="Nhập mật khẩu"
-                  value={adminData.password}
-                  onChange={(e) =>
-                    setAdminData({ ...adminData, password: e.target.value })
-                  }
-                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-medium">UserName</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập tên đăng nhập"
+                    value={adminData.username}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, username: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">Họ và tên</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập họ và tên"
+                    value={adminData.ho_va_ten}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, ho_va_ten: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block font-medium">UserName</label>
-                <input
-                  type="text"
-                  placeholder="Nhập tên đăng nhập"
-                  value={adminData.username}
-                  onChange={(e) =>
-                    setAdminData({ ...adminData, username: e.target.value })
-                  }
-                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-medium">Ngày sinh</label>
+                  <input
+                    type="date"
+                    value={adminData.ngay_sinh}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, ngay_sinh: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">Quê quán</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập quê quán"
+                    value={adminData.que_quan}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, que_quan: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block font-medium">Họ và tên</label>
-                <input
-                  type="text"
-                  placeholder="Nhập họ và tên"
-                  value={adminData.ho_va_ten}
-                  onChange={(e) =>
-                    setAdminData({ ...adminData, ho_va_ten: e.target.value })
-                  }
-                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-medium">Số điện thoại</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập số điện thoại"
+                    value={adminData.so_dien_thoai}
+                    onChange={(e) =>
+                      setAdminData({
+                        ...adminData,
+                        so_dien_thoai: e.target.value,
+                      })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">CCCD</label>
+                  <input
+                    type="text"
+                    placeholder="Nhập số CCCD"
+                    value={adminData.cccd}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, cccd: e.target.value })
+                    }
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block font-medium">Ngày sinh</label>
-                <input
-                  type="date"
-                  value={adminData.ngay_sinh}
-                  onChange={(e) =>
-                    setAdminData({ ...adminData, ngay_sinh: e.target.value })
-                  }
-                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block font-medium">Quê quán</label>
-                <input
-                  type="text"
-                  placeholder="Nhập quê quán"
-                  value={adminData.que_quan}
-                  onChange={(e) =>
-                    setAdminData({ ...adminData, que_quan: e.target.value })
-                  }
-                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block font-medium">Số điện thoại</label>
-                <input
-                  type="text"
-                  placeholder="Nhập số điện thoại"
-                  value={adminData.so_dien_thoai}
-                  onChange={(e) =>
-                    setAdminData({
-                      ...adminData,
-                      so_dien_thoai: e.target.value,
-                    })
-                  }
-                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block font-medium">CCCD</label>
-                <input
-                  type="text"
-                  placeholder="Nhập số CCCD"
-                  value={adminData.cccd}
-                  onChange={(e) =>
-                    setAdminData({ ...adminData, cccd: e.target.value })
-                  }
-                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block font-medium">Giới tính</label>
-                <select
-                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
-                  value={adminData.gioi_tinh}
-                  onChange={(e) =>
-                    setAdminData({ ...adminData, gioi_tinh: e.target.value })
-                  }
-                >
-                  <option value="">Chọn giới tính</option>
-                  <option value="Nam">Nam</option>
-                  <option value="Nữ">Nữ</option>
-                  <option value="Khác">Khác</option>
-                </select>
-              </div>
-            <div>
-                <label className="block font-medium">Quyền</label>
-                <select
-                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
-                  value={adminData.id_quyen}
-                  onChange={(e) =>
-                    setAdminData({ ...adminData, id_quyen: e.target.value })
-                  }
-                >
-                  <option value="">Chọn quyền</option>
-                  {roles && roles.length > 0 ? (
-                    roles.map((role) => (
-                      <option key={role.id_quyen} value={role.id_quyen}>
-                        {role.ten_quyen}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-medium">Giới tính</label>
+                  <select
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                    value={adminData.gioi_tinh}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, gioi_tinh: e.target.value })
+                    }
+                  >
+                    <option value="">Chọn giới tính</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-medium">Quyền</label>
+                  <select
+                    className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                    value={adminData.id_quyen}
+                    onChange={(e) =>
+                      setAdminData({ ...adminData, id_quyen: e.target.value })
+                    }
+                  >
+                    <option value="">Chọn quyền</option>
+                    {roles && roles.length > 0 ? (
+                      roles.map((role) => (
+                        <option key={role._id} value={role._id}>
+                          {role.ten_quyen}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        Không có quyền nào
                       </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      Không có quyền nào
-                    </option>
-                  )}
-                </select>
+                    )}
+                  </select>
+                </div>
               </div>
               {/* <div>
                 <label className="block font-medium">Khoá tài khoản</label>
@@ -280,7 +358,7 @@ function AccountAdmin() {
               onClick={handleCreate}
               className="mt-6 py-2 px-10 bg-customBlue rounded-lg text-white w-full"
             >
-              Tạo
+              {modalType === "edit" ? "Chỉnh sửa" : "Thêm"}
             </button>
           </div>
         </div>

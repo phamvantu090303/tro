@@ -12,6 +12,14 @@ function SuachuaAdmin() {
     fetchData,
   } = useApiManagerAdmin("/sua_chua");
 
+  const [dsHienThi, setDsHienThi] = useState([]);
+
+  useEffect(() => {
+    if (suachua) {
+      setDsHienThi(suachua);
+    }
+  }, [suachua]);
+
   const [socket, setSocket] = useState(null);
   useEffect(() => {
     const s = connectSocket();
@@ -59,15 +67,27 @@ function SuachuaAdmin() {
     );
   };
 
+  const handleSearch = (keyword) => {
+    const tuKhoa = keyword.toLowerCase();
+    const filtered = suachua.filter(
+      (item) =>
+        item.userName.toLowerCase().includes(tuKhoa) ||
+        item.ma_phong.toLowerCase().includes(tuKhoa) ||
+        item.issue?.toLowerCase().includes(tuKhoa)
+    );
+
+    setDsHienThi(filtered);
+  };
+
   return (
     <div className="min-h-screen">
       <div className="flex gap-5 ">
-        <SearchBar />
+        <SearchBar onSearch={handleSearch} />
       </div>
       <RoomTable
         title={"Sửa chữa"}
         headers={headers}
-        displayedRooms={suachua}
+        displayedRooms={dsHienThi}
         roomsPerPage={5}
         renderStatus={renderStatus}
         handleDelete={handleDelete}

@@ -19,17 +19,36 @@ const createImage = async (req: Request, res: Response) => {
 };
 
 const updateImage = async (req: Request, res: Response) => {
-  const { ma_phong } = req.params;
-  const body = req.body;
+  const { id } = req.params;
+  const { ma_phong, image_url } = req.body;
+
+  // Kiểm tra đầu vào cơ bản
+  if (!ma_phong || !image_url) {
+    return res.status(400).json({
+      message: "Thiếu thông tin ma_phong hoặc image_url",
+    });
+  }
+
   try {
-    await imageService.updateImage(ma_phong, body);
+    const updatedImage = await imageService.updateImage(id, {
+      ma_phong,
+      image_url,
+    });
+
+    if (!updatedImage) {
+      return res.status(404).json({
+        message: "Không tìm thấy hình ảnh với ID đã cho",
+      });
+    }
 
     res.status(200).json({
       message: "Hình ảnh đã được cập nhật thành công",
+      data: updatedImage,
     });
   } catch (error: any) {
-    res.status(400).json({
-      message: error.message,
+    res.status(500).json({
+      message: "Lỗi khi cập nhật hình ảnh",
+      error: error.message,
     });
   }
 };
