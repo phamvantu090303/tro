@@ -90,6 +90,21 @@ export const createAdmin = async (req: Request, res: Response) => {
   }
 };
 
+export const UpdatIs_Block = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await adminService.Is_block(id);
+    res.status(200).json({
+      message: "Thay đổi is_block thành công",
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
+
 export const updateAdmin = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -104,7 +119,6 @@ export const updateAdmin = async (req: Request, res: Response) => {
     });
   }
 };
-
 export const deleteAdmin = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {

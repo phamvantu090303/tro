@@ -42,6 +42,18 @@ export class AdminService {
     await newAdmin.save();
   }
 
+  
+ async Is_block(_id: any): Promise<void> {
+    const id = new ObjectId(_id);
+   const update = await AdminModel.findById(id);
+    if (!update) {
+      throw new Error("ID admin không tồn tại");
+    }
+    update.is_block = !update.is_block;
+    await update.save();
+  }
+
+
   async updateAdminService(_id: any, data: any): Promise<void> {
     const id = new ObjectId(_id);
     const {
@@ -59,7 +71,6 @@ export class AdminService {
       is_block,
     } = data;
 
-    // Kiểm tra danh mục cần cập nhật có tồn tại không
     const update = await AdminModel.findById(id);
     if (!update) {
       throw new Error("ID admin không tồn tại");

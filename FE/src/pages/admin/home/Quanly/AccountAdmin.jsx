@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import RoomTable from "../../../../component/admin/RoomTable";
 import useApiManagerAdmin from "../../../../hook/useApiManagerAdmin";
 import SearchBar from "../../../../component/admin/SearchBar";
+import { axiosInstance } from "../../../../../Axios";
+import { toast } from "react-toastify";
 
 function AccountAdmin() {
   const [modal, setModal] = useState(false);
@@ -12,6 +14,8 @@ function AccountAdmin() {
     UpdateData,
   } = useApiManagerAdmin("/admin");
   const generateRandomId = () => Math.floor(Math.random() * 1000000).toString();
+    const [roles, setRoles] = useState([]);
+
   const [adminData, setAdminData] = useState({
     id_quyen: "",
     email: "",
@@ -27,6 +31,21 @@ function AccountAdmin() {
     is_block: false,
   });
 
+
+   // Fetch roles from /phan_quyen/AllQuyen
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await axiosInstance.get("/phan_quyen/AllQuyen");
+        setRoles(res.data.data || []); // Adjust based on API response structure
+      } catch (error) {
+        toast.error("Lỗi khi tải danh sách quyền");
+        console.log(error);
+      }
+    };
+    fetchRoles();
+  }, []);
+
   const headers = [
     { label: "Tên quyền", key: "ten_quyen" },
     { label: "UserName", key: "username" },
@@ -36,7 +55,7 @@ function AccountAdmin() {
     { label: "Số điện thoại", key: "so_dien_thoai" },
     { label: "Giới tính", key: "gioi_tinh" },
     { label: "Căn cước công dân", key: "cccd" },
-    { label: "Tài khoản bị khóa", key: "is_block" },
+    { label: "Trạng thái", key: "is_block" },
   ];
 
   useEffect(() => {
@@ -221,7 +240,30 @@ function AccountAdmin() {
                   <option value="Khác">Khác</option>
                 </select>
               </div>
-              <div>
+            <div>
+                <label className="block font-medium">Quyền</label>
+                <select
+                  className="w-full border border-gray-500 py-2 px-4 rounded-md"
+                  value={adminData.id_quyen}
+                  onChange={(e) =>
+                    setAdminData({ ...adminData, id_quyen: e.target.value })
+                  }
+                >
+                  <option value="">Chọn quyền</option>
+                  {roles && roles.length > 0 ? (
+                    roles.map((role) => (
+                      <option key={role.id_quyen} value={role.id_quyen}>
+                        {role.ten_quyen}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      Không có quyền nào
+                    </option>
+                  )}
+                </select>
+              </div>
+              {/* <div>
                 <label className="block font-medium">Khoá tài khoản</label>
                 <input
                   type="checkbox"
@@ -232,7 +274,7 @@ function AccountAdmin() {
                   className="mr-2"
                 />
                 <span>Tài khoản bị khoá</span>
-              </div>
+              </div> */}
             </div>
             <button
               onClick={handleCreate}

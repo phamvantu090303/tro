@@ -1,3 +1,4 @@
+import { UpdatIs_Block } from './../controllers/adminController';
 import { Router } from "express";
 import {
   createAdmin,
@@ -23,6 +24,7 @@ routerAdmin.post("/login", LoginAdminValidator, loginAdmin);
 
 routerAdmin.post("/create", createAdmin);
 routerAdmin.post("/update/:id", accessTokenAdmin, updateAdmin);
+routerAdmin.post("/is_block/:id", accessTokenAdmin, UpdatIs_Block);
 routerAdmin.delete("/delete/:id", deleteAdmin);
 
 routerAdmin.post(
