@@ -20,12 +20,14 @@ import { openConfirmModal } from "../../../../Store/filterConfirmModal";
 import { useDispatch, useSelector } from "react-redux";
 import ModalConFirm from "../../../../component/ModalConfirm";
 import { renderToStaticMarkup } from "react-dom/server";
+
 const customIcon = new L.DivIcon({
   className: "custom-icon",
   html: renderToStaticMarkup(
-    <FaMapMarkerAlt style={{ color: "#005BFF", fontSize: "30px" }} />
+    <FaMapMarkerAlt style={{ color: "#007BFF", fontSize: "30px" }} />
   ),
 });
+
 export default function MapAdmin() {
   const dispatch = useDispatch();
   const [locations, setLocations] = useState({});

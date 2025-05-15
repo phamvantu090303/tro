@@ -152,7 +152,6 @@ function AccountAdmin() {
         String(item.so_dien_thoai).toLowerCase().includes(tuKhoa) ||
         item.ten_quyen.toLowerCase().includes(tuKhoa)
     );
-
     setDsHienThi(filtered);
   };
   return (
@@ -160,7 +159,7 @@ function AccountAdmin() {
       <div className="flex gap-5 ">
         <SearchBar onSearch={handleSearch} />
         <button
-          className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
+          className="bg-customBlue text-white p-3 rounded-lg hover:bg-sky-600"
           onClick={() => {
             dispatch(OpenModalForm({ modalType: "create", id: null }));
           }}
@@ -362,7 +361,7 @@ function AccountAdmin() {
             </button>
           </div>
         </div>
-      )} 
+      )}
     </div>
   );
 }

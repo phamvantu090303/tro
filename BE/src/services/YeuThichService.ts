@@ -88,6 +88,11 @@ export class YeuThichSevice {
   async getAllYeuTich(): Promise<any[]> {
     return await yeuthichModel.aggregate([
       {
+        $addFields: {
+          id_users_obj: { $toObjectId: "$id_user" },
+        },
+      },
+      {
         $lookup: {
           from: "phongtros",
           localField: "ma_phong",
@@ -101,9 +106,31 @@ export class YeuThichSevice {
           preserveNullAndEmptyArrays: true,
         },
       },
+      {
+        $lookup: {
+          from: "users",
+          localField: "id_users_obj",
+          foreignField: "_id",
+          as: "user_info",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user_info",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          ma_phong: 1,
+          id_user: 1,
+          username: "$user_info.username",
+        },
+      },
     ]);
   }
-  
+
   async isYeuThich(id_user: string, ma_phong: string): Promise<boolean> {
     const result = await yeuthichModel.findOne({
       id_user: new ObjectId(id_user),
