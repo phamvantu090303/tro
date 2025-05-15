@@ -4,6 +4,16 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { axiosInstance } from "../../../../Axios";
 import { CloseModalForm } from "../../../Store/filterModalForm";
+import { FaMapMarkerAlt } from "react-icons/fa";
+import { renderToStaticMarkup } from "react-dom/server";
+import L from "leaflet";
+
+const customIcon = new L.DivIcon({
+  className: "custom-icon",
+  html: renderToStaticMarkup(
+    <FaMapMarkerAlt style={{ color: "#007BFF", fontSize: "30px" }} />
+  ),
+});
 
 const ModalMap = ({ data, reload }) => {
   const dispatch = useDispatch();
@@ -63,7 +73,12 @@ const ModalMap = ({ data, reload }) => {
         }));
       },
     });
-    return <Marker position={[formData.latitude, formData.longitude]} />;
+    return (
+      <Marker
+        position={[formData.latitude, formData.longitude]}
+        icon={customIcon}
+      />
+    );
   }
 
   const handleChange = (e) => {

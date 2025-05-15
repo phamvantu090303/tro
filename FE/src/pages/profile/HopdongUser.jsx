@@ -85,7 +85,15 @@ function HopDongUser() {
                   <span className="inline-block px-3 py-1 font-medium rounded-full bg-customBlue text-white">
                     Bạn chưa ký hợp đồng
                   </span>
-                ) : null}
+                ) : dataContract.trang_thai === "yeu_cau_huy_hop_dong" ? (
+                  <span className="inline-block px-3 py-1 font-medium rounded-full bg-yellow-500 text-white">
+                    Yêu cầu hủy hợp đồng
+                  </span>
+                ) : (
+                  <span className="inline-block px-3 py-1 font-medium rounded-full bg-slate-300 text-black">
+                    Trạng thái không xác định
+                  </span>
+                )}
               </div>
             </div>
             <div className="mt-10 flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-3">

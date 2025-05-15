@@ -129,6 +129,38 @@ function PhongTroAdmin() {
     setImages((prev) => prev.filter((_, i) => i !== indexToRemove));
   };
 
+  const validateRoomData = () => {
+    const {
+      ma_phong,
+      ma_map,
+      ma_danh_muc,
+      ten_phong_tro,
+      mo_ta,
+      dien_tich,
+      gia_tien,
+      trang_thai,
+      so_luong_nguoi,
+      dia_chi,
+    } = phongTroMoi;
+
+    if (
+      !ma_phong ||
+      !ma_map ||
+      !ma_danh_muc ||
+      !ten_phong_tro ||
+      !mo_ta ||
+      !dien_tich ||
+      !gia_tien ||
+      trang_thai === "" ||
+      !so_luong_nguoi ||
+      !dia_chi
+    ) {
+      toast.error("Vui lòng điền đầy đủ thông tin phòng trọ!");
+      return false;
+    }
+    return true;
+  };
+
   const resetData = () => {
     setPhongTroMoi({
       ma_phong: "",
@@ -142,6 +174,7 @@ function PhongTroAdmin() {
       so_luong_nguoi: "",
       dia_chi: "",
     });
+
     setImages([]);
     setHienthiAnh([]);
     setPage(1);
@@ -149,6 +182,7 @@ function PhongTroAdmin() {
   };
 
   const handleCreateRoom = async () => {
+    if (!validateRoomData()) return;
     const urlsImg = await upload(images);
     if (!urlsImg.length) {
       toast.error("Không có ảnh để tạo phòng!");
@@ -179,8 +213,8 @@ function PhongTroAdmin() {
       await handleCreateRoom();
     } else if (modalType === "edit") {
       await UpdateData(idModal, phongTroMoi);
+      resetData();
     }
-    resetData();
   };
 
   const handleOpenModalEdit = (room) => {
@@ -191,18 +225,18 @@ function PhongTroAdmin() {
   };
 
   const handleSearch = (keyword) => {
-    const tuKhoa = keyword.toLowerCase(); // Chuyển từ khóa thành chữ thường
+    const tuKhoa = keyword.toLowerCase();
     const filtered = filteredRooms.filter(
       (item) =>
-        item.ten_phong_tro.toLowerCase().includes(tuKhoa) || // Kiểm tra tên phòng
-        item.ma_phong.toLowerCase().includes(tuKhoa) || // Kiểm tra mã phòng
-        item.ma_danh_muc?.toLowerCase().includes(tuKhoa) // Kiểm tra mã danh mục
+        item.ten_phong_tro?.toLowerCase().includes(tuKhoa.toLowerCase()) ||
+        item.ma_phong.toLowerCase().includes(tuKhoa) ||
+        item.ma_danh_muc?.toLowerCase().includes(tuKhoa)
     );
-    setDsHienThi(filtered); // Cập nhật danh sách phòng hiển thị
+    setDsHienThi(filtered);
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 z-50">
       {page === 1 && (
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Room</h2>

@@ -37,7 +37,7 @@ function HoadonThangAdmin() {
   const [dsHienThi, setDsHienThi] = useState([]);
   useEffect(() => {
     if (hdThang) {
-      setDsHienThi(hdThang); // reset về dữ liệu gốc mỗi lần fetch lại
+      setDsHienThi(hdThang);
     }
   }, [hdThang]);
   const handleDelete = async (value) => {
@@ -111,9 +111,13 @@ function HoadonThangAdmin() {
   };
 
   // Tính toán số điện tiêu thụ dựa trên chỉ số điện tháng này và tháng trước
-  const soDienTieuThu = data.chi_so_dien_thang_nay - data.chi_so_dien_thang_truoc;
-  const Tongtien = soDienTieuThu * (data.dich_vu.tien_dien || 0) + data.tien_phong+ data.dich_vu.tien_nuoc + data.dich_vu.tien_wifi;
-  
+  const soDienTieuThu =
+    data.chi_so_dien_thang_nay - data.chi_so_dien_thang_truoc;
+  const Tongtien =
+    soDienTieuThu * (data.dich_vu.tien_dien || 0) +
+    data.tien_phong +
+    data.dich_vu.tien_nuoc +
+    data.dich_vu.tien_wifi;
 
   const handleSearch = (keyword) => {
     const tuKhoa = keyword.toLowerCase();
@@ -130,7 +134,7 @@ function HoadonThangAdmin() {
       <div className="flex gap-5 ">
         <SearchBar onSearch={handleSearch} />
         <button
-          className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
+          className="bg-customBlue text-white p-3 rounded-lg hover:bg-sky-600"
           onClick={() =>
             dispatch(OpenModalForm({ modalType: "create", id: null }))
           }
@@ -148,7 +152,7 @@ function HoadonThangAdmin() {
         handleOpenModalEdit={handleOpenModalEdit}
       />
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30 ">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 ">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] w-1/3">
             <div className="flex justify-between items-center w-full">
               <h2 className="text-xl font-semibold mb-4">
@@ -166,7 +170,7 @@ function HoadonThangAdmin() {
             <form className="space-y-4">
               <div className="flex gap-5">
                 <InputField
-                disabled={true}
+                  disabled={modalType === "edit"}
                   label="Mã phòng"
                   name="ma_phong"
                   value={data.ma_phong}
@@ -178,7 +182,7 @@ function HoadonThangAdmin() {
                   }
                 />
                 <InputField
-                disabled={true}
+                  disabled={modalType === "edit"}
                   label="Người dùng"
                   name="ho_va_ten"
                   value={data.ho_va_ten}
@@ -192,7 +196,7 @@ function HoadonThangAdmin() {
               </div>
               <div className="flex gap-5">
                 <InputField
-                 disabled={true}
+                  disabled={modalType === "edit"}
                   label="chỉ số điện tháng này"
                   name="chi_so_dien_thang_nay"
                   value={data.chi_so_dien_thang_nay}
@@ -204,7 +208,7 @@ function HoadonThangAdmin() {
                   }
                 />
                 <InputField
-                 disabled={true}
+                  disabled={modalType === "edit"}
                   label="chỉ số điện tháng trước"
                   name="chi_so_dien_thang_truoc"
                   value={data.chi_so_dien_thang_truoc}
@@ -218,47 +222,51 @@ function HoadonThangAdmin() {
               </div>
               <div className="flex gap-5">
                 <InputField
-                 disabled={true}
+                  disabled={modalType === "edit"}
                   label="Số điện tiêu thụ"
                   name="so_dien_tieu_thu"
                   value={soDienTieuThu}
                   onChange={() => {}}
                 />
+                {modalType === "edit" ? (
+                  <InputField
+                    disabled={modalType === "edit"}
+                    label="Tiền điện"
+                    name="tien_dien"
+                    value={data.dich_vu.tien_dien}
+                    onChange={() => {}}
+                  />
+                ) : null}
+
                 <InputField
-                 disabled={true}
-                  label="Tiền điện"
-                  name="tien_dien"
-                  value={data.dich_vu.tien_dien}
-                  onChange={() => {}}
-                />
-                <InputField
-                 disabled={true}
+                  disabled={modalType === "edit"}
                   label="Tổng Tiền điện"
                   name="tong_tien_dien"
                   value={soDienTieuThu * (data.dich_vu.tien_dien || 0)}
                   onChange={() => {}}
                 />
               </div>
-              <div className="flex gap-5">
-                <InputField
-                 disabled={true}
-                  label="Tiền nước"
-                  name="tien_nuoc"
-                  value={data.dich_vu.tien_nuoc}
-                  onChange={() => {}}
-                />
-                <InputField
-                 disabled={true}
-                  label="Tiền Wifi"
-                  name="tien_wifi"
-                  value={data.dich_vu.tien_wifi}
-                  onChange={() => {}}
-                />
-              </div>
+              {modalType === "edit" ? (
+                <div className="flex gap-5">
+                  <InputField
+                    disabled={modalType === "edit"}
+                    label="Tiền nước"
+                    name="tien_nuoc"
+                    value={data.dich_vu.tien_nuoc}
+                    onChange={() => {}}
+                  />
+                  <InputField
+                    disabled={modalType === "edit"}
+                    label="Tiền Wifi"
+                    name="tien_wifi"
+                    value={data.dich_vu.tien_wifi}
+                    onChange={() => {}}
+                  />
+                </div>
+              ) : null}
               <div className="flex gap-5 w-full">
-               
                 <InputField
-                 disabled={true}
+                  disabled={modalType === "edit"}
                   label="Tiền phòng"
                   name="tien_phong"
                   value={data.tien_phong}
@@ -269,18 +277,20 @@ function HoadonThangAdmin() {
                     }))
                   }
                 />
-                 <InputField
-                 disabled={true}
-                  label="Tổng tiền"
-                  name="tong_tien"
-                  value={Tongtien}
-                  onChange={(e) =>
-                    setData((setPrev) => ({
-                      ...setPrev,
-                      tong_tien: e.target.value,
-                    }))
-                  }
-                />
+                {modalType === "edit" ? (
+                  <InputField
+                    disabled={modalType === "edit"}
+                    label="Tổng tiền"
+                    name="tong_tien"
+                    value={Tongtien}
+                    onChange={(e) =>
+                      setData((setPrev) => ({
+                        ...setPrev,
+                        tong_tien: e.target.value,
+                      }))
+                    }
+                  />
+                ) : null}
               </div>
               <div>
                 <select

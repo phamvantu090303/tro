@@ -158,7 +158,7 @@ function ThietBiAdmin() {
         handleOpenModalEdit={handleOpenModalEdit}
       />
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px]">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold mb-4">

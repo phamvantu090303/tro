@@ -126,7 +126,7 @@ function DanhMucAdmin() {
             dispatch(OpenModalForm({ modalType: "create", id: null }));
           }}
         >
-          {modalType === "edit" ? "Chỉnh sửa danh mục" : "Thêm danh mục"}
+          Thêm danh mục
         </button>
         <button
           className="bg-red-600 text-white p-3 rounded-lg hover:bg-sky-600"
@@ -148,7 +148,9 @@ function DanhMucAdmin() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px]">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold mb-4">Thêm danh mục</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                {modalType === "edit" ? "Chỉnh sửa danh mục" : "Thêm danh mục"}
+              </h2>
               <button
                 className="bg-red-500 text-white p-2 rounded-lg"
                 onClick={resetData} // Sửa null thành false

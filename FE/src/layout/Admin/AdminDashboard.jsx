@@ -17,6 +17,9 @@ import HoadonThangAdmin from "../../pages/admin/home/Quanly/HoadonThang";
 import HoadonCocAdmin from "../../pages/admin/home/Quanly/HoadonCocAdmin";
 import ThongKeYeuThich from "../../pages/admin/home/Chart/thongKeYeuthich";
 import HopDongAdmin from "../../pages/admin/home/Quanly/HopDongAdmin";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { CloseModalForm } from "../../Store/filterModalForm";
 function AdminDashboard({ activeComponent }) {
   const renderComponent = () => {
     switch (activeComponent) {
@@ -58,6 +61,12 @@ function AdminDashboard({ activeComponent }) {
         return <ThongKeDanhGia />;
     }
   };
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Reset modal khi activeComponent thay đổi
+    dispatch(CloseModalForm());
+  }, [activeComponent, dispatch]);
 
   return (
     <div className="w-full min-h-screen bg-gray-100 p-6 rounded-lg shadow-lg text-black">

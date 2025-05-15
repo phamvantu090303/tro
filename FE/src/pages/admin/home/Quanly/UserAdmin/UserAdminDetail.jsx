@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { axiosInstance } from "../../../../../../Axios";
 import { FaRegUserCircle, FaPhoneAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
@@ -14,7 +14,7 @@ const UserAdminDetail = ({ id, setStep }) => {
 
   const statusMapping = {
     da_ky: { text: "Đã ký", color: "text-green-500" },
-    0: { text: "Hết hạn hợp đồng", color: "text-red-500" },
+    chua_ky: { text: "Hết hạn hợp đồng", color: "text-red-500" },
   };
 
   useEffect(() => {
@@ -167,7 +167,6 @@ const UserAdminDetail = ({ id, setStep }) => {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="p-3">Mã Hợp Đồng</th>
                   <th className="p-3">Tên hợp đồng</th>
                   <th className="p-3">Ngày Bắt Đầu</th>
                   <th className="p-3">Ngày kết thúc</th>
@@ -179,7 +178,6 @@ const UserAdminDetail = ({ id, setStep }) => {
                   key={dataHopdong._id}
                   className="border-t hover:bg-gray-50 transition-colors duration-200"
                 >
-                  <td className="p-3">{dataHopdong._id}</td>
                   <td className="p-3">{dataHopdong.ten_hop_dong}</td>
                   <td className="p-3">{dataHopdong.start_date}</td>
                   <td className="p-3">{dataHopdong.end_date}</td>
@@ -202,9 +200,6 @@ const UserAdminDetail = ({ id, setStep }) => {
         <div className="md:hidden">
           {dataHopdong && Object.keys(dataHopdong).length > 0 ? (
             <div className="border-b pb-4 mb-4 text-sm">
-              <p className="py-2">
-                <strong>Mã Hợp Đồng:</strong> {dataHopdong._id}
-              </p>
               <p className="py-2">
                 <strong>Tên hợp đồng:</strong> {dataHopdong.ten_hop_dong}
               </p>
