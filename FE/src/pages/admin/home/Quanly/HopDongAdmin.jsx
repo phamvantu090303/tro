@@ -61,6 +61,7 @@ function HopDongAdmin() {
     setData({
       ma_phong: room.ma_phong,
       id_users: room.id_users,
+      ho_va_ten: room.ho_va_ten,
       start_date: room.start_date,
       end_date: room.end_date,
       tien_coc: room.tien_coc,

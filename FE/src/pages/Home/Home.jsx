@@ -11,11 +11,18 @@ import { axiosInstance } from "../../../Axios";
 import Slider from "react-slick";
 import { useNavigate } from "react-router";
 import { Helmet } from "react-helmet";
-
+import banner2 from "../../assets/image1.jpg";
+import banner3 from "../../assets/image.jpg";
 const slideUpVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" } },
 };
+
+const bannerImages = [
+  wallhome,
+  banner2,
+  banner3,
+];
 
 function Homepage() {
   const settings = {
@@ -95,12 +102,26 @@ function Homepage() {
           content="phòng trọ, thuê phòng, nhà trọ, nhà cho thuê, tìm phòng trọ, giá rẻ, sinh viên, nhà trọ tiện nghi"
         />
       </Helmet>
-      {/* Ảnh bìa */}
-      <img
-        src={wallhome}
-        alt=""
-        className="w-full h-auto max-h-[400px] md:max-h-[500px] object-cover"
-      />
+      <Slider
+        dots={true}
+        infinite={true}
+        speed={1000}
+        slidesToShow={1}
+        slidesToScroll={1}
+        autoplay={true}
+        autoplaySpeed={4000}
+        className="w-full"
+      >
+        {bannerImages.map((img, index) => (
+          <div key={index} className=" rounded-lg overflow-hidden">
+            <img
+              src={img}
+              alt={`banner-${index}`}
+              className="w-full h-auto max-h-[400px] md:max-h-[500px] object-cover"
+            />
+          </div>
+        ))}
+      </Slider>
 
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6  lg:px-[150px] mt-10 mb-20">
         <div className="space-y-10">

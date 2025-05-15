@@ -8,8 +8,9 @@ import {
   Topdanhgia,
 } from "../controllers/danhGiaController";
 
-routerDanhGia.post("/createdanhgia", accessTokenValidatetor, createDanhGia);
-routerDanhGia.get("/getdanhgia/:ma_phong", getDataDanhGia);
-routerDanhGia.post("/deletedanhgia/:id", accessTokenValidatetor, DeleteDanhGia);
-routerDanhGia.get("/AllTopdanhgia", Topdanhgia);
+routerDanhGia.post('/createdanhgia',accessTokenValidatetor, createDanhGia);
+routerDanhGia.get('/getdanhgia/:ma_phong', getDataDanhGia);
+routerDanhGia.post('/deletedanhgia/:id',accessTokenValidatetor, DeleteDanhGia);
+routerDanhGia.get('/AllTopdanhgia', Topdanhgia);  
 export default routerDanhGia;
+

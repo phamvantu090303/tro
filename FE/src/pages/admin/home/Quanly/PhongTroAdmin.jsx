@@ -339,7 +339,7 @@ function PhongTroAdmin() {
                 <option value="">-- Chọn map --</option>
                 {maps.map((m) => (
                   <option key={m.ma_map} value={m.ma_map}>
-                    {m.ten_map}
+                    {m.ma_map}
                   </option>
                 ))}
               </select>
