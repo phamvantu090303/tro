@@ -401,7 +401,7 @@ function PhongTroAdmin() {
 
           {/* Thiết bị */}
           <div>
-            <p className="text-xl font-medium mb-4">Thiết bị</p>
+            {/* <p className="text-xl font-medium mb-4">Thiết bị</p> */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {/* Thêm checkbox nếu bạn có mảng amenities */}
             </div>

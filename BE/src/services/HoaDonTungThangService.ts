@@ -98,49 +98,65 @@ export class HoaDonThangService {
     }
   }
 
-  async getDataHoaDon() {
-    return await HoaDonTungThangModel.aggregate([
-      {
-        // Chuyển id_users (string) thành ObjectId
-        $addFields: {
-          id_users: { $toObjectId: "$id_users" },
-        },
+ async getDataHoaDon() {
+  return await HoaDonTungThangModel.aggregate([
+    {
+      // Chuyển id_users và dich_vu (string) thành ObjectId
+      $addFields: {
+        id_users: { $toObjectId: "$id_users" },
+        dich_vu: { $toObjectId: "$dich_vu" }, // Chuyển dich_vu thành ObjectId
       },
-      {
-        $lookup: {
-          from: "users",
-          localField: "id_users",
-          foreignField: "_id",
-          as: "id_users",
-        },
+    },
+    {
+      // Lookup để lấy thông tin users
+      $lookup: {
+        from: "users",
+        localField: "id_users",
+        foreignField: "_id",
+        as: "id_users",
       },
-      {
-        $unwind: {
-          path: "$id_users", // biến nó thành object
-          preserveNullAndEmptyArrays: false, // hoặc true nếu muốn giữ bản ghi lỗi
-        },
+    },
+    {
+      $unwind: {
+        path: "$id_users",
+        preserveNullAndEmptyArrays: false,
       },
-      {
-        // Chỉ lấy các trường cần thiết
-        $project: {
-          ma_hoa_don_thang: 1,
-          id_user: "$id_users._id",
-          ho_va_ten: "$id_users.ho_va_ten",
-          ma_phong: 1,
-          dich_vu: 1,
-          so_dien_tieu_thu: 1,
-          tien_dien: 1,
-          tien_phong: 1,
-          chi_so_dien_thang_nay: 1,
-          chi_so_dien_thang_truoc: 1,
-          tong_tien: 1,
-          trang_thai: 1,
-          ngay_tao_hoa_don: 1,
-        },
+    },
+    {
+      // Lookup để lấy thông tin dich_vu
+      $lookup: {
+        from: "dich_vus", // Tên collection của dịch vụ
+        localField: "dich_vu",
+        foreignField: "_id",
+        as: "dich_vu",
       },
-    ]);
-  }
-
+    },
+    {
+      $unwind: {
+        path: "$dich_vu",
+        preserveNullAndEmptyArrays: false, // true nếu muốn giữ bản ghi khi không có dịch vụ
+      },
+    },
+    {
+      // Chỉ lấy các trường cần thiết
+      $project: {
+        ma_hoa_don_thang: 1,
+        id_user: "$id_users._id",
+        ho_va_ten: "$id_users.ho_va_ten",
+        ma_phong: 1,
+        dich_vu: 1,
+        so_dien_tieu_thu: 1,
+        tien_dien: 1,
+        tien_phong: 1,
+        chi_so_dien_thang_nay: 1,
+        chi_so_dien_thang_truoc: 1,
+        tong_tien: 1,
+        trang_thai: 1,
+        ngay_tao_hoa_don: 1,
+      },
+    },
+  ]);
+}
   async getUserHoaDon(id_user: string): Promise<any[]> {
     const id = new ObjectId(id_user);
 

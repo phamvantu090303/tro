@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { axiosInstance } from "../../../Axios";
-import { FaUser, FaComment } from "react-icons/fa";
+import { FaUser, FaComment, FaStar } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
 export default function RoomReview({ id }) {
   const { user } = useSelector((state) => state.auth);
   const [review, setReview] = useState("");
   const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState(0);
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -22,31 +23,34 @@ export default function RoomReview({ id }) {
   const fetchReviews = async () => {
     try {
       const response = await axiosInstance.get(`/danh_gia/getdanhgia/${id}`);
-
-      // Định dạng ngày tháng trước khi set vào state
       const formattedReviews = response.data.data.map((review) => ({
         ...review,
-        createdAt: formatDate(review.createdAt), // Định dạng lại trường createdAt
+        createdAt: formatDate(review.createdAt),
+        replies: review.replies.map((reply) => ({
+          ...reply,
+          createdAt: formatDate(reply.createdAt),
+        })),
       }));
-
       setReviews(formattedReviews);
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu:", error);
     }
   };
 
-  // Gửi đánh giá mới
   const handleSubmit = async () => {
     if (!review.trim()) return alert("Vui lòng nhập nội dung đánh giá!");
+    if (rating === 0) return alert("Vui lòng chọn số sao đánh giá!");
 
     try {
       await axiosInstance.post("/danh_gia/createdanhgia", {
         ma_phong: id,
         noi_dung: review,
+        danh_gia_sao: rating,
       });
 
-      setReview(""); // Xóa nội dung sau khi gửi
-      fetchReviews(); // Cập nhật danh sách đánh giá
+      setReview("");
+      setRating(0);
+      fetchReviews();
     } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
     }
@@ -83,7 +87,16 @@ export default function RoomReview({ id }) {
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
               ></textarea>
-
+              <div className="flex gap-1 mt-2 absolute bottom-4 left-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <FaStar
+                    key={star}
+                    size={20}
+                    className={`cursor-pointer ${star <= rating ? "text-yellow-400" : "text-gray-300"}`}
+                    onClick={() => setRating(star)}
+                  />
+                ))}
+              </div>
               <button
                 className="absolute bottom-4 right-4 bg-[#23284C] text-white py-2 px-4 text-sm sm:text-base font-medium rounded-full hover:bg-blue-700 transition-all"
                 onClick={handleSubmit}
@@ -106,19 +119,22 @@ function ReviewItem({ review, fetchReviews }) {
   const { user } = useSelector((state) => state.auth);
   const [reply, setReply] = useState("");
   const [isReplying, setIsReplying] = useState(false);
+  const [rating, setRating] = useState(0);
 
-  // Gửi trả lời bình luận
   const handleReply = async () => {
     if (!reply.trim()) return alert("Vui lòng nhập nội dung trả lời!");
+    if (rating === 0) return alert("Vui lòng chọn số sao đánh giá!");
 
     try {
       await axiosInstance.post("/danh_gia/createdanhgia", {
         ma_phong: review.ma_phong,
         noi_dung: reply,
         repcomment: review._id,
+        danh_gia_sao: rating,
       });
 
       setReply("");
+      setRating(0);
       setIsReplying(false);
       fetchReviews();
     } catch (error) {
@@ -126,7 +142,6 @@ function ReviewItem({ review, fetchReviews }) {
     }
   };
 
-  // Xóa bình luận
   const handleDelete = async () => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa bình luận này?")) return;
 
@@ -137,6 +152,7 @@ function ReviewItem({ review, fetchReviews }) {
       console.error("Lỗi khi xóa bình luận:", error);
     }
   };
+
   return (
     <div className="mb-4 p-4 border rounded-lg bg-gray-50">
       <div className="flex flex-col sm:flex-row gap-3">
@@ -145,11 +161,27 @@ function ReviewItem({ review, fetchReviews }) {
           className="border border-gray-500 rounded-full shrink-0 self-start"
         />
         <div className="flex-1">
-          <p className="font-medium text-lg">{review.user.username}</p>
+          <div className="flex justify-between items-center mb-2">
+            <p className="font-medium text-lg">{review.user.username}</p>
+            <p className="text-gray-500 text-sm">{review.createdAt}</p>
+          </div>
+          <div className="flex gap-1 mt-2  ">
+            {Array(5)
+              .fill(0)
+              .map((_, index) => (
+                <FaStar
+                  key={index}
+                  size={20}
+                  className={
+                    index < review.danh_gia_sao ? "text-yellow-400" : "text-gray-300"
+                  }
+                />
+              ))}
+          </div>
           <p className="text-black text-base sm:text-lg mt-2">
             {review.noi_dung}
           </p>
-
+          
           <div className="flex flex-wrap gap-4 mt-2">
             <button
               className="text-gray-600 hover:underline flex items-center gap-1"
@@ -179,7 +211,6 @@ function ReviewItem({ review, fetchReviews }) {
         </div>
       </div>
 
-      {/* Form nhập trả lời */}
       {isReplying && (
         <div className="mt-4 sm:ml-10">
           <textarea
@@ -189,6 +220,16 @@ function ReviewItem({ review, fetchReviews }) {
             value={reply}
             onChange={(e) => setReply(e.target.value)}
           ></textarea>
+          <div className="flex gap-1 mt-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <FaStar
+                key={star}
+                size={20}
+                className={`cursor-pointer ${star <= rating ? "text-yellow-400" : "text-gray-300"}`}
+                onClick={() => setRating(star)}
+              />
+            ))}
+          </div>
           <button
             className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
             onClick={handleReply}
@@ -198,8 +239,7 @@ function ReviewItem({ review, fetchReviews }) {
         </div>
       )}
 
-      {/* Hiển thị phản hồi con */}
-      {review.replies.length > 0 && (
+      {review.replies && review.replies.length > 0 && (
         <div className="mt-4 sm:ml-10 border-l-2 border-gray-300 pl-4">
           {review.replies.map((reply) => (
             <ReviewItem

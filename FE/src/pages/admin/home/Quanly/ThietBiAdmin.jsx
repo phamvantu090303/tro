@@ -211,6 +211,7 @@ function ThietBiAdmin() {
               </div>
               <input
                 type="number"
+                min={0}
                 placeholder="Số lượng thiết bị"
                 className="py-3 px-5 border border-gray-500 rounded-lg"
                 onChange={(e) =>

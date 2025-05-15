@@ -15,10 +15,17 @@ const DanhGiaSchema = new Schema(
         type : ObjectId,
         default: null
     },
+    
     noi_dung: {
         type : String,
         require: true
     },
+    danh_gia_sao:{
+      type : Number,
+      require: true,
+      min:1,
+      max:5
+    }
 
   },
   { timestamps: true }

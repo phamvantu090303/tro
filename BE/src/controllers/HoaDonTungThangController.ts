@@ -45,7 +45,7 @@ export const taoHoaDon = async (req: Request, res: Response) => {
 export const getHoaDon = async (req: any, res: any) => {
   try {
     const data = await hoaDonThangService.getDataHoaDon();
-
+    
     res.status(200).json({
       status: "200",
       data: data,

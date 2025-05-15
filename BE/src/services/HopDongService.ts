@@ -44,42 +44,60 @@ export class HopDongService {
   }
 
   async getDataHopDong(): Promise<any[]> {
-    return await HopDongModel.aggregate([
-      {
-        // Chuyển id_users (string) thành ObjectId
-        $addFields: {
-          id_users: { $toObjectId: "$id_users" },
-        },
+  return await HopDongModel.aggregate([
+    {
+      // Chuyển id_users và id_dichvu (string) thành ObjectId
+      $addFields: {
+        id_users: { $toObjectId: "$id_users" },
+        id_dichvu: { $toObjectId: "$dich_vu" }, // Thêm nếu id_dichvu là string
       },
-      {
-        $lookup: {
-          from: "users",
-          localField: "id_users",
-          foreignField: "_id",
-          as: "id_users",
-        },
+    },
+    {
+      // Lookup để lấy thông tin users
+      $lookup: {
+        from: "users",
+        localField: "id_users",
+        foreignField: "_id",
+        as: "id_users",
       },
-      {
-        $unwind: {
-          path: "$id_users", // biến nó thành object
-          //preserveNullAndEmptyArrays: false, // hoặc true nếu muốn giữ bản ghi lỗi
-        },
+    },
+    {
+      $unwind: {
+        path: "$id_users",
+        preserveNullAndEmptyArrays: true, // Giữ bản ghi nếu không có user
       },
-      {
-        // Chỉ lấy các trường cần thiết
-        $project: {
-          ma_phong: 1,
-          id_user: "$id_users._id",
-          ho_va_ten: "$id_users.ho_va_ten",
-          start_date: 1,
-          end_date: 1,
-          tien_coc: 1,
-          trang_thai: 1,
-          file_hop_dong: 1,
-        },
+    },
+    {
+      // Lookup để lấy thông tin dịch vụ
+      $lookup: {
+        from: "dich_vus",
+        localField: "dich_vu",
+        foreignField: "_id",
+        as: "dichvu",
       },
-    ]);
-  }
+    },
+    {
+      $unwind: {
+        path: "$dichvu",
+        preserveNullAndEmptyArrays: true, // Giữ bản ghi nếu không có dịch vụ
+      },
+    },
+    {
+      // Chỉ lấy các trường cần thiết
+      $project: {
+        ma_phong: 1,
+        id_user: "$id_users._id",
+        ho_va_ten: "$id_users.ho_va_ten",
+        start_date: 1,
+        end_date: 1,
+        tien_coc: 1,
+        trang_thai: 1,
+        file_hop_dong: 1,
+       
+      },
+    },
+  ]);
+}
 
   async deleteHopDong(body: any): Promise<void> {
     const { id } = body;

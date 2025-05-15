@@ -7,9 +7,8 @@ const danhGiaService = new DanhGiaService();
 export const createDanhGia = async (req: Request, res: Response) => {
     try {
         const { user } = req as any;
-        console.log(user);
         const data = req.body;
-
+        console.log(data);
         await danhGiaService.createDanhGia(data, user._id);
         res.status(200).json({
         message: "Đánh giá đã được tạo thành công",
