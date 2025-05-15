@@ -6,7 +6,7 @@ import {
   OpenModalForm,
 } from "../../../../Store/filterModalForm";
 import RoomTable from "../../../../component/admin/RoomTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { axiosInstance } from "../../../../../Axios";
 
 function HoadonCocAdmin() {
@@ -16,6 +16,14 @@ function HoadonCocAdmin() {
   const [data, setData] = useState("");
   const dispatch = useDispatch();
   const { data: hdCoc, DeleteData } = useApiManagerAdmin("/hoadon");
+
+  const [dsHienThi, setDsHienThi] = useState([]);
+  useEffect(() => {
+    if (hdCoc) {
+      setDsHienThi(hdCoc); // reset về dữ liệu gốc mỗi lần fetch lại
+    }
+  }, [hdCoc]);
+
   const headers = [
     { label: "Tên user", key: "ho_va_ten" },
     { label: "Mã phòng", key: "ma_phong" },
@@ -39,7 +47,6 @@ function HoadonCocAdmin() {
   const renderStatus = (status) => {
     return (
       <div>
-
         {status.trang_thai === "chưa thanh toán" ? (
           <p className="px-2 py-2 text-white text-sm rounded-lg bg-red-500 w-[120px]">
             chưa thanh toán
@@ -53,15 +60,28 @@ function HoadonCocAdmin() {
     );
   };
 
+  const handleSearch = (keyword) => {
+    const tuKhoa = keyword.toLowerCase();
+    const filtered = hdCoc.filter(
+      (item) =>
+        item.ma_phong.toLowerCase().includes(tuKhoa) ||
+        item.ma_don_hang.toLowerCase().includes(tuKhoa) ||
+        item.ho_va_ten?.toLowerCase().includes(tuKhoa) ||
+        String(item.so_tien).toLowerCase().includes(tuKhoa)
+    );
+
+    setDsHienThi(filtered);
+  };
+
   return (
     <div className="min-h-screen">
       <div className="flex gap-5 ">
-        <SearchBar />
+        <SearchBar onSearch={handleSearch} />
       </div>
       <RoomTable
         title={"Hóa đơn Cọc"}
         headers={headers}
-        displayedRooms={hdCoc}
+        displayedRooms={dsHienThi}
         roomsPerPage={10}
         renderStatus={renderStatus}
         handleDelete={handleDelete}

@@ -12,7 +12,8 @@ const ChatAdmin = () => {
   const [messages, setMessages] = useState([]);
   const messageEndRef = useRef(null);
   const [socket, setSocket] = useState(null);
-
+  const [keyword, setKeyword] = useState("");
+  const [DsHienThi, setDsHienThi] = useState(DanhsachUser);
   const fetchMessages = async (userId) => {
     try {
       const res = await axiosInstance.get(`/tin-nhan/messAdmin/${userId}`);
@@ -62,6 +63,11 @@ const ChatAdmin = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    setDsHienThi(DanhsachUser);
+  }, [DanhsachUser]);
+
   const fetchData = async () => {
     try {
       const [resUsers, resAdmin] = await Promise.all([
@@ -114,6 +120,18 @@ const ChatAdmin = () => {
     e.target.reset();
   };
 
+  const handleSearch = (keyword) => {
+    const tuKhoa = keyword.toLowerCase();
+
+    const filtered = DanhsachUser.filter((item) => {
+      const hoTen = item.username?.toLowerCase();
+
+      return hoTen.includes(tuKhoa);
+    });
+
+    setDsHienThi(filtered);
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-4">
       {/* Sidebar */}
@@ -131,6 +149,12 @@ const ChatAdmin = () => {
             <input
               type="text"
               placeholder="Search..."
+              value={keyword}
+              onChange={(e) => {
+                const value = e.target.value;
+                setKeyword(value); // cập nhật state
+                handleSearch(value); // gọi hàm tìm kiếm
+              }}
               className="w-full p-2 pl-8 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
             <svg
@@ -151,7 +175,7 @@ const ChatAdmin = () => {
 
         {/* Danh sách user */}
         <div className="overflow-auto space-y-2">
-          {DanhsachUser.map((chat, index) => (
+          {DsHienThi.map((chat, index) => (
             <motion.div
               key={index}
               onClick={() => handleSelectUser(chat)}

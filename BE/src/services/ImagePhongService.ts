@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 import HinhAnhPhongModel from "../models/HinhAnhPhongModel";
 
 export class ImageService {
@@ -18,10 +19,18 @@ export class ImageService {
   }
 
   // Cập nhật thông tin hình ảnh
-  async updateImage(ma_phong: string, body: any) {
-    return await HinhAnhPhongModel.findOneAndUpdate({ ma_phong }, body, {
-      new: true,
-    });
+  async updateImage(
+    id: string,
+    body: { ma_phong: string; image_url: string[] }
+  ) {
+    return await HinhAnhPhongModel.findByIdAndUpdate(
+      id,
+      {
+        ma_phong: body.ma_phong,
+        image_url: body.image_url,
+      },
+      { new: true }
+    );
   }
 
   // Lấy danh sách tất cả hình ảnh

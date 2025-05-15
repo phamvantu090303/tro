@@ -88,7 +88,9 @@ function RoomTable({
       key === "timestamp" ||
       key === "createdAt" ||
       key === "ngay_tao_hoa_don" ||
-      key === "ngay_chuyen_khoan"
+      key === "ngay_chuyen_khoan" ||
+      key === "start_date" ||
+      key === "end_date"
     )
       return formatDate(room[key]);
     if (key === "email") return maskEmail(room[key]);

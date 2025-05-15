@@ -6,7 +6,7 @@ import {
   CloseModalForm,
   OpenModalForm,
 } from "../../../../Store/filterModalForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function HoadonThangAdmin() {
   const [data, setData] = useState({
@@ -22,6 +22,7 @@ function HoadonThangAdmin() {
     trang_thai: "",
     ngay_tao_hoa_don: "",
   });
+
   const { modalType, idModal, isOpen } = useSelector(
     (state) => state.ModalForm
   );
@@ -33,6 +34,12 @@ function HoadonThangAdmin() {
     DeleteData,
   } = useApiManagerAdmin("/hoa-don-thang");
 
+  const [dsHienThi, setDsHienThi] = useState([]);
+  useEffect(() => {
+    if (hdThang) {
+      setDsHienThi(hdThang); // reset về dữ liệu gốc mỗi lần fetch lại
+    }
+  }, [hdThang]);
   const handleDelete = async (value) => {
     await DeleteData(value._id);
   };
@@ -107,10 +114,21 @@ function HoadonThangAdmin() {
   const soDienTieuThu = data.chi_so_dien_thang_nay - data.chi_so_dien_thang_truoc;
   const Tongtien = soDienTieuThu * (data.dich_vu.tien_dien || 0) + data.tien_phong+ data.dich_vu.tien_nuoc + data.dich_vu.tien_wifi;
   
+
+  const handleSearch = (keyword) => {
+    const tuKhoa = keyword.toLowerCase();
+    const filtered = hdThang.filter(
+      (item) =>
+        item.ma_phong.toLowerCase().includes(tuKhoa) ||
+        item.ho_va_ten.toLowerCase().includes(tuKhoa) ||
+        String(item.tong_tien).toLowerCase().includes(tuKhoa)
+    );
+    setDsHienThi(filtered);
+  };
   return (
     <div className="min-h-screen">
       <div className="flex gap-5 ">
-        <SearchBar />
+        <SearchBar onSearch={handleSearch} />
         <button
           className="bg-sky-500 text-white p-3 rounded-lg hover:bg-sky-600"
           onClick={() =>
@@ -123,7 +141,7 @@ function HoadonThangAdmin() {
       <RoomTable
         title={"Hóa đơn tháng"}
         headers={headers}
-        displayedRooms={hdThang}
+        displayedRooms={dsHienThi}
         roomsPerPage={10}
         renderStatus={renderStatus}
         handleDelete={handleDelete}

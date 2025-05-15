@@ -8,7 +8,7 @@ function ProductShowcase({ data, desc, limit, slide, showAll }) {
   const settings = {
     dots: false,
     infinite: data.length > 1,
-    speed: 500,
+    speed: 2000,
     slidesToShow: 5,
     slidesToScroll: 1,
     autoplay: true,
@@ -18,19 +18,19 @@ function ProductShowcase({ data, desc, limit, slide, showAll }) {
       {
         breakpoint: 1600, // Laptop màn lớn
         settings: {
-          slidesToShow: 3,
+          slidesToShow: 4,
         },
       },
       {
         breakpoint: 1280, // Laptop phổ thông
         settings: {
-          slidesToShow: 3,
+          slidesToShow: 4,
         },
       },
       {
         breakpoint: 1024, // Laptop nhỏ hơn (13 inch)
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 3,
         },
       },
       {
@@ -61,7 +61,7 @@ function ProductShowcase({ data, desc, limit, slide, showAll }) {
       {slide ? (
         <Slider
           {...settings}
-          className="mt-[33px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-6"
+          className="m-w-full mt-[33px] grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6"
         >
           {data.slice(0, limit).map((item, index) => (
             <CardRoom
@@ -80,7 +80,7 @@ function ProductShowcase({ data, desc, limit, slide, showAll }) {
           ))}
         </Slider>
       ) : (
-        <div className="mt-[33px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-6">
+        <div className="max-w-full mt-[33px] grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6">
           {data.slice(0, limit).map((item, index) => (
             <CardRoom
               key={index}

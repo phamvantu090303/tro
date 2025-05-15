@@ -34,6 +34,23 @@ function ThietBiAdmin() {
     fetchData();
   }, []);
 
+  const [dsHienThi, setDsHienThi] = useState([]);
+  useEffect(() => {
+    if (thietBi) {
+      setDsHienThi(thietBi); // reset về dữ liệu gốc mỗi lần fetch lại
+    }
+  }, [thietBi]);
+
+  const handleSearch = (keyword) => {
+    const tuKhoa = keyword.toLowerCase();
+    const filtered = thietBi.filter(
+      (item) =>
+        item.ma_phong.toLowerCase().includes(tuKhoa) ||
+        item.ten_thiet_bi.toLowerCase().includes(tuKhoa) ||
+        String(item.so_luong_thiet_bi).toLowerCase().includes(tuKhoa)
+    );
+    setDsHienThi(filtered);
+  };
   const headers = [
     {
       label: "Mã phòng",
@@ -115,7 +132,7 @@ function ThietBiAdmin() {
   return (
     <div>
       <div className="flex gap-5 ">
-        <SearchBar />
+        <SearchBar onSearch={handleSearch} />
         <button
           className="bg-customBlue text-white p-3 rounded-lg hover:bg-sky-600"
           onClick={() =>
@@ -134,7 +151,7 @@ function ThietBiAdmin() {
       <RoomTable
         headers={headers}
         title={"Thiết bị"}
-        displayedRooms={thietBi}
+        displayedRooms={dsHienThi}
         roomsPerPage={10}
         renderStatus={renderStatus}
         handleDelete={handleDelete}
