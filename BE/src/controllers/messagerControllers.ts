@@ -72,18 +72,45 @@ export const getAllMessAdmin = async (req: Request, res: Response) => {
 };
 
 //đếm tin nhắn chưa đọc của admin
-export const getUnreadMessCountAdmin =async (req: Request, res: Response) => {
-  try{
-   const {id_nguoi_nhan} = req.params
-   const count = await MessagersModel.countDocuments({
-    nguoi_nhan: id_nguoi_nhan,
-    is_read: false,
-  });
-  return res.status(200).json({
-    message: "Get unread message count successfully",
-    unreadCount: count,
-  });
-  }catch (error: any) {
-      return res.status(500).json({ success: false, message: error.message });
+export const getUnreadMessCountAdmin = async (req: Request, res: Response) => {
+  try {
+    const { id_nguoi_nhan } = req.params;
+    const count = await MessagersModel.countDocuments({
+      nguoi_nhan: id_nguoi_nhan,
+      is_read: false,
+    });
+    return res.status(200).json({
+      message: "Get unread message count successfully",
+      unreadCount: count,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
   }
-}
+};
+
+export const demtinnhanController = async (req: Request, res: Response) => {
+  try {
+    const { id_nguoi_nhan } = req.params;
+    const count = await messService.getdemtinnhan(id_nguoi_nhan);
+    return res.status(200).json({
+      message: "Số lượng tin nhắn chưa đọc",
+      tinnhanchuadoc: count,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// tin nhắn là đã đọc
+export const doctinnhanController = async (req: Request, res: Response) => {
+  try {
+    const { id_nguoi_nhan } = req.params;
+    const doctinnhan = await messService.doctinnhanService(id_nguoi_nhan);
+    return res.status(200).json({
+      message: "Đã đọc tin nhắn",
+      doctinnhan,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

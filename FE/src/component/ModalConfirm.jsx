@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { closeConfirmModal } from "../Store/filterConfirmModal";
 import { axiosInstance } from "../../Axios";
+import { toast } from "react-toastify";
 
 function ModalConFirm({ id, reload }) {
   const dispatch = useDispatch();
@@ -8,7 +9,10 @@ function ModalConFirm({ id, reload }) {
     (state) => state.confirmModal
   );
   const handleDelete = async (id) => {
-    await axiosInstance.delete(`/map/deleteMap/${id}`);
+    const res = await axiosInstance.delete(`/map/deleteMap/${id}`);
+    if (res.data.message) {
+      toast.success("Xóa map thành công");
+    }
   };
   const handleDeleteRepair = async (ids) => {
     await axiosInstance.delete(`/sua_chua/Delete/${ids}`);

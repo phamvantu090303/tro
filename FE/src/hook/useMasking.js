@@ -25,11 +25,17 @@ const formatDate = (dateString) => {
   return `${day}/${month}/${year}`;
 };
 
+export const formatTienPhong = (number) => {
+  if (number === undefined || number === null) return "";
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 export const useMasking = () => {
   return {
     maskEmail,
     maskPhone,
     maskCCCD,
     formatDate,
+    formatTienPhong,
   };
 };

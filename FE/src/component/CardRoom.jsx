@@ -2,6 +2,7 @@ import "react-toastify/dist/ReactToastify.css";
 import test from "../assets/test.png";
 import { FaArrowsAlt, FaUserFriends } from "react-icons/fa";
 import { useNavigate } from "react-router";
+import { formatTienPhong } from "../hook/useMasking";
 function CardRoom({
   id,
   price,
@@ -22,6 +23,7 @@ function CardRoom({
       console.log(error);
     }
   };
+
   return (
     <div
       className="w-full md:max-w-[300px]  min-h-[430px] flex flex-col justify-between shadow-xl  bg-white p-4 rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105"
@@ -39,7 +41,7 @@ function CardRoom({
           {title}
         </p>
         <p className="mt-2 2xl:text-lg text-base text-[#FEBB02] font-bold">
-          {price} VND / Tiền cọc
+          {formatTienPhong(price)} VND / Tiền cọc
         </p>
       </div>
       <div className="mt-4">
