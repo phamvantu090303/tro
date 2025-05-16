@@ -134,7 +134,7 @@ const ModalMap = ({ data, reload }) => {
     <div>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg w-1/3 p-6">
+          <div className="bg-white rounded-lg shadow-lg w-1/3 p-6 h-[90%] overflow-auto">
             <h2 className="text-lg font-semibold mb-4">
               {modalType === "edit"
                 ? "Chỉnh sửa thông tin bản đồ"
@@ -170,49 +170,63 @@ const ModalMap = ({ data, reload }) => {
                 </div>
               </div>
 
-              <label className="block text-base mb-4 font-medium">
-                Quận/Huyện:
-              </label>
-              <input
-                type="text"
-                name="district"
-                value={formData.district}
-                onChange={handleChange}
-                className="w-full border rounded p-2"
-              />
+              <div className="flex justify-between gap-10">
+                <div>
+                  <label className="block text-base mb-4 font-medium">
+                    Quận/Huyện:
+                  </label>
+                  <input
+                    type="text"
+                    name="district"
+                    value={formData.district}
+                    onChange={handleChange}
+                    className="w-full border rounded p-2"
+                  />
+                </div>
 
-              <label className="block text-base mb-4 font-medium">
-                Thành phố:
-              </label>
-              <input
-                type="text"
-                name="ward"
-                value={formData.ward}
-                onChange={handleChange}
-                className="w-full border rounded p-2"
-              />
+                <div>
+                  <label className="block text-base mb-4 font-medium">
+                    Thành phố:
+                  </label>
+                  <input
+                    type="text"
+                    name="ward"
+                    value={formData.ward}
+                    onChange={handleChange}
+                    className="w-full border rounded p-2"
+                  />
+                </div>
+              </div>
 
-              <label className="block text-base mb-4 font-medium">
-                Kinh độ:
-              </label>
-              <input
-                type="number"
-                name="longitude"
-                value={formData.longitude}
-                onChange={handleChange}
-                className="w-full border rounded p-2"
-                step="0.000001"
-              />
+              <div className="flex justify-between gap-10">
+                <div>
+                  <label className="block text-base mb-4 font-medium">
+                    Kinh độ:
+                  </label>
+                  <input
+                    type="number"
+                    name="longitude"
+                    value={formData.longitude}
+                    onChange={handleChange}
+                    className="w-full border rounded p-2"
+                    step="0.000001"
+                  />
+                </div>
 
-              <label className="block text-base mb-4 font-medium">Vĩ độ:</label>
-              <input
-                type="number"
-                name="latitude"
-                value={formData.latitude}
-                onChange={handleChange}
-                className="w-full border rounded p-2"
-                step="0.000001"
-              />
+                <div>
+                  <label className="block text-base mb-4 font-medium">
+                    Vĩ độ:
+                  </label>
+                  <input
+                    type="number"
+                    name="latitude"
+                    value={formData.latitude}
+                    onChange={handleChange}
+                    className="w-full border rounded p-2"
+                    step="0.000001"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="mt-4">

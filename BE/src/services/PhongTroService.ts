@@ -22,6 +22,7 @@ async updatePhongTro(ma_phong: string, updateData: any) {
   if (sanitizedData.ma_phong && sanitizedData.ma_phong !== ma_phong) {
     const existing = await PhongTroModel.findOne({
       ma_phong: sanitizedData.ma_phong,
+
     });
 
     if (existing) {

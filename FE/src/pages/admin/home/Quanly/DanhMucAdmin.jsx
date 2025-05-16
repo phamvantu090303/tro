@@ -15,6 +15,7 @@ function DanhMucAdmin() {
     mo_ta: "",
     trang_thai: "",
   });
+  const [errors, setErrors] = useState({});
   const { modalType, idModal, isOpen } = useSelector(
     (state) => state.ModalForm
   );
@@ -29,7 +30,7 @@ function DanhMucAdmin() {
   const [dsDanhMucHienThi, setDsDanhMucHienThi] = useState([]);
   useEffect(() => {
     if (danhMuc) {
-      setDsDanhMucHienThi(danhMuc); // reset về dữ liệu gốc mỗi lần fetch lại
+      setDsDanhMucHienThi(danhMuc);
     }
   }, [danhMuc]);
   const headers = [
@@ -64,6 +65,7 @@ function DanhMucAdmin() {
       mo_ta: "",
       trang_thai: "",
     });
+    setErrors({});
   };
 
   // Tạo danh mục mới sử dụng createData từ hook
@@ -95,7 +97,23 @@ function DanhMucAdmin() {
     });
   };
 
+  const validateForm = () => {
+    let tempErrors = {};
+    if (!dataDanhmuc.ma_danh_muc.trim()) {
+      tempErrors.ma_danh_muc = "Mã danh mục không được để trống";
+    }
+    if (!dataDanhmuc.ten_danh_muc.trim()) {
+      tempErrors.ten_danh_muc = "Tên danh mục không được để trống";
+    }
+    if (dataDanhmuc.trang_thai === "") {
+      tempErrors.trang_thai = "Vui lòng chọn trạng thái";
+    }
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
   const handleCreate = async () => {
+    if (!validateForm()) return;
     if (modalType === "create") {
       await handleCreateDanhMuc();
     } else if (modalType === "edit") {
@@ -153,61 +171,90 @@ function DanhMucAdmin() {
               </h2>
               <button
                 className="bg-red-500 text-white p-2 rounded-lg"
-                onClick={resetData} // Sửa null thành false
+                onClick={resetData}
               >
-                Đóng
+                Close
               </button>
             </div>
             <div className="space-y-4 mt-4">
               <div className="flex gap-5">
-                <input
-                  type="text"
-                  placeholder="Mã danh mục"
-                  value={dataDanhmuc.ma_danh_muc}
-                  onChange={(e) =>
-                    setDataDanhmuc((setPrev) => ({
-                      ...setPrev,
-                      ma_danh_muc: e.target.value,
-                    }))
-                  }
-                  className="py-3 px-5 border border-gray-500 rounded-lg"
-                />
-                <input
-                  type="text"
-                  placeholder="Mô tả"
-                  value={dataDanhmuc.mo_ta}
-                  onChange={(e) =>
-                    setDataDanhmuc((setPrev) => ({
-                      ...setPrev,
-                      mo_ta: e.target.value,
-                    }))
-                  }
-                  className="py-3 px-5 border border-gray-500 rounded-lg"
-                />
+                <div className="flex flex-col">
+                  <input
+                    type="text"
+                    placeholder="Mã danh mục"
+                    value={dataDanhmuc.ma_danh_muc}
+                    onChange={(e) =>
+                      setDataDanhmuc((prev) => ({
+                        ...prev,
+                        ma_danh_muc: e.target.value,
+                      }))
+                    }
+                    className={`py-3 px-5 border rounded-lg ${
+                      errors.ma_danh_muc ? "border-red-500" : "border-gray-500"
+                    }`}
+                  />
+                  {errors.ma_danh_muc && (
+                    <span className="text-red-500 text-sm mt-1">
+                      {errors.ma_danh_muc}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col">
+                  <input
+                    type="text"
+                    placeholder="Mô tả"
+                    value={dataDanhmuc.mo_ta}
+                    onChange={(e) =>
+                      setDataDanhmuc((prev) => ({
+                        ...prev,
+                        mo_ta: e.target.value,
+                      }))
+                    }
+                    className="py-3 px-5 border border-gray-500 rounded-lg"
+                  />
+                  {/* Nếu muốn validate mo_ta thì thêm tương tự */}
+                </div>
               </div>
-              <select
-                value={dataDanhmuc.trang_thai}
-                onChange={(e) =>
-                  setDataDanhmuc((setPrev) => ({
-                    ...setPrev,
-                    trang_thai: e.target.value,
-                  }))
-                }
-                className="border bg-white border-gray-300 px-3 py-3 rounded-lg w-[60%]"
-              >
-                <option value="" disabled>
-                  Chọn trạng thái
-                </option>
-                <option value={1}>Hoạt động</option>
-                <option value={0}>Không hoạt động</option>
-              </select>
+
+              <div className="flex flex-col w-[60%]">
+                <select
+                  value={dataDanhmuc.trang_thai}
+                  onChange={(e) =>
+                    setDataDanhmuc((prev) => ({
+                      ...prev,
+                      trang_thai: e.target.value,
+                    }))
+                  }
+                  className={`border rounded-lg px-3 py-3 bg-white ${
+                    errors.trang_thai ? "border-red-500" : "border-gray-300"
+                  }`}
+                >
+                  <option value="" disabled>
+                    Chọn trạng thái
+                  </option>
+                  <option value={1}>Hoạt động</option>
+                  <option value={0}>Không hoạt động</option>
+                </select>
+                {errors.trang_thai && (
+                  <span className="text-red-500 text-sm mt-1">
+                    {errors.trang_thai}
+                  </span>
+                )}
+              </div>
+
               <OptionDanhMuc
                 value={dataDanhmuc.ten_danh_muc}
                 setTenDanhMuc={(value) =>
                   setDataDanhmuc((prev) => ({ ...prev, ten_danh_muc: value }))
                 }
               />
+              {errors.ten_danh_muc && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.ten_danh_muc}
+                </span>
+              )}
             </div>
+
             <button
               onClick={handleCreate}
               className="py-2 px-7 text-white bg-customBlue rounded-lg mt-4"
