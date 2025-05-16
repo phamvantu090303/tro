@@ -31,7 +31,7 @@ const HopDongScheme = new Schema(
         trang_thai: {
             type: String,
             enum: [ "chua_ky", "da_ky", "het_han", "yeu_cau_huy_hop_dong" ],
-            default: "chua_ky",
+            default: "da_ky",
             required: true,
         },
         file_hop_dong: {

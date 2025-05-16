@@ -7,11 +7,37 @@ export class PhongtroService {
     return await newPhongTro.save();
   }
 
-  async updatePhongTro(ma_phong: string, updateData: any) {
-    return await PhongTroModel.findOneAndUpdate({ ma_phong }, updateData, {
-      new: true,
+async updatePhongTro(ma_phong: string, updateData: any) {
+  const {
+    _id,
+    __v,
+    createdAt,
+    updatedAt,
+    danh_muc,
+    mapDetail,
+    ...sanitizedData
+  } = updateData;
+
+  // Kiểm tra nếu có thay đổi mã phòng
+  if (sanitizedData.ma_phong && sanitizedData.ma_phong !== ma_phong) {
+    const existing = await PhongTroModel.findOne({
+      ma_phong: sanitizedData.ma_phong,
     });
+
+    if (existing) {
+      throw new Error("Mã phòng đã tồn tại. Vui lòng chọn mã phòng khác.");
+    }
   }
+
+  // Cập nhật thông tin phòng
+  const updated = await PhongTroModel.findOneAndUpdate(
+    { ma_phong },
+    sanitizedData,
+    { new: true }
+  );
+
+  return updated;
+}
 
   async getAllPhongTro() {
     return await PhongTroModel.aggregate([

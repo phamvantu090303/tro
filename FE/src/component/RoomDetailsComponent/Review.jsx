@@ -38,14 +38,14 @@ export default function RoomReview({ id }) {
   };
 
   const handleSubmit = async () => {
-    if (!review.trim()) return alert("Vui lòng nhập nội dung đánh giá!");
-    if (rating === 0) return alert("Vui lòng chọn số sao đánh giá!");
+    // if (!review.trim()) return alert("Vui lòng nhập nội dung đánh giá!");
+    // if (rating === 0) return alert("Vui lòng chọn số sao đánh giá!");
 
     try {
       await axiosInstance.post("/danh_gia/createdanhgia", {
         ma_phong: id,
         noi_dung: review,
-        danh_gia_sao: rating,
+        danh_gia_sao: rating || 0,
       });
 
       setReview("");
@@ -122,8 +122,8 @@ function ReviewItem({ review, fetchReviews }) {
   const [rating, setRating] = useState(0);
 
   const handleReply = async () => {
-    if (!reply.trim()) return alert("Vui lòng nhập nội dung trả lời!");
-    if (rating === 0) return alert("Vui lòng chọn số sao đánh giá!");
+    // if (!reply.trim()) return alert("Vui lòng nhập nội dung trả lời!");
+    // if (rating === 0) return alert("Vui lòng chọn số sao đánh giá!");
 
     try {
       await axiosInstance.post("/danh_gia/createdanhgia", {

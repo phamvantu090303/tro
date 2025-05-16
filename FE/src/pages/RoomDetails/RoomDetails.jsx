@@ -186,7 +186,7 @@ function RoomDetails() {
   return (
     <div className="w-full">
       <Helmet>
-        <title>Chi thiết phòng trọ</title>
+        <title>Chi tiết phòng trọ</title>
         <meta
           name="description"
           content="Khám phá bộ sưu tập chi tiết phòng trọ cao cấp, đầy đủ tiện nghi, phù hợp cho mọi nhu cầu."
@@ -337,7 +337,7 @@ function RoomDetails() {
               </div>
             </motion.section>
 
-            {/* Địa chỉ */}
+            {/* /* Địa chỉ */ }
             <motion.section
               initial="hidden"
               whileInView="visible"
@@ -352,14 +352,14 @@ function RoomDetails() {
                 </p>
               </div>
               <span
-                ref={addressRef}
                 className="text-xl font-medium text-[#2F80ED] cursor-pointer"
+                onClick={() => handleScroll("Địa chỉ")}
               >
                 Hiển thị bản đồ
               </span>
             </motion.section>
 
-            {/* Nội dung chi tiết */}
+            {/* /* Nội dung chi tiết */}
             <motion.div
               initial="hidden"
               whileInView="visible"

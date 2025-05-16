@@ -49,7 +49,6 @@ export class HopDongService {
       // Chuyển id_users và id_dichvu (string) thành ObjectId
       $addFields: {
         id_users: { $toObjectId: "$id_users" },
-        id_dichvu: { $toObjectId: "$dich_vu" }, // Thêm nếu id_dichvu là string
       },
     },
     {
@@ -64,22 +63,7 @@ export class HopDongService {
     {
       $unwind: {
         path: "$id_users",
-        preserveNullAndEmptyArrays: true, // Giữ bản ghi nếu không có user
-      },
-    },
-    {
-      // Lookup để lấy thông tin dịch vụ
-      $lookup: {
-        from: "dich_vus",
-        localField: "dich_vu",
-        foreignField: "_id",
-        as: "dichvu",
-      },
-    },
-    {
-      $unwind: {
-        path: "$dichvu",
-        preserveNullAndEmptyArrays: true, // Giữ bản ghi nếu không có dịch vụ
+        // preserveNullAndEmptyArrays: true, // Giữ bản ghi nếu không có user
       },
     },
     {

@@ -28,6 +28,7 @@ function Search() {
       const sortedResults = res.data.data.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
+      console.log("Kết quả tìm kiếm:", sortedResults);  
       setDataSearch(sortedResults);
     } catch (error) {
       console.error("Lỗi khi fetch dữ liệu:", error);
@@ -244,6 +245,7 @@ function Search() {
                     number={item.so_luong_nguoi}
                     dientich={item.dien_tich}
                     diachi={item.dia_chi}
+                    giatien={item.gia_tien}
                     trangthai={item.trang_thai}
                     thanhpho={item.ward}
                   />

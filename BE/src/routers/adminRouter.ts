@@ -16,13 +16,14 @@ import {
   LoginAdminValidator,
   ResetPasswordAdmin,
 } from "../middlewares/admin.middleware";
+import { validateAdminInput } from "../middlewares/validateAdminInput";
 
 const routerAdmin = Router();
 
 routerAdmin.post("/login", LoginAdminValidator, loginAdmin);
 
-routerAdmin.post("/create", createAdmin);
-routerAdmin.post("/update/:id", accessTokenAdmin, updateAdmin);
+routerAdmin.post("/create",validateAdminInput, createAdmin);
+routerAdmin.post("/update/:id", accessTokenAdmin,validateAdminInput, updateAdmin);
 routerAdmin.delete("/delete/:id", deleteAdmin);
 
 routerAdmin.post(
