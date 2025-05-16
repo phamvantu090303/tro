@@ -7,11 +7,13 @@ import {
   OpenModalForm,
 } from "../../../../Store/filterModalForm";
 import { useEffect, useState } from "react";
+import { axiosInstance } from "../../../../../Axios";
+import { validateHoaDonThang } from "../../../../utils/validateHoaDonThang";
 
 function HoadonThangAdmin() {
   const [data, setData] = useState({
     ma_phong: "",
-    id_user: "",
+    id_users: "",
     chi_so_dien_thang_nay: 0,
     chi_so_dien_thang_truoc: 0,
     so_dien_tieu_thu: 0,
@@ -22,15 +24,14 @@ function HoadonThangAdmin() {
     trang_thai: "",
     ngay_tao_hoa_don: "",
   });
-
-  const { modalType, idModal, isOpen } = useSelector(
-    (state) => state.ModalForm
-  );
+  const [ListUser, setListUser] = useState([]);
+  const [listMaPhong, setListMaPhong] = useState([]);
+  const [errors, setErrors] = useState({});
+  const { modalType, isOpen } = useSelector((state) => state.ModalForm);
   const dispatch = useDispatch();
   const {
     data: hdThang,
     createData,
-    UpdateData,
     DeleteData,
   } = useApiManagerAdmin("/hoa-don-thang");
 
@@ -40,14 +41,40 @@ function HoadonThangAdmin() {
       setDsHienThi(hdThang);
     }
   }, [hdThang]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await axiosInstance.get("/auth/getAll");
+      const resMaPhong = await axiosInstance.get("/phongTro/getAll");
+      setListUser(res.data.data);
+      setListMaPhong(resMaPhong.data.data);
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (modalType === "edit" && data.ho_va_ten) {
+      const user = ListUser.find((u) => u.ho_va_ten === data.ho_va_ten);
+      if (user && user._id !== data.id_users) {
+        setData((prev) => ({
+          ...prev,
+          id_users: user._id,
+        }));
+      }
+    }
+  }, [modalType, data.ho_va_ten, ListUser]);
+
   const handleDelete = async (value) => {
     await DeleteData(value._id);
   };
+
   const handleCreate = async () => {
+    if (Object.keys(validateHoaDonThang(data)).length > 0) {
+      setErrors(validateHoaDonThang(data));
+      return;
+    }
     if (modalType === "create") {
       await createData(data);
-    } else if (modalType === "edit") {
-      await UpdateData(idModal, data);
     }
     handleClose();
   };
@@ -56,7 +83,7 @@ function HoadonThangAdmin() {
     dispatch(OpenModalForm({ modalType: "edit", id: room._id ?? null }));
     setData({
       ma_phong: room.ma_phong,
-      id_user: room.id_user,
+      id_users: room.id_user,
       ho_va_ten: room.ho_va_ten,
       chi_so_dien_thang_nay: room.chi_so_dien_thang_nay,
       chi_so_dien_thang_truoc: room.chi_so_dien_thang_truoc,
@@ -71,7 +98,7 @@ function HoadonThangAdmin() {
   };
 
   const headers = [
-    { label: "Tên user", key: "ho_va_ten" },
+    { label: "Tên người dùng", key: "ho_va_ten" },
     { label: "Mã phòng", key: "ma_phong" },
     { label: "Tổng tiền", key: "tong_tien" },
     { label: "Trạng thái", key: "trang_thai" },
@@ -92,6 +119,7 @@ function HoadonThangAdmin() {
       trang_thai: "",
       ngay_tao_hoa_don: "",
     });
+    setErrors({});
   };
 
   const renderStatus = (status) => {
@@ -169,172 +197,227 @@ function HoadonThangAdmin() {
             </div>
             <form className="space-y-4">
               <div className="flex gap-5">
-                <InputField
-                  disabled={modalType === "edit"}
-                  label="Mã phòng"
-                  name="ma_phong"
-                  value={data.ma_phong}
-                  onChange={(e) =>
-                    setData((setPrev) => ({
-                      ...setPrev,
-                      ma_phong: e.target.value,
-                    }))
-                  }
-                />
-                <InputField
-                  disabled={modalType === "edit"}
-                  label="Người dùng"
-                  name="ho_va_ten"
-                  value={data.ho_va_ten}
-                  onChange={(e) =>
-                    setData((setPrev) => ({
-                      ...setPrev,
-                      ho_va_ten: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="flex gap-5">
-                <InputField
-                  disabled={modalType === "edit"}
-                  label="chỉ số điện tháng này"
-                  name="chi_so_dien_thang_nay"
-                  value={data.chi_so_dien_thang_nay}
-                  onChange={(e) =>
-                    setData((setPrev) => ({
-                      ...setPrev,
-                      chi_so_dien_thang_nay: e.target.value,
-                    }))
-                  }
-                />
-                <InputField
-                  disabled={modalType === "edit"}
-                  label="chỉ số điện tháng trước"
-                  name="chi_so_dien_thang_truoc"
-                  value={data.chi_so_dien_thang_truoc}
-                  onChange={(e) =>
-                    setData((setPrev) => ({
-                      ...setPrev,
-                      chi_so_dien_thang_truoc: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="flex gap-5">
-                <InputField
-                  disabled={modalType === "edit"}
-                  label="Số điện tiêu thụ"
-                  name="so_dien_tieu_thu"
-                  value={soDienTieuThu}
-                  onChange={() => {}}
-                />
-                {modalType === "edit" ? (
-                  <InputField
+                <div className="w-full">
+                  <label className="block font-semibold">Mã phòng</label>
+                  <select
                     disabled={modalType === "edit"}
-                    label="Tiền điện"
-                    name="tien_dien"
-                    value={data.dich_vu.tien_dien}
-                    onChange={() => {}}
-                  />
-                ) : null}
-
-                <InputField
-                  disabled={modalType === "edit"}
-                  label="Tổng Tiền điện"
-                  name="tong_tien_dien"
-                  value={soDienTieuThu * (data.dich_vu.tien_dien || 0)}
-                  onChange={() => {}}
-                />
-              </div>
-              {modalType === "edit" ? (
-                <div className="flex gap-5">
-                  <InputField
-                    disabled={modalType === "edit"}
-                    label="Tiền nước"
-                    name="tien_nuoc"
-                    value={data.dich_vu.tien_nuoc}
-                    onChange={() => {}}
-                  />
-                  <InputField
-                    disabled={modalType === "edit"}
-                    label="Tiền Wifi"
-                    name="tien_wifi"
-                    value={data.dich_vu.tien_wifi}
-                    onChange={() => {}}
-                  />
-                </div>
-              ) : null}
-              <div className="flex gap-5 w-full">
-                <InputField
-                  disabled={modalType === "edit"}
-                  label="Tiền phòng"
-                  name="tien_phong"
-                  value={data.tien_phong}
-                  onChange={(e) =>
-                    setData((setPrev) => ({
-                      ...setPrev,
-                      tien_phong: e.target.value,
-                    }))
-                  }
-                />
-                {modalType === "edit" ? (
-                  <InputField
-                    disabled={modalType === "edit"}
-                    label="Tổng tiền"
-                    name="tong_tien"
-                    value={Tongtien}
+                    value={data.ma_phong || ""}
+                    className="w-full border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onChange={(e) =>
-                      setData((setPrev) => ({
-                        ...setPrev,
-                        tong_tien: e.target.value,
-                      }))
+                      setData((prev) => ({ ...prev, ma_phong: e.target.value }))
+                    }
+                  >
+                    <option value="">Chọn mã phòng</option>
+                    {listMaPhong.map((item, index) => (
+                      <option key={index} value={item.ma_phong}>
+                        {item.ma_phong}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.ma_phong && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.ma_phong}
+                    </p>
+                  )}
+                </div>
+                <div className="w-full">
+                  <label className="block font-semibold">Tên người dùng</label>
+                  <select
+                    disabled={modalType === "edit"}
+                    value={data.id_users || ""}
+                    className="w-full border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={(e) =>
+                      setData((prev) => ({ ...prev, id_users: e.target.value }))
+                    }
+                  >
+                    <option value="">Chọn người dùng</option>
+                    {ListUser.map((item, index) => (
+                      <option
+                        key={index}
+                        value={item._id}
+                        className="text-black"
+                      >
+                        {item.ho_va_ten}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.id_users && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.id_users}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {modalType === "edit" && (
+                <>
+                  <div className="flex gap-5">
+                    <InputField
+                      disabled
+                      label="chỉ số điện tháng này"
+                      name="chi_so_dien_thang_nay"
+                      value={data.chi_so_dien_thang_nay}
+                      onChange={(e) =>
+                        setData((setPrev) => ({
+                          ...setPrev,
+                          chi_so_dien_thang_nay: e.target.value,
+                        }))
+                      }
+                    />
+                    <InputField
+                      disabled
+                      label="chỉ số điện tháng trước"
+                      name="chi_so_dien_thang_truoc"
+                      value={data.chi_so_dien_thang_truoc}
+                      onChange={(e) =>
+                        setData((setPrev) => ({
+                          ...setPrev,
+                          chi_so_dien_thang_truoc: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div className="flex gap-5">
+                    <InputField
+                      disabled
+                      label="Số điện tiêu thụ"
+                      name="so_dien_tieu_thu"
+                      value={soDienTieuThu}
+                      onChange={() => {}}
+                    />
+                    <InputField
+                      disabled
+                      label="Tiền điện"
+                      name="tien_dien"
+                      value={data.dich_vu.tien_dien}
+                      onChange={() => {}}
+                    />
+                    <InputField
+                      disabled
+                      label="Tổng Tiền điện"
+                      name="tong_tien_dien"
+                      value={soDienTieuThu * (data.dich_vu.tien_dien || 0)}
+                      onChange={() => {}}
+                    />
+                  </div>
+
+                  <div className="flex gap-5">
+                    <InputField
+                      disabled
+                      label="Tiền nước"
+                      name="tien_nuoc"
+                      value={data.dich_vu.tien_nuoc}
+                      onChange={() => {}}
+                    />
+                    <InputField
+                      disabled
+                      label="Tiền Wifi"
+                      name="tien_wifi"
+                      value={data.dich_vu.tien_wifi}
+                      onChange={() => {}}
+                    />
+                  </div>
+
+                  <div className="flex gap-5 w-full">
+                    <InputField
+                      disabled
+                      label="Tiền phòng"
+                      name="tien_phong"
+                      value={data.tien_phong}
+                      onChange={(e) =>
+                        setData((setPrev) => ({
+                          ...setPrev,
+                          tien_phong: e.target.value,
+                        }))
+                      }
+                    />
+                    <InputField
+                      disabled
+                      label="Tổng tiền"
+                      name="tong_tien"
+                      value={Tongtien}
+                      onChange={(e) =>
+                        setData((setPrev) => ({
+                          ...setPrev,
+                          tong_tien: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <select
+                      name="trang_thai"
+                      value={data.trang_thai}
+                      disabled
+                      onChange={(e) =>
+                        setData((prevData) => ({
+                          ...prevData,
+                          trang_thai: e.target.value,
+                        }))
+                      }
+                      className="w-full border-gray-500 border p-1"
+                    >
+                      <option value="đã thanh toán">đã thanh toán</option>
+                      <option value="chưa thanh toán">chưa thanh toán</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold">
+                      Ngày tạo hóa đơn:
+                    </label>
+                    <input
+                      type="date"
+                      value={
+                        data.ngay_tao_hoa_don
+                          ? new Date(data.ngay_tao_hoa_don)
+                              .toISOString()
+                              .substring(0, 10)
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setData({
+                          ...data,
+                          ngay_tao_hoa_don: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+
+              {modalType !== "edit" && (
+                <div>
+                  <label className="block font-semibold">
+                    Tháng tạo hóa đơn:
+                  </label>
+                  <input
+                    type="month"
+                    value={data.ngay_tao_hoa_don || ""}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        ngay_tao_hoa_don: e.target.value,
+                      })
                     }
                   />
-                ) : null}
-              </div>
-              <div>
-                <select
-                  name="trang_thai"
-                  value={data.trang_thai}
-                  onChange={(e) =>
-                    setData((prevData) => ({
-                      ...prevData,
-                      trang_thai: e.target.value,
-                    }))
-                  }
-                  className="w-full border-gray-500 border p-1"
-                >
-                  <option value="đã thanh toán">đã thanh toán</option>
-                  <option value="chưa thanh toán">chưa thanh toán</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-semibold">Ngày tạo hóa đơn:</label>
-                <input
-                  type="date"
-                  value={
-                    data.ngay_tao_hoa_don
-                      ? new Date(data.ngay_tao_hoa_don)
-                          .toISOString()
-                          .substring(0, 10)
-                      : ""
-                  }
-                  onChange={(e) =>
-                    setData({
-                      ...data,
-                      ngay_tao_hoa_don: e.target.value,
-                    })
-                  }
-                />
-              </div>
+                  {errors.thang && (
+                    <p className="text-red-500 text-sm mt-1">{errors.thang}</p>
+                  )}
+                </div>
+              )}
             </form>
-            <button
-              onClick={handleCreate}
-              className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
-            >
-              {modalType === "edit" ? "Chỉnh sửa" : "Tạo"}
-            </button>
+
+            {modalType === "create" && (
+              <button
+                onClick={handleCreate}
+                className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
+              >
+                Tạo hóa đơn
+              </button>
+            )}
           </div>
         </div>
       )}

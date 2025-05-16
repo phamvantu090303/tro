@@ -7,6 +7,8 @@ import { CloseModalForm } from "../../../Store/filterModalForm";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { renderToStaticMarkup } from "react-dom/server";
 import L from "leaflet";
+import { validateMapForm } from "../../../utils/validateMap";
+import { toast } from "react-toastify";
 
 const customIcon = new L.DivIcon({
   className: "custom-icon",
@@ -26,6 +28,7 @@ const ModalMap = ({ data, reload }) => {
       setMapKey(idModal); // Chỉ update key khi id tồn tại, tránh cập nhật liên tục
     }
   }, [idModal]);
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     ma_map: "",
@@ -97,7 +100,7 @@ const ModalMap = ({ data, reload }) => {
   };
 
   const handleCreate = async () => {
-    await axiosInstance.post("/map/creatMap", {
+    const res = await axiosInstance.post("/map/creatMap", {
       ma_map: formData.ma_map,
       address: formData.address,
       district: formData.district,
@@ -105,13 +108,20 @@ const ModalMap = ({ data, reload }) => {
       longitude: formData.longitude,
       ward: formData.ward,
     });
+    if (res.data.message) {
+      toast.success("Tạo map thành công");
+    }
   };
 
   const handleConfirm = async () => {
+    const validationErrors = validateMapForm(formData);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
     if (modalType === "create") {
       await handleCreate();
     } else if (modalType === "edit") {
       await handleUpdate(idModal);
+      toast.success("Cập nhật map thành công");
     }
     reload();
     dispatch(CloseModalForm());
@@ -154,6 +164,9 @@ const ModalMap = ({ data, reload }) => {
                     onChange={handleChange}
                     className="w-full border rounded p-2"
                   />
+                  {errors.ma_map && (
+                    <p className="text-red-500 text-sm mt-1">{errors.ma_map}</p>
+                  )}
                 </div>
 
                 <div className="w-full">
@@ -167,6 +180,11 @@ const ModalMap = ({ data, reload }) => {
                     onChange={handleChange}
                     className="w-full border rounded p-2"
                   />
+                  {errors.address && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.address}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -182,6 +200,11 @@ const ModalMap = ({ data, reload }) => {
                     onChange={handleChange}
                     className="w-full border rounded p-2"
                   />
+                  {errors.district && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.district}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -195,6 +218,9 @@ const ModalMap = ({ data, reload }) => {
                     onChange={handleChange}
                     className="w-full border rounded p-2"
                   />
+                  {errors.ward && (
+                    <p className="text-red-500 text-sm mt-1">{errors.ward}</p>
+                  )}
                 </div>
               </div>
 

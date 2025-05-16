@@ -20,6 +20,7 @@ import { usePhongTro } from "../../Context/PhongTroContext";
 import RoomReview from "../../component/RoomDetailsComponent/Review";
 import { toast } from "react-toastify";
 import Device from "../../component/thietbi/device";
+import { useMasking } from "../../hook/useMasking";
 
 const slideUpVariants = {
   hidden: { opacity: 0, y: 70 },
@@ -50,7 +51,7 @@ function RoomDetails() {
     4: { text: "Đã được đặt", color: "blue" },
     5: { text: "Không cho thuê", color: "gray" },
   };
-
+  const { formatTienPhong } = useMasking();
   const [nut, setNut] = useState("Tổng quan");
   // Tạo các ref cho từng phần nội dung
   const overviewRef = useRef(null);
@@ -289,7 +290,7 @@ function RoomDetails() {
               </div>
               <div className="lg:text-end mt-5 lg:mt-0">
                 <p className="text-xl sm:text-2xl font-bold text-yellow-500">
-                  {data.gia_tien} VND
+                  {formatTienPhong(data.gia_tien)} VND
                 </p>
                 <div className="flex items-center gap-4 mt-4">
                   {yeuthich ? (
@@ -337,7 +338,7 @@ function RoomDetails() {
               </div>
             </motion.section>
 
-            {/* /* Địa chỉ */ }
+            {/* /* Địa chỉ */}
             <motion.section
               initial="hidden"
               whileInView="visible"

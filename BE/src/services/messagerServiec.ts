@@ -45,5 +45,27 @@ class MessagersService {
       ],
     }).sort({ createdAt: 1 });
   }
+  async getdemtinnhan(nguoi_nhan: string) {
+    const count = await MessagersModel.countDocuments({
+      nguoi_nhan: new ObjectId(nguoi_nhan),
+      is_read: false,
+    });
+    return count;
+  }
+
+  // tin nhắn là đã đọc
+  async doctinnhanService(nguoi_nhan: string) {
+    const result = await MessagersModel.updateMany(
+      {
+        nguoi_nhan: new ObjectId(nguoi_nhan),
+        is_read: false,
+      },
+      {
+        $set: { is_read: true },
+      }
+    );
+
+    return result.modifiedCount;
+  }
 }
 export default MessagersService;

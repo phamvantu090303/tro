@@ -9,6 +9,8 @@ import {
   OpenModalForm,
 } from "../../../../Store/filterModalForm";
 import { useDispatch, useSelector } from "react-redux";
+import { validate } from "../../../../utils/validateAdmin";
+import { useMasking } from "../../../../hook/useMasking";
 function AccountAdmin() {
   const {
     data: admin,
@@ -20,6 +22,8 @@ function AccountAdmin() {
   const { modalType, idModal, isOpen } = useSelector(
     (state) => state.ModalForm
   );
+  const [errors, setErrors] = useState({});
+  const { formatDateInput } = useMasking();
   const dispatch = useDispatch();
   const [adminData, setAdminData] = useState({
     id_quyen: "",
@@ -70,7 +74,6 @@ function AccountAdmin() {
 
   const handleCreateAccountAdmin = async () => {
     const success = await createData({ ...adminData });
-
     if (success) {
       resetData();
     }
@@ -95,6 +98,9 @@ function AccountAdmin() {
   };
 
   const handleCreate = async () => {
+    const validationErrors = validate(adminData);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
     if (modalType === "create") {
       await handleCreateAccountAdmin();
     } else if (modalType === "edit") {
@@ -138,6 +144,7 @@ function AccountAdmin() {
       verify: 1,
       is_block: false,
     });
+    setErrors({});
     dispatch(CloseModalForm());
   };
 
@@ -178,7 +185,7 @@ function AccountAdmin() {
         handleOpenModalEdit={handleOpenModalEdit}
       />
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100]">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[300px] w-2/3">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold mb-4">
@@ -206,6 +213,9 @@ function AccountAdmin() {
                     }
                     className="w-full border border-gray-500 py-2 px-4 rounded-md"
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block font-medium">Mật khẩu</label>
@@ -218,6 +228,11 @@ function AccountAdmin() {
                     }
                     className="w-full border border-gray-500 py-2 px-4 rounded-md"
                   />
+                  {errors.password && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.password}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -232,6 +247,11 @@ function AccountAdmin() {
                     }
                     className="w-full border border-gray-500 py-2 px-4 rounded-md"
                   />
+                  {errors.username && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.username}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block font-medium">Họ và tên</label>
@@ -244,6 +264,11 @@ function AccountAdmin() {
                     }
                     className="w-full border border-gray-500 py-2 px-4 rounded-md"
                   />
+                  {errors.ho_va_ten && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.ho_va_ten}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -251,12 +276,17 @@ function AccountAdmin() {
                   <label className="block font-medium">Ngày sinh</label>
                   <input
                     type="date"
-                    value={adminData.ngay_sinh}
+                    value={formatDateInput(adminData.ngay_sinh)}
                     onChange={(e) =>
                       setAdminData({ ...adminData, ngay_sinh: e.target.value })
                     }
                     className="w-full border border-gray-500 py-2 px-4 rounded-md"
                   />
+                  {errors.ngay_sinh && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.ngay_sinh}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block font-medium">Quê quán</label>
@@ -269,6 +299,11 @@ function AccountAdmin() {
                     }
                     className="w-full border border-gray-500 py-2 px-4 rounded-md"
                   />
+                  {errors.que_quan && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.que_quan}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -286,6 +321,11 @@ function AccountAdmin() {
                     }
                     className="w-full border border-gray-500 py-2 px-4 rounded-md"
                   />
+                  {errors.so_dien_thoai && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.so_dien_thoai}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block font-medium">CCCD</label>
@@ -298,6 +338,9 @@ function AccountAdmin() {
                     }
                     className="w-full border border-gray-500 py-2 px-4 rounded-md"
                   />
+                  {errors.cccd && (
+                    <p className="text-red-500 text-sm mt-1">{errors.cccd}</p>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -315,6 +358,11 @@ function AccountAdmin() {
                     <option value="Nữ">Nữ</option>
                     <option value="Khác">Khác</option>
                   </select>
+                  {errors.gioi_tinh && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.gioi_tinh}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block font-medium">Quyền</label>
@@ -338,6 +386,11 @@ function AccountAdmin() {
                       </option>
                     )}
                   </select>
+                  {errors.id_quyen && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.id_quyen}
+                    </p>
+                  )}
                 </div>
               </div>
               {/* <div>
