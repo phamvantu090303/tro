@@ -9,6 +9,7 @@ import { axiosInstance } from "../../../Axios";
 import ModalUser from "../../component/User/ModalUser";
 import Spinner from "../../component/Loading";
 import ModalConFirm from "../../component/ModalConfirm";
+import { connectSocket } from "../../../Socket";
 
 function SuachuaUser() {
   const [data, setData] = useState([]);
@@ -20,7 +21,7 @@ function SuachuaUser() {
     maphong: "",
     lydo: "",
   });
-
+   const [socket, setSocket] = useState(null);
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -35,7 +36,27 @@ function SuachuaUser() {
 
   useEffect(() => {
     fetchData();
+    const s = connectSocket();
+    console.log(s);
+    setSocket(s);
+    return () => {
+      s.disconnect();
+    };
+
   }, []);
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNotification = () => {
+      console.log("Nhận được tín hiệu cập nhật từ Admin");
+      fetchData(); // Gọi lại API để cập nhật UI
+    };
+
+    socket.on("cap_nhat_suachua", handleNotification);
+    return () => {
+      socket.off("cap_nhat_suachua", handleNotification);
+    };
+  }, [socket]);
   useEffect(() => {
     if (!isOpen) {
       setRepairData((prev) => ({

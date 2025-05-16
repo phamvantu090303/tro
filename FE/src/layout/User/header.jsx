@@ -17,10 +17,6 @@ const Item = [
     Navigate: "/",
   },
   {
-    id: 3,
-    name: "Phòng trọ của tôi",
-  },
-  {
     id: 4,
     name: "Tìm kiếm",
     Navigate: "/Search",

@@ -9,6 +9,7 @@ function CardSearch({
   number,
   dientich,
   diachi,
+  giatien,
   trangthai,
   thanhpho,
   price,
@@ -53,10 +54,17 @@ function CardSearch({
         </div>
 
         <div>
-        <button className="bg-[#23284C] text-white rounded-lg text-lg py-[10px] px-[56px] mt-[18px]" onClick={()=>handleCard(ma_phong)}>
-                  Xem
-        </button>
-
+          <div className="flex justify-between items-center mt-4">
+            <p className="text-lg font-bold text-red-600">
+              {giatien ? `${giatien.toLocaleString()} đ/tháng` : ""}
+            </p>
+            <button
+              className="bg-[#23284C] text-white rounded-lg text-lg py-[10px] px-[36px]"
+              onClick={() => handleCard(ma_phong)}
+            >
+              Xem
+            </button>
+          </div>
         </div>
       </div>
     </div>

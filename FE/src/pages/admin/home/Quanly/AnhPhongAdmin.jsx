@@ -14,11 +14,16 @@ import {
 function AnhPhongAdmin() {
   const { phongTro } = usePhongTro();
   const [maphong, setMaphong] = useState("");
+  const [errors, setErrors] = useState({
+    ma_phong: "",
+  });
+
   const [img, setImg] = useState("");
   const [hienthiAnh, setHienthiAnh] = useState("");
   const { isOpen, modalType, idModal } = useSelector(
     (state) => state.ModalForm
   );
+
   const dispatch = useDispatch();
   const {
     data: anhphong,
@@ -73,6 +78,19 @@ function AnhPhongAdmin() {
     }
     return urls;
   };
+  const validate = () => {
+    const newErrors = { ma_phong: "" };
+    let isValid = true;
+
+    if (!maphong) {
+      newErrors.ma_phong = "Vui lòng chọn mã phòng!";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleAddImage = (event) => {
     const files = event.target.files;
     if (files && files.length > 0) {
@@ -97,6 +115,7 @@ function AnhPhongAdmin() {
     setHienthiAnh("");
   };
   const handleCreate = async () => {
+    if (!validate()) return;
     if (modalType === "create") {
       await handleCreateAnh();
     } else if (modalType === "edit") {
@@ -222,6 +241,10 @@ function AnhPhongAdmin() {
                     </option>
                   ))}
                 </select>
+                {errors.ma_phong && (
+                  <p className="text-red-500 text-sm mt-1">{errors.ma_phong}</p>
+                )}
+
                 <div>
                   <p className=" font-medium mb-4">Ảnh phòng</p>
                   <div className="flex space-x-2 overflow-x-auto">
