@@ -40,7 +40,6 @@ function SuachuaAdmin() {
   ];
 
   const handleUpdateTrangThai = async (status, value) => {
-    console.log("status", status);
     await axiosInstance.post(`/sua_chua/UpdateStatus/${status._id}`, {
       status: value,
     });
