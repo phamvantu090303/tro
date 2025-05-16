@@ -28,6 +28,92 @@ function Profile() {
     so_dien_thoai: "",
     cccd: "",
   });
+  const [errors, setErrors] = useState({
+    username: "",
+    ho_va_ten: "",
+    que_quan: "",
+    ngay_sinh: "",
+    email: "",
+    cccd: "",
+    so_dien_thoai: "",
+    oldPassword: "",
+    password: "",
+  });
+
+  const validateForm = () => {
+    let newErrors = {
+      username: "",
+      ho_va_ten: "",
+      que_quan: "",
+      ngay_sinh: "",
+      email: "",
+      cccd: "",
+      so_dien_thoai: "",
+      password: "",
+      oldPassword: "",
+    };
+
+    let isValid = true;
+
+    if (!users.username.trim()) {
+      newErrors.username = "Tên tài khoản không được để trống";
+      isValid = false;
+    }
+
+    if (!users.ho_va_ten.trim()) {
+      newErrors.ho_va_ten = "Họ và tên không được để trống";
+      isValid = false;
+    } else if (/\d/.test(users.ho_va_ten)) {
+      newErrors.ho_va_ten = "Họ và tên không được chứa số";
+      isValid = false;
+    }
+
+    if (!users.que_quan.trim()) {
+      newErrors.que_quan = "Quê quán không được để trống";
+      isValid = false;
+    } else if (/\d/.test(users.que_quan)) {
+      newErrors.que_quan = "Quê quán không được chứa số";
+      isValid = false;
+    }
+
+    if (!users.ngay_sinh.trim()) {
+      newErrors.ngay_sinh = "Ngày sinh không được để trống";
+      isValid = false;
+    } else {
+      const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+      if (users.ngay_sinh > today) {
+        newErrors.ngay_sinh = "Ngày sinh không được là ngày trong tương lai";
+        isValid = false;
+      }
+    }
+
+    if (!users.email.trim()) {
+      newErrors.email = "Email không được để trống";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(users.email)) {
+      newErrors.email = "Email không hợp lệ";
+      isValid = false;
+    }
+
+    if (!users.cccd.trim()) {
+      newErrors.cccd = "CCCD không được để trống";
+      isValid = false;
+    } else if (!/^\d{12}$/.test(users.cccd)) {
+      newErrors.cccd = "CCCD phải có 12 chữ số";
+      isValid = false;
+    }
+
+    if (!users.so_dien_thoai.trim()) {
+      newErrors.so_dien_thoai = "Số điện thoại không được để trống";
+      isValid = false;
+    } else if (!/^0\d{9}$/.test(users.so_dien_thoai)) {
+      newErrors.so_dien_thoai = "Số điện thoại phải có 10 số và bắt đầu bằng 0";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const { maskEmail, maskPhone, maskCCCD, formatDate } = useMasking();
   const [isLoading, setIsLoading] = useState(false);
@@ -55,6 +141,7 @@ function Profile() {
   }, [user]);
 
   const handleUpdateUser = async () => {
+    if (!validateForm()) return;
     try {
       setIsLoading(true);
       const payload = {
@@ -65,8 +152,9 @@ function Profile() {
         password: users.password || "",
         que_quan: users.que_quan || user.que_quan,
         ho_va_ten: users.ho_va_ten || user.ho_va_ten,
-        so_dien_thoai: users.so_dien_thoai || user.so_dien_thoai,
-        cccd: users.cccd || user.cccd,
+        so_dien_thoai:
+          Number(users.so_dien_thoai) || Number(user.so_dien_thoai),
+        cccd: Number(users.cccd) || Number(user.cccd),
       };
 
       const res = await axiosInstance.post(`/auth/update/${user._id}`, payload);
@@ -91,6 +179,8 @@ function Profile() {
   if (!user) {
     return <Spinner />;
   }
+  console.log(user);
+  console.log(errors);
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
@@ -150,29 +240,39 @@ function Profile() {
                           <p className="font-medium text-base">Tên tài khoản</p>
                           <input
                             type="text"
-                            value={user.username}
+                            value={users.username}
                             onChange={(e) =>
                               setUsers((prev) => ({
                                 ...prev,
                                 username: e.target.value,
                               }))
                             }
-                            className="text-base px-5 py-4 placeholder:text-gray-500 font-medium  bg-slate-200 mt-3 w-full"
+                            className="text-base px-5 py-4 placeholder:text-gray-700 font-medium  bg-slate-200 mt-3 w-full"
                           />
+                          {errors.username && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.username}
+                            </p>
+                          )}
                         </div>
                         <div className="w-full">
                           <p className="font-medium text-base">Họ và Tên</p>
                           <input
                             type="text"
-                            value={user.ho_va_ten}
+                            value={users.ho_va_ten}
                             onChange={(e) =>
                               setUsers((prev) => ({
                                 ...prev,
                                 ho_va_ten: e.target.value,
                               }))
                             }
-                            className=" text-base px-5 py-4 mt-3 w-full bg-slate-200 placeholder:text-gray-500 font-medium"
+                            className=" text-base px-5 py-4 mt-3 w-full bg-slate-200 placeholder:text-gray-700 font-medium"
                           />
+                          {errors.ho_va_ten && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.ho_va_ten}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="flex gap-5 w-full">
@@ -182,7 +282,7 @@ function Profile() {
                             type="text"
                             placeholder={user.que_quan}
                             value={users.que_quan}
-                            className="text-base px-5 py-4 placeholder:text-gray-500 font-medium bg-slate-200 mt-3 w-full"
+                            className="text-base px-5 py-4 placeholder:text-gray-700 font-medium bg-slate-200 mt-3 w-full"
                             onChange={(e) =>
                               setUsers((prev) => ({
                                 ...prev,
@@ -190,6 +290,11 @@ function Profile() {
                               }))
                             }
                           />
+                          {errors.que_quan && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.que_quan}
+                            </p>
+                          )}
                         </div>
                         <div className="w-full">
                           <p className="font-medium text-base">Ngày sinh</p>
@@ -202,8 +307,13 @@ function Profile() {
                                 ngay_sinh: e.target.value,
                               }))
                             }
-                            className="text-base px-5 py-4 mt-3 w-full bg-slate-200 placeholder:text-gray-500 font-medium"
+                            className="text-base px-5 py-4 mt-3 w-full bg-slate-200 placeholder:text-gray-700 font-medium"
                           />
+                          {errors.ngay_sinh && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.ngay_sinh}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -228,8 +338,13 @@ function Profile() {
                                 email: e.target.value,
                               }))
                             }
-                            className="text-base px-5 py-4 placeholder:text-gray-500   bg-slate-200 mt-3 w-full font-medium"
+                            className="text-base px-5 py-4 placeholder:text-gray-700   bg-slate-200 mt-3 w-full font-medium"
                           />
+                          {errors.email && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.email}
+                            </p>
+                          )}
                         </div>
                         <div className="w-full">
                           <p className="font-medium text-base">
@@ -250,8 +365,13 @@ function Profile() {
                                 cccd: e.target.value,
                               }))
                             }
-                            className="text-base px-5 py-4 placeholder:text-gray-500   bg-slate-200 mt-3 w-full font-medium"
+                            className="text-base px-5 py-4 placeholder:text-gray-700   bg-slate-200 mt-3 w-full font-medium"
                           />
+                          {errors.cccd && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.cccd}
+                            </p>
+                          )}
                         </div>
                         <div className="w-full">
                           <p className="font-medium text-base">Số điện thoại</p>
@@ -273,12 +393,17 @@ function Profile() {
                                 so_dien_thoai: e.target.value,
                               }))
                             }
-                            className="text-base px-5 py-4 placeholder:text-gray-500 bg-slate-200 mt-3 w-full font-medium"
+                            className="text-base px-5 py-4 placeholder:text-gray-700 bg-slate-200 mt-3 w-full font-medium"
                           />
+                          {errors.so_dien_thoai && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.so_dien_thoai}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div>
-                        <p className="font-medium text-base placeholder:text-gray-500  ">
+                        <p className="font-medium text-base placeholder:text-gray-700  ">
                           Mật khẩu cũ
                         </p>
                         <input
@@ -303,7 +428,7 @@ function Profile() {
                               password: e.target.value,
                             }))
                           }
-                          className=" text-base px-5 py-4 placeholder:text-gray-500  mt-3 w-full bg-slate-200 font-medium"
+                          className=" text-base px-5 py-4 placeholder:text-gray-700  mt-3 w-full bg-slate-200 font-medium"
                           placeholder="Nhập mật khẩu mới"
                         />
                       </div>

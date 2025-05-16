@@ -154,6 +154,7 @@ export const createContract = async (req: Request, res: Response) => {
           .toISOString()
           .split("T")[0],
       file_hop_dong: modifiedPdfUrl,
+      trang_thai: "da_ky",
       createdAt: new Date(),
     });
 
