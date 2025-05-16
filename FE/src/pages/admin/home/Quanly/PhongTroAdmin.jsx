@@ -12,6 +12,7 @@ import {
   CloseModalForm,
   OpenModalForm,
 } from "../../../../Store/filterModalForm";
+import { validateRoomData } from "../../../../utils/validateRoom";
 
 function PhongTroAdmin() {
   const [chucnang, setChucnang] = useState("Tất cả các phòng");
@@ -129,38 +130,6 @@ function PhongTroAdmin() {
     setImages((prev) => prev.filter((_, i) => i !== indexToRemove));
   };
 
-  const validateRoomData = () => {
-    const {
-      ma_phong,
-      ma_map,
-      ma_danh_muc,
-      ten_phong_tro,
-      mo_ta,
-      dien_tich,
-      gia_tien,
-      trang_thai,
-      so_luong_nguoi,
-      dia_chi,
-    } = phongTroMoi;
-
-    if (
-      !ma_phong ||
-      !ma_map ||
-      !ma_danh_muc ||
-      !ten_phong_tro ||
-      !mo_ta ||
-      !dien_tich ||
-      !gia_tien ||
-      trang_thai === "" ||
-      !so_luong_nguoi ||
-      !dia_chi
-    ) {
-      toast.error("Vui lòng điền đầy đủ thông tin phòng trọ!");
-      return false;
-    }
-    return true;
-  };
-
   const resetData = () => {
     setPhongTroMoi({
       ma_phong: "",
@@ -182,7 +151,6 @@ function PhongTroAdmin() {
   };
 
   const handleCreateRoom = async () => {
-    if (!validateRoomData()) return;
     const urlsImg = await upload(images);
     if (!urlsImg.length) {
       toast.error("Không có ảnh để tạo phòng!");
@@ -209,6 +177,7 @@ function PhongTroAdmin() {
   });
 
   const handleCreate = async () => {
+    if (!validateRoomData(phongTroMoi)) return;
     if (modalType === "create") {
       await handleCreateRoom();
     } else if (modalType === "edit") {
@@ -223,6 +192,7 @@ function PhongTroAdmin() {
     setHienthiAnh(room.anh_phong?.split(", ") || []);
     setPage(2);
   };
+  console.log(phongTroMoi);
 
   const handleSearch = (keyword) => {
     const tuKhoa = keyword.toLowerCase();
@@ -330,7 +300,7 @@ function PhongTroAdmin() {
               { label: "Mô tả", name: "mo_ta" },
               { label: "Diện tích", name: "dien_tich" },
               { label: "Giá tiền", name: "gia_tien" },
-              { label: "Trạng thái (0: thuê, 1: trống)", name: "trang_thai" },
+
               { label: "Số lượng người", name: "so_luong_nguoi" },
               { label: "Địa chỉ", name: "dia_chi" },
             ].map(({ label, name }) => (
@@ -345,6 +315,31 @@ function PhongTroAdmin() {
               </div>
             ))}
 
+            <div>
+              <label className="block text-sm font-medium">
+                Trạng thái phòng
+              </label>
+              <select
+                name="trang_thai"
+                value={phongTroMoi.trang_thai}
+                onChange={(e) =>
+                  handleChange({
+                    target: {
+                      name: e.target.name,
+                      value: Number(e.target.value),
+                    },
+                  })
+                }
+                className="w-full border rounded px-3 py-2"
+              >
+                <option value="" disabled>
+                  Chọn trạng thái
+                </option>
+                <option value={0}>Phòng đã được thuê</option>
+                <option value={1}>Phòng trống</option>
+              </select>
+            </div>
+
             {/* Danh mục và Map */}
             <div>
               <label className="block text-sm font-medium">Mã danh mục</label>
@@ -355,8 +350,8 @@ function PhongTroAdmin() {
                 className="w-full border rounded px-3 py-2"
               >
                 <option value="">-- Chọn danh mục --</option>
-                {danhMuc.map((dm) => (
-                  <option key={dm.ma_danh_muc} value={dm.ma_danh_muc}>
+                {danhMuc.map((dm, index) => (
+                  <option key={index} value={dm.ma_danh_muc}>
                     {dm.ten_danh_muc}
                   </option>
                 ))}
@@ -371,8 +366,8 @@ function PhongTroAdmin() {
                 className="w-full border rounded px-3 py-2"
               >
                 <option value="">-- Chọn map --</option>
-                {maps.map((m) => (
-                  <option key={m.ma_map} value={m.ma_map}>
+                {maps.map((m, index) => (
+                  <option key={index} value={m.ma_map}>
                     {m.ma_map}
                   </option>
                 ))}

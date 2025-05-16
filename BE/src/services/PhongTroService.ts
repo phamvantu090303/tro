@@ -8,6 +8,10 @@ export class PhongtroService {
   }
 
   async updatePhongTro(ma_phong: string, updateData: any) {
+    if (updateData._id) {
+      delete updateData._id;
+    }
+
     return await PhongTroModel.findOneAndUpdate({ ma_phong }, updateData, {
       new: true,
     });
