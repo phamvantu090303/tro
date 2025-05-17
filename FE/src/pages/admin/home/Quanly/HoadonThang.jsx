@@ -139,13 +139,23 @@ function HoadonThangAdmin() {
   };
 
   // Tính toán số điện tiêu thụ dựa trên chỉ số điện tháng này và tháng trước
-  const soDienTieuThu =
-    data.chi_so_dien_thang_nay - data.chi_so_dien_thang_truoc;
-  const Tongtien =
-    soDienTieuThu * (data.dich_vu.tien_dien || 0) +
-    data.tien_phong +
-    data.dich_vu.tien_nuoc +
-    data.dich_vu.tien_wifi;
+  const soDienTieuThu = Number(
+    data.chi_so_dien_thang_nay - data.chi_so_dien_thang_truoc
+  ).toFixed(2);
+  
+  // Tổng Tiền điện
+  const TongtienDien = Number(
+    (soDienTieuThu * (data.dich_vu?.tien_dien || 0)).toFixed(0)
+  );
+  // Tính tổng tiền, đảm bảo không có số thập phân
+  const Tongtien = Number(
+    (
+      soDienTieuThu * ((data.dich_vu?.tien_dien || 0)) +
+      (data.tien_phong || 0) +
+      (data.dich_vu?.tien_nuoc || 0) +
+      (data.dich_vu?.tien_wifi || 0)
+    ).toFixed(0)
+  );
 
   const handleSearch = (keyword) => {
     const tuKhoa = keyword.toLowerCase();
@@ -297,7 +307,7 @@ function HoadonThangAdmin() {
                       disabled
                       label="Tổng Tiền điện"
                       name="tong_tien_dien"
-                      value={soDienTieuThu * (data.dich_vu.tien_dien || 0)}
+                      value={TongtienDien}
                       onChange={() => {}}
                     />
                   </div>
@@ -394,7 +404,7 @@ function HoadonThangAdmin() {
                     Tháng tạo hóa đơn:
                   </label>
                   <input
-                    type="month"
+                    type="date"
                     value={data.ngay_tao_hoa_don || ""}
                     onChange={(e) =>
                       setData({
