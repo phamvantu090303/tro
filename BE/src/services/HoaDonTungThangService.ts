@@ -4,19 +4,29 @@ import DichVuModel from "../models/DichVuModel";
 import HoaDonTungThangModel from "../models/HoaDonTungThangModel";
 import PhongTroModel from "../models/PhongTroModel";
 
-const startOfMonth = (thang: string) => new Date(`${thang}-01T00:00:00Z`);
-const endOfMonth = (thang: string) => {
-  const date = new Date(`${thang}-01T00:00:00Z`);
+// Hàm tính ngày đầu tháng
+export function startOfMonth(dateStr: string): Date {
+  const date = new Date(dateStr);
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+// Hàm tính ngày cuối tháng
+export function endOfMonth(dateStr: string): Date {
+  const date = new Date(dateStr);
   return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
-};
+}
 
 export class HoaDonThangService {
-  async taoHoaDon(ma_phong: string, id_users: string, thang: string) {
+
+  async taoHoaDon(ma_phong: string, id_users: string, ngay_tao_hoa_don: string) {
     try {
-      // Lấy dữ liệu điện trong tháng và sắp xếp theo timestamp giảm dần để lấy bản ghi mới nhất
+      // Lấy dữ liệu điện trong tháng và sắp xếp theo timestamp giảm dần
       const electricityData = await Electricity.find({
         room_id: ma_phong,
-        timestamp: { $gte: startOfMonth(thang), $lte: endOfMonth(thang) },
+        timestamp: {
+          $gte: startOfMonth(ngay_tao_hoa_don),
+          $lte: endOfMonth(ngay_tao_hoa_don),
+        },
       }).sort({ timestamp: -1 });
 
       // Nếu không có dữ liệu điện, đặt chiSoDienThangNay = 0
@@ -28,7 +38,7 @@ export class HoaDonThangService {
         console.log("latestElectricity", latestElectricity);
       } else {
         console.log(
-          `Không có dữ liệu tiêu thụ điện trong tháng ${thang} cho phòng ${ma_phong}, sử dụng giá trị 0.`
+          `Không có dữ liệu tiêu thụ điện trong tháng ${ngay_tao_hoa_don} cho phòng ${ma_phong}, sử dụng giá trị 0.`
         );
       }
 
@@ -41,21 +51,21 @@ export class HoaDonThangService {
       const tienNuoc = dichVu.tien_nuoc ?? 0;
       const tienWifi = dichVu.tien_wifi ?? 0;
 
-      // Tính tổng tiền
-      const phongTro = await PhongTroModel.findOne();
+      // Lấy thông tin phòng trọ theo ma_phong
+      const phongTro = await PhongTroModel.findOne({ ma_phong });
       if (!phongTro) {
-        throw new Error("Không tìm thấy thông tin phòng trọ");
+        throw new Error(`Không tìm thấy thông tin phòng trọ với mã ${ma_phong}`);
       }
       const tienPhong = phongTro.gia_tien;
 
       // Lấy chỉ số điện tháng trước
-      const previousMonth = new Date(startOfMonth(thang));
+      const previousMonth = new Date(startOfMonth(ngay_tao_hoa_don));
       previousMonth.setMonth(previousMonth.getMonth() - 1);
       const hoaDonThangTruoc = await HoaDonTungThangModel.findOne({
         ma_phong,
         ngay_tao_hoa_don: {
-          $gte: startOfMonth(previousMonth.toISOString().slice(0, 7)),
-          $lte: endOfMonth(previousMonth.toISOString().slice(0, 7)),
+          $gte: startOfMonth(previousMonth.toISOString()),
+          $lte: endOfMonth(previousMonth.toISOString()),
         },
       }).sort({ ngay_tao_hoa_don: -1 });
 
@@ -83,8 +93,9 @@ export class HoaDonThangService {
         tien_dien: tienDien,
         tien_phong: tienPhong,
         dich_vu: dichVu._id,
-        electricity_data: latestElectricity, // Chỉ lưu _id của bản ghi mới nhất
-        tong_tien: tongTien,
+        electricity_data: latestElectricity ? [latestElectricity._id] : [],
+        ngay_tao_hoa_don: new Date(ngay_tao_hoa_don),
+        tong_tien: Number(tongTien.toFixed(0)),
       });
 
       await hoaDon.save();
@@ -97,7 +108,6 @@ export class HoaDonThangService {
       );
     }
   }
-
  async getDataHoaDon() {
   return await HoaDonTungThangModel.aggregate([
     {

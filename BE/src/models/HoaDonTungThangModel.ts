@@ -54,7 +54,7 @@ const HoaDonTungThangSchema = new Schema(
     },
     ngay_tao_hoa_don: {
       type: Date,
-      default: Date.now,
+      required: true,
     },
   },
   { timestamps: true }

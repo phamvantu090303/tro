@@ -25,13 +25,13 @@ export const taoHoaDon = async (req: Request, res: Response) => {
     }
     if (!ngay_tao_hoa_don) {
       return res.status(400).json({
-        message: "Thiếu thông tin: thang là bắt buộc",
+        message: "Thiếu thông tin: ngay_tao_hoa_don là bắt buộc",
       });
     }
-    if (!/^\d{4}-\d{2}$/.test(ngay_tao_hoa_don)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(ngay_tao_hoa_don)) {
       return res
         .status(400)
-        .json({ message: "Định dạng tháng không hợp lệ (YYYY-MM)" });
+        .json({ message: "Định dạng ngày không hợp lệ (YYYY-MM-DD)" });
     }
 
     const hoaDon = await hoaDonThangService.taoHoaDon(
@@ -45,7 +45,7 @@ export const taoHoaDon = async (req: Request, res: Response) => {
     });
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: `Lỗi: ${error.message}` });
     }
     console.error("Lỗi không xác định:", error);
     return res.status(500).json({ message: "Lỗi server nội bộ" });
