@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { DanhMucService } from "../services/DanhMucService";
+import DanhMucModel from "../models/DanhMucModel";
 dotenv.config();
 
 const danhMucService = new DanhMucService();
@@ -7,7 +8,12 @@ const danhMucService = new DanhMucService();
 const storeDanhMuc = async (req: any, res: any) => {
   const body = req.body;
   try {
-
+    const checkmaDanhMuc = await DanhMucModel.findOne({ ma_danh_muc: body.ma_danh_muc });
+    if (checkmaDanhMuc) {
+      return res.status(400).json({
+      message: "Mã danh mục đã tồn tại",
+      });
+    }
     await danhMucService.createDanhMuc(body);
 
     res.status(200).json({

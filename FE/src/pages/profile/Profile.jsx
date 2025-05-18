@@ -190,7 +190,7 @@ function Profile() {
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-[150px] mt-10 mb-20">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
-          <div className="w-full md:w-1/4">
+          <div className="w-full md:w-1/3">
             <div className="bg-white rounded-2xl shadow-sm p-6">
               {/* Avatar Section */}
               <div className="flex flex-col items-center pb-6 border-b border-gray-200">
@@ -217,7 +217,7 @@ function Profile() {
                     }`}
                   >
                     <span className="text-lg">{item.icon}</span>
-                    <span>{item.title}</span>
+                    <span className="w-full text-left">{item.title}</span>
                   </button>
                 ))}
               </nav>

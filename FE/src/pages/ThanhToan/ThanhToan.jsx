@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import useApiManagerAdmin from "../../hook/useApiManagerAdmin";
 import { axiosInstance } from "../../../Axios";
-
+import { useNavigate, useParams } from "react-router";
 function ThanhToan() {
-    const { data: hoaDonData, fetchData: fetchHoaDonData } = useApiManagerAdmin("/hoadon");
+    const params = useParams();
+    const navigate = useNavigate();
+    const { id } = params;
     const [thanhToan, setThanhToan] = useState({
         ma_phong: "",
         id_users: "",
@@ -14,28 +15,35 @@ function ThanhToan() {
     });
     const [message, setMessage] = useState("");
 
-    // Lấy thông tin hóa đơn mới nhất
     useEffect(() => {
-        if (hoaDonData && hoaDonData.length > 0) {
-            const latestHoaDon = hoaDonData[hoaDonData.length - 1];
-            setThanhToan({
-                ma_phong: latestHoaDon.ma_phong || "",
-                id_users: latestHoaDon.id_users || "",
-                ma_don_hang: latestHoaDon.ma_don_hang || "HD-Unknown",
-                ho_va_ten: latestHoaDon.ho_va_ten || "Khách",
-                so_tien: latestHoaDon.so_tien || 0,
-                trang_thai: latestHoaDon.trang_thai || "chưa thanh toán",
-            });
-        }
-    }, [hoaDonData]);
+        fetchDetailHoaDon();
+    }, [id]);
 
-    // Hàm gọi API kiểm tra giao dịch
+    // Gọi hàm để lấy thông tin hóa đơn khi id thay đổi
+    const fetchDetailHoaDon = async () => {
+        try {
+            const response = await axiosInstance.get(`/hoadon/get-detail/${id}`);
+            const hoaDon = response.data.data[0];
+            setThanhToan({
+                ma_phong: hoaDon.ma_phong || "",
+                id_users: hoaDon.id_users || "",
+                ma_don_hang: hoaDon.ma_don_hang || "HD-Unknown",
+                ho_va_ten: hoaDon.ho_va_ten || "Khách",
+                so_tien: hoaDon.so_tien || 0,
+                trang_thai: hoaDon.trang_thai || "chưa thanh toán",
+            });
+
+        } catch (error) {
+            console.error("Error fetching invoice details:", error);
+        }
+    }
+
     const handleCheckTransaction = async () => {
         setMessage("");
         try {
             const { data } = await axiosInstance.post("/ngan-hang/transaction");
             setMessage(data.message);
-            await fetchHoaDonData();
+            await fetchDetailHoaDon();
         } catch (error) {
             setMessage("Lỗi khi kiểm tra giao dịch");
             console.error("Error checking transaction:", error.message);
@@ -58,6 +66,9 @@ function ThanhToan() {
         if (thanhToan.trang_thai === "đã thanh toán") {
             clearInterval(intervalId);
             setMessage("Giao dịch đã được xác nhận thành công!");
+            setTimeout(() => {
+                navigate("/");
+            }, 5000);
         }
 
         return () => clearInterval(intervalId); // Cleanup interval khi component unmount
