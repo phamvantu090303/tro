@@ -31,7 +31,7 @@ const routerUser = (
     <Route path="profile" element={<Profile />} />
     <Route path="/ProductList" element={<ProductList />} />
     <Route path="/thanh-toan" element={<ThanhToan />} />
-    <Route path="/thanh-toan-thang" element={<ThanhToanThang />} />
+    <Route path="/thanh-toan-thang/:id" element={<ThanhToanThang />} />
   </Route>
 );
 

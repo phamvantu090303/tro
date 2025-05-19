@@ -39,6 +39,16 @@ export const taoHoaDon = async (req: Request, res: Response) => {
       id_users,
       ngay_tao_hoa_don
     );
+
+    // Lấy thông tin người thuê
+    const nguoiThue = await UserModel.findById(id_users);
+    if (!nguoiThue) {
+      return res.status(404).json({ message: 'Không tìm thấy người thuê' });
+    }
+
+    // Gửi email
+    await sendEmail(nguoiThue, hoaDon);
+
     return res.status(201).json({
       message: "Tạo hóa đơn tháng thành công",
       data: hoaDon,
@@ -83,6 +93,8 @@ export const getHoaDonUser = async (req: Request, res: Response) => {
       status: "200",
       data: data,
     });
+
+    
   } catch (error: any) {
     res.status(404).json({
       message: error.message,
@@ -122,6 +134,22 @@ export const deleteHoaDonByID = async (req: any, res: any) => {
     });
   }
 };
+
+export const getByIdHoaDon = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    console.log("ID nhận được:", id);
+    const hoadonThang = await hoaDonThangService.findById(id);
+    if (!hoadonThang)
+      return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
+    res.status(200).json({
+      status: "200",
+      data: hoadonThang,
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 // Hàm tự động tạo hóa đơn mới cho tháng tiếp theo
 export const tuDongTaoHoaDonThang = async () => {
@@ -454,7 +482,7 @@ const sendEmail = async (ngươithue: any, hoaDon: any) => {
     },
   });
 
-  const linkThanhToanThang = `${process.env.CLIENT_URL}/thanh-toan-thang`;
+  const linkThanhToanThang = `${process.env.CLIENT_URL}/thanh-toan-thang/${hoaDon.ma_hoa_don_thang}`;
   const mailOptions = {
     from: process.env.MAIL_USERNAME,
     to: ngươithue.email,
