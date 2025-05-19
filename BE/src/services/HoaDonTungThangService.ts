@@ -3,6 +3,7 @@ import Electricity from "../models/Electricity";
 import DichVuModel from "../models/DichVuModel";
 import HoaDonTungThangModel from "../models/HoaDonTungThangModel";
 import PhongTroModel from "../models/PhongTroModel";
+import HoaDonThanhToanModel from "../models/HoaDonThanhToanModel";
 
 // Hàm tính ngày đầu tháng
 export function startOfMonth(dateStr: string): Date {
@@ -102,71 +103,72 @@ export class HoaDonThangService {
       return hoaDon;
     } catch (error) {
       throw new Error(
-        `Lỗi khi tạo hóa đơn: ${
-          error instanceof Error ? error.message : "Unknown error"
+        `Lỗi khi tạo hóa đơn: ${error instanceof Error ? error.message : "Unknown error"
         }`
       );
     }
   }
- async getDataHoaDon() {
-  return await HoaDonTungThangModel.aggregate([
-    {
-      // Chuyển id_users và dich_vu (string) thành ObjectId
-      $addFields: {
-        id_users: { $toObjectId: "$id_users" },
-        dich_vu: { $toObjectId: "$dich_vu" }, // Chuyển dich_vu thành ObjectId
+
+  async getDataHoaDon() {
+    return await HoaDonTungThangModel.aggregate([
+      {
+        // Chuyển id_users và dich_vu (string) thành ObjectId
+        $addFields: {
+          id_users: { $toObjectId: "$id_users" },
+          dich_vu: { $toObjectId: "$dich_vu" }, // Chuyển dich_vu thành ObjectId
+        },
       },
-    },
-    {
-      // Lookup để lấy thông tin users
-      $lookup: {
-        from: "users",
-        localField: "id_users",
-        foreignField: "_id",
-        as: "id_users",
+      {
+        // Lookup để lấy thông tin users
+        $lookup: {
+          from: "users",
+          localField: "id_users",
+          foreignField: "_id",
+          as: "id_users",
+        },
       },
-    },
-    {
-      $unwind: {
-        path: "$id_users",
-        preserveNullAndEmptyArrays: false,
+      {
+        $unwind: {
+          path: "$id_users",
+          preserveNullAndEmptyArrays: false,
+        },
       },
-    },
-    {
-      // Lookup để lấy thông tin dich_vu
-      $lookup: {
-        from: "dich_vus", // Tên collection của dịch vụ
-        localField: "dich_vu",
-        foreignField: "_id",
-        as: "dich_vu",
+      {
+        // Lookup để lấy thông tin dich_vu
+        $lookup: {
+          from: "dich_vus", // Tên collection của dịch vụ
+          localField: "dich_vu",
+          foreignField: "_id",
+          as: "dich_vu",
+        },
       },
-    },
-    {
-      $unwind: {
-        path: "$dich_vu",
-        preserveNullAndEmptyArrays: false, // true nếu muốn giữ bản ghi khi không có dịch vụ
+      {
+        $unwind: {
+          path: "$dich_vu",
+          preserveNullAndEmptyArrays: false, // true nếu muốn giữ bản ghi khi không có dịch vụ
+        },
       },
-    },
-    {
-      // Chỉ lấy các trường cần thiết
-      $project: {
-        ma_hoa_don_thang: 1,
-        id_user: "$id_users._id",
-        ho_va_ten: "$id_users.ho_va_ten",
-        ma_phong: 1,
-        dich_vu: 1,
-        so_dien_tieu_thu: 1,
-        tien_dien: 1,
-        tien_phong: 1,
-        chi_so_dien_thang_nay: 1,
-        chi_so_dien_thang_truoc: 1,
-        tong_tien: 1,
-        trang_thai: 1,
-        ngay_tao_hoa_don: 1,
+      {
+        // Chỉ lấy các trường cần thiết
+        $project: {
+          ma_hoa_don_thang: 1,
+          id_user: "$id_users._id",
+          ho_va_ten: "$id_users.ho_va_ten",
+          ma_phong: 1,
+          dich_vu: 1,
+          so_dien_tieu_thu: 1,
+          tien_dien: 1,
+          tien_phong: 1,
+          chi_so_dien_thang_nay: 1,
+          chi_so_dien_thang_truoc: 1,
+          tong_tien: 1,
+          trang_thai: 1,
+          ngay_tao_hoa_don: 1,
+        },
       },
-    },
-  ]);
-}
+    ]);
+  }
+
   async getUserHoaDon(id_user: string): Promise<any[]> {
     const id = new ObjectId(id_user);
 
@@ -338,9 +340,9 @@ export class HoaDonThangService {
     hoaDon.ma_phong = ma_phong ?? hoaDon.ma_phong;
     hoaDon.id_users = id_users ?? hoaDon.id_users;
     hoaDon.chi_so_dien_thang_nay =
-    chi_so_dien_thang_nay ?? hoaDon.chi_so_dien_thang_nay;
+      chi_so_dien_thang_nay ?? hoaDon.chi_so_dien_thang_nay;
     hoaDon.chi_so_dien_thang_truoc =
-    chi_so_dien_thang_truoc ?? hoaDon.chi_so_dien_thang_truoc;
+      chi_so_dien_thang_truoc ?? hoaDon.chi_so_dien_thang_truoc;
     hoaDon.so_dien_tieu_thu = so_dien_tieu_thu ?? hoaDon.so_dien_tieu_thu;
     hoaDon.tien_dien = tien_dien ?? hoaDon.tien_dien;
     hoaDon.tien_phong = tien_phong ?? hoaDon.tien_phong;
@@ -358,6 +360,70 @@ export class HoaDonThangService {
       throw new Error("Hóa đơn không tồn tại");
     }
     await HoaDonTungThangModel.findByIdAndDelete(id);
+  }
+
+  async findById(id: string) {
+    return await HoaDonTungThangModel.aggregate([
+      {
+        // Phù hợp với tài liệu bằng ma_hoa_don_thang
+        $match: { ma_hoa_don_thang: id },
+      },
+      {
+        // Chuyển id_users và dich_vu (string) thành ObjectId
+        $addFields: {
+          id_users: { $toObjectId: "$id_users" },
+          dich_vu: { $toObjectId: "$dich_vu" }, // Chuyển dich_vu thành ObjectId
+        },
+      },
+      {
+        // Lookup để lấy thông tin users
+        $lookup: {
+          from: "users",
+          localField: "id_users",
+          foreignField: "_id",
+          as: "id_users",
+        },
+      },
+      {
+        $unwind: {
+          path: "$id_users",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        // Lookup để lấy thông tin dich_vu
+        $lookup: {
+          from: "dich_vus", // Tên collection của dịch vụ
+          localField: "dich_vu",
+          foreignField: "_id",
+          as: "dich_vu",
+        },
+      },
+      {
+        $unwind: {
+          path: "$dich_vu",
+          preserveNullAndEmptyArrays: false, // true nếu muốn giữ bản ghi khi không có dịch vụ
+        },
+      },
+      {
+        // Chỉ lấy các trường cần thiết
+        $project: {
+          ma_hoa_don_thang: 1,
+          id_user: "$id_users._id",
+          ho_va_ten: "$id_users.ho_va_ten",
+          ma_phong: 1,
+          dich_vu: 1,
+          so_dien_tieu_thu: 1,
+          tien_dien: 1,
+          tien_phong: 1,
+          chi_so_dien_thang_nay: 1,
+          chi_so_dien_thang_truoc: 1,
+          tong_tien: 1,
+          trang_thai: 1,
+          ngay_tao_hoa_don: 1,
+        },
+      },
+    ]);
   }
 }
 
