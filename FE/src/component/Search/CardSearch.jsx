@@ -10,9 +10,6 @@ function CardSearch({
   dientich,
   diachi,
   giatien,
-  trangthai,
-  thanhpho,
-  price,
 }) {
   const navigate = useNavigate();
   const handleCard = async (e) => {

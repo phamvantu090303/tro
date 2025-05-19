@@ -10,6 +10,8 @@ import { FaMapLocationDot } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import { axiosInstance } from "../../../Axios";
 import { Helmet } from "react-helmet";
+import { validateUser } from "../../utils/validateUser";
+
 function Register() {
   const navigate = useNavigate();
   const [user, setUser] = useState({
@@ -23,72 +25,20 @@ function Register() {
     gioitinh: "",
     cccd: "",
   });
-
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const validate = (name, value) => {
-    let errorMsg = "";
-
-    if (value.trim() !== "") {
-      if (name === "hovaten" || name === "quequan") {
-        if (!/^[A-Za-zÀ-ỹà-ỹ\s]+$/.test(value)) {
-          errorMsg = "Chỉ được nhập chữ cái và khoảng trắng.";
-        }
-      }
-
-      if (name === "email") {
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          errorMsg = "Email không hợp lệ.";
-        }
-      }
-
-      if (name === "password") {
-        if (value.length < 6) {
-          errorMsg = "Mật khẩu phải có ít nhất 6 ký tự.";
-        }
-      }
-
-      if (name === "sodienthoai") {
-        if (!/^\d{10}$/.test(value)) {
-          errorMsg = "Số điện thoại phải có 10 chữ số.";
-        }
-      }
-
-      if (name === "cccd") {
-        if (!/^\d{10}$/.test(value)) {
-          errorMsg = "Căn cước công dân phải có 12 chữ số.";
-        }
-      }
-      if (name === "ngaysinh") {
-        const selectedDate = new Date(value);
-        if (isNaN(selectedDate.getTime()) || selectedDate > new Date()) {
-          errorMsg = "Ngày sinh không hợp lệ.";
-        }
-      }
-    }
-
-    setErrors((prev) => ({ ...prev, [name]: errorMsg }));
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    validate(name, value);
+
     setUser((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    let newErrors = {};
-
-    Object.keys(user).forEach((key) => {
-      if (!user[key]) newErrors[key] = "Trường này không được bỏ trống.";
-    });
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      console.log("Errors found:", newErrors);
-      return;
-    }
+    const validationErrors = validateUser(user);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
     try {
       setLoading(true);
@@ -100,7 +50,7 @@ function Register() {
         ngay_sinh: new Date(user.ngaysinh).toISOString(),
         que_quan: user.quequan,
         so_dien_thoai: user.sodienthoai,
-        gioi_tinh: new Number(user.gioitinh),
+        gioi_tinh: Number(user.gioitinh),
         cccd: user.cccd,
       });
       console.log("Server response:", res.data);
@@ -117,7 +67,7 @@ function Register() {
       setLoading(false);
     }
   };
-
+  console.log("errors", errors);
   return (
     <div className="relative flex">
       <Helmet>
@@ -153,7 +103,7 @@ function Register() {
                 <p className="font-semibold text-[34px] mb-5">
                   Bình tĩnh và thư giãn
                 </p>
-                <p>Liên hệ: +62 891 7323 8801</p>
+                <p>Liên hệ: +85 935 525 683</p>
               </div>
             </div>
           </div>

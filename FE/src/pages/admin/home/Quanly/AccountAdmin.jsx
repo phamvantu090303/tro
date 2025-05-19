@@ -222,7 +222,6 @@ function AccountAdmin() {
                   <input
                     type="password"
                     placeholder="Nhập mật khẩu"
-                    value={adminData.password}
                     onChange={(e) =>
                       setAdminData({ ...adminData, password: e.target.value })
                     }

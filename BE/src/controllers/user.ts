@@ -56,7 +56,7 @@ export const login = async (req: Request, res: Response) => {
     });
     res.status(200).json({
       message: "Login successfully!!!",
-      token : token,
+      token: token,
       data: {
         user: {
           id: user._id,
@@ -173,6 +173,7 @@ export const updateUser = async (req: Request, res: Response) => {
   try {
     const { user } = req as any;
     const data = req.body;
+
     await userService.updateUserService(user._id, data);
 
     res.status(200).json({

@@ -93,7 +93,7 @@ export class UserService {
     // Kiểm tra danh mục cần cập nhật có tồn tại không
     const update = await UserModel.findById(id);
     if (!update) {
-      throw new Error("ID admin không tồn tại");
+      throw new Error("ID Người dùng không tồn tại");
     }
 
     if (password) {
@@ -106,6 +106,11 @@ export class UserService {
       }
 
       const isMatch = await bcrypt.compare(oldPassword, update.password);
+      const isSamePassword = await bcrypt.compare(password, update.password);
+
+      if (isSamePassword) {
+        throw new Error("Vui lòng nhập mật khẩu mới khác mật khẩu cũ.");
+      }
 
       if (!isMatch) {
         throw new Error("Mật khẩu cũ không đúng");
