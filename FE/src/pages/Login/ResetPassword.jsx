@@ -68,7 +68,7 @@ const ResetPassword = ({ token: propToken }) => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg min-h-screen">
       <Helmet>
         <title>Đổi mật khẩu</title>
       </Helmet>

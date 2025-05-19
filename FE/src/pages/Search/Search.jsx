@@ -28,7 +28,7 @@ function Search() {
       const sortedResults = res.data.data.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
-      console.log("Kết quả tìm kiếm:", sortedResults);  
+      console.log("Kết quả tìm kiếm:", sortedResults);
       setDataSearch(sortedResults);
     } catch (error) {
       console.error("Lỗi khi fetch dữ liệu:", error);
@@ -74,7 +74,7 @@ function Search() {
       </Helmet>
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-[150px] mt-[40px] lg:mt-[78px] flex flex-col lg:flex-row gap-6 lg:gap-[59px] mb-[140px]">
         {/* Bộ lọc */}
-        <div className="w-full lg:w-1/4 xl:sticky top-2 bg-white/50 md:bg-inherit">
+        <div className="w-full lg:w-1/4 xl:sticky top-2 bg-white/50 md:bg-inherit h-screen overflow-auto">
           <div className="xl:sticky top-2">
             <div className="bg-[#282C4E] py-4 px-4 sm:px-[18px] rounded-lg">
               <p className="text-base text-white mb-3">Tìm kiếm phòng trọ</p>

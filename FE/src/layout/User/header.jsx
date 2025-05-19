@@ -142,13 +142,13 @@ function Header() {
                   className="font-bold text-base border border-white px-6 py-3 rounded-md hover:bg-white hover:text-black transition"
                   onClick={() => navigate("/Register")}
                 >
-                  Register
+                  Đăng ký
                 </button>
                 <button
                   className="font-bold text-base bg-white text-black px-6 py-3 rounded-md hover:bg-gray-300 transition"
                   onClick={() => navigate("/login")}
                 >
-                  Sign In
+                  Đăng nhập
                 </button>
               </motion.div>
             ) : (

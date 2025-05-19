@@ -90,16 +90,16 @@ function Login() {
             <div className="absolute inset-0 bg-black bg-opacity-40 h-full"></div>
             <div className="absolute inset-0 flex flex-col w-[100%]">
               <div className="absolute top-[30%] right-10 w-[80%]">
-                <h1 className="text-[64px] text-right font-bold">Room</h1>
-                <p className="mt-2 text-lg  text-right">
-                  Choose your accommodation
-                </p>
+                <h1 className="text-[64px] text-right font-bold">Phòng trọ</h1>
+                <p className="mt-2 text-lg  text-right">Chọn chỗ ở của bạn</p>
                 <span className=" block h-[2px] bg-white w-full"></span>
               </div>
 
               <div className="absolute bottom-5 right-10 text-sm text-gray-300 text-end">
-                <p className="font-semibold text-[34px] mb-5">calm & relaxed</p>
-                <p>Contact: +62 891 7323 8801</p>
+                <p className="font-semibold text-[34px] mb-5">
+                  Tĩnh lặng & thoải mái
+                </p>
+                <p>Liên hệ: +85 935 525 683</p>
               </div>
             </div>
           </div>
@@ -128,7 +128,7 @@ function Login() {
                 <input
                   type="password"
                   name="password"
-                  placeholder="password"
+                  placeholder="Mật khẩu"
                   className="w-full px-10 py-3 rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400"
                   value={password}
                   onChange={handleInputChange}
@@ -137,9 +137,7 @@ function Login() {
               </div>
               <div className="flex items-center">
                 <input type="checkbox" className="mr-2 w-[20px] h-[20px]" />
-                <label className="text-lg text-gray-600">
-                  Remember Password
-                </label>
+                <label className="text-lg text-gray-600">Lưu mật khẩu</label>
               </div>
               <button
                 type="submit"

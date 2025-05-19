@@ -329,7 +329,7 @@ function RoomDetails() {
                       onClick={() => handlePile(id)}
                       disabled={isLoading}
                     >
-                      {isLoading ? "Đang xử lý..." : "Đặc cọc"}
+                      {isLoading ? "Đang xử lý..." : "Đặt cọc"}
                     </button>
                   ) : (
                     <div></div>

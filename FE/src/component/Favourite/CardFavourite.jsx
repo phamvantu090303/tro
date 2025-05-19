@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { axiosInstance } from "../../../Axios";
 import { motion } from "framer-motion";
+import { formatTienPhong } from "../../hook/useMasking";
 
 function CardFavourite({
   id,
@@ -68,7 +69,7 @@ function CardFavourite({
       <img
         src={img}
         alt=""
-        className="w-auto md:w-[329px] h-auto object-cover rounded-md"
+        className="min-w-[285px] xl:w-[285px] xl:h-[200px] object-cover pt-4 md:pt-0"
       />
 
       {/* Nội dung */}
@@ -81,26 +82,24 @@ function CardFavourite({
           >
             {title}
           </h6>
-          <p className="text-sm sm:text-base text-gray-500 mt-2 lg:mt-4">
-            {noidung}
-          </p>
+          <p className="text-sm sm:text-base text-gray-500 mt-2">{noidung}</p>
 
-          <div className="flex justify-between lg:block mt-2 lg:mt-4">
+          <div className="flex justify-between lg:block mt-2">
             <button
-              className="py-2 lg:py-3 px-4 sm:px-5 bg-customBlue text-white font-medium w-fit rounded-lg hover:bg-customBlue/90"
+              className="py-2 lg:py-3 px-4 sm:px-5 bg-customBlue text-white font-medium w-[120px] rounded-lg hover:bg-customBlue/90 "
               onClick={() => navigate(`/details/${id}`)}
             >
               Xem
             </button>
-            <div>
+            <div className="mt-2">
               <p
                 style={{ color: colorStatus }}
                 className="font-medium text-base sm:text-lg"
               >
                 {status}
               </p>
-              <p className="mt-2 lg:mt-4 text-sm sm:text-base">
-                Khu vực {diachi}
+              <p className="mt-2">
+                <span className="text-lg font-medium">Khu vực: </span> {diachi}
               </p>
             </div>
           </div>
@@ -125,7 +124,7 @@ function CardFavourite({
               </p>
             </div>
             <p className="text-bold text-lg sm:text-xl mt-3 text-yellow-500">
-              ${price}
+              {formatTienPhong(price)} VND
             </p>
           </div>
         </div>

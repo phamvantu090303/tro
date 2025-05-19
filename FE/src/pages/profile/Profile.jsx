@@ -121,7 +121,7 @@ function Profile() {
   const menuItems = [
     { title: "Thông tin cá nhân", icon: "👤" },
     { title: "Sửa chữa", icon: "🔧" },
-    { title: "Yêu cầu", icon: "📋" },
+
     { title: "Hóa đơn", icon: "💰" },
     { title: "Hợp đồng", icon: "📄" },
   ];
@@ -138,6 +138,7 @@ function Profile() {
         cccd: user.cccd?.toString() || "",
       });
     }
+    console.log("User updated in sidebar:", user);
   }, [user]);
 
   const handleUpdateUser = async () => {
@@ -179,8 +180,6 @@ function Profile() {
   if (!user) {
     return <Spinner />;
   }
-  console.log(user);
-  console.log(errors);
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
@@ -191,7 +190,7 @@ function Profile() {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
           <div className="w-full md:w-1/4">
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            <div className="bg-white rounded-2xl shadow-sm p-4">
               {/* Avatar Section */}
               <div className="flex flex-col items-center pb-6 border-b border-gray-200">
                 <FaRegUserCircle className="w-32 h-32" />
@@ -210,7 +209,7 @@ function Profile() {
                   <button
                     key={item.title}
                     onClick={() => setChucnang(item.title)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                    className={`w-full flex items-center gap-2 px-2 py-3 rounded-lg transition-all duration-200 ${
                       chucnang === item.title
                         ? "bg-blue-500 text-white shadow-md"
                         : "text-gray-600 hover:bg-gray-50"
