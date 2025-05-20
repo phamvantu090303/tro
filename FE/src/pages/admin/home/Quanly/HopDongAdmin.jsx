@@ -12,6 +12,7 @@ function HopDongAdmin() {
   const { modalType, idModal, isOpen } = useSelector(
     (state) => state.ModalForm
   );
+  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
     ma_phong: "",
     id_users: "",
@@ -47,8 +48,14 @@ function HopDongAdmin() {
   ];
 
   const handleUpdate = async () => {
-    if (modalType === "edit") {
-      await UpdateData(idModal, data);
+    setIsLoading(true);
+    try {
+      if (modalType === "edit") {
+        await UpdateData(idModal, data);
+      }
+      handleClose();
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -249,9 +256,14 @@ function HopDongAdmin() {
             </form>
             <button
               onClick={handleUpdate}
+              disabled={isLoading}
               className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
             >
-              {modalType === "edit" ? "Chỉnh sửa" : "Tạo"}
+              {isLoading
+                ? "Đang tải "
+                : modalType === "edit"
+                ? "Chỉnh sửa"
+                : "Tạo"}
             </button>
           </div>
         </div>

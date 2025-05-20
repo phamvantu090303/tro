@@ -33,7 +33,7 @@ const ElectricityInvoice = () => {
   const [invoices, setInvoices] = useState([]);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(false);
 
   // Dữ liệu cho biểu đồ
   const [usageData, setUsageData] = useState({
@@ -73,6 +73,7 @@ const ElectricityInvoice = () => {
   // Lấy danh sách hóa đơn từ API
   useEffect(() => {
     const fetchInvoices = async () => {
+      setLoading(true);
       try {
         const response = await axiosInstance.get(
           `/hoa-don-thang/getHDUser/${user._id}`
@@ -82,11 +83,11 @@ const ElectricityInvoice = () => {
         if (data.status === "200" && data.data.length > 0) {
           setInvoices(data.data);
         } else {
-          setError(data.message);
+          setError(true);
         }
-        setLoading(false);
-      } catch (error) {
-        setError(error.response.data.message);
+      } catch {
+        setError(true);
+      } finally {
         setLoading(false);
       }
     };
@@ -162,7 +163,12 @@ const ElectricityInvoice = () => {
   };
 
   if (loading) return <div className="text-center p-4">Đang tải...</div>;
-  if (error) return <div className="text-center p-4 text-red-500">{error}</div>;
+  if (error)
+    return (
+      <div className="text-center text-sm md:text-xl font-semibold py-4 block md:table-celltext-center p-4 text-red-500">
+        Bạn chưa có hóa đơn nào
+      </div>
+    );
 
   // Step 1: Danh sách hóa đơn
   if (step === 1) {

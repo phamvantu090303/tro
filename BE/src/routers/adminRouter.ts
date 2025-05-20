@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  checkAdmin,
   createAdmin,
   deleteAdmin,
   getAdmin,
@@ -22,8 +23,13 @@ const routerAdmin = Router();
 
 routerAdmin.post("/login", LoginAdminValidator, loginAdmin);
 
-routerAdmin.post("/create",validateAdminInput, createAdmin);
-routerAdmin.post("/update/:id", accessTokenAdmin,validateAdminInput, updateAdmin);
+routerAdmin.post("/create", validateAdminInput, createAdmin);
+routerAdmin.post(
+  "/update/:id",
+  accessTokenAdmin,
+  validateAdminInput,
+  updateAdmin
+);
 routerAdmin.delete("/delete/:id", deleteAdmin);
 
 routerAdmin.post(
@@ -33,7 +39,7 @@ routerAdmin.post(
 );
 routerAdmin.post("/reset-password", ResetPasswordAdmin, resetPasswordAdmin);
 routerAdmin.post("/logout", logoutAdmin);
-
+routerAdmin.get("/check-admin", checkAdmin);
 routerAdmin.get("/getadmin", accessTokenAdmin, getAdmin);
 routerAdmin.get("/getAll", getAllAdmin);
 

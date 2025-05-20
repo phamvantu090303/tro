@@ -1,17 +1,44 @@
 import MapModel from "../models/MapModel";
 
+interface MapData {
+  ma_map: string;
+  address: string;
+  district: string;
+  latitude: number;
+  longitude: number;
+  province: string;
+  ward: string;
+}
 class MapService {
-  async CreateMap(data: any) {
-    const map = new MapModel({
-      ma_map: data.ma_map,
-      address: data.address,
-      district: data.district,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      province: data.province,
-      ward: data.ward,
-    });
-    await map.save();
+  async CreateMap(data: MapData) {
+    const map = new MapModel(data);
+    if(data.ma_map === "") {
+      throw new Error("Mã bản đồ không được để trống");
+    }
+    if(data.address === "") {
+      throw new Error("Địa chỉ không được để trống");
+    }
+    if(data.district === "") {
+      throw new Error("Quận huyện không được để trống");
+    }
+    if(data.latitude === 0) {
+      throw new Error("Vĩ độ không được để trống");
+    }
+    if(data.longitude === 0) {
+      throw new Error("Kinh độ không được để trống");
+    }
+    if(data.province === "") {
+      throw new Error("Tỉnh thành không được để trống");
+    }
+    if(data.ward === "") {
+      throw new Error("Phường xã không được để trống");
+    }
+    const chekCodeMap = await MapModel.findOne({ ma_map: data.ma_map });
+    if (chekCodeMap) {
+      throw new Error("Mã bản đồ đã tồn tại");
+    }
+    const savedMap = await map.save();
+    return savedMap;
   }
 
   async DeleteMap(_id: any) {
@@ -19,8 +46,10 @@ class MapService {
   }
 
   async UpdateMap(id: any, updateData: any) {
-    console.log("id", id);
-    console.log("data update", updateData);
+    const existingMap = await MapModel.findOne({ ma_map: updateData.ma_map });
+    if (existingMap && existingMap._id.toString() !== id) {
+      throw new Error("Mã bản đồ đã tồn tại");
+    }
     await MapModel.findByIdAndUpdate(id, {
       ma_map: updateData.ma_map,
       address: updateData.address,

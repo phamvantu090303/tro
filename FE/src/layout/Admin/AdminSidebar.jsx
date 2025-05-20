@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "../../assets/logo/logo.svg";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { IoIosLogOut } from "react-icons/io";
@@ -9,6 +9,7 @@ import { FaBars } from "react-icons/fa";
 import { IoChevronDown, IoChevronUp } from "react-icons/io5";
 import { logoutAdmin } from "../../Store/filterAdmin";
 import { axiosInstance } from "../../../Axios";
+import { getSocket } from "../../../Socket";
 
 export default function AdminSidebar({ setActiveComponent, activeComponent }) {
   const { admin } = useSelector((state) => state.authAdmin);
@@ -16,9 +17,11 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdowns, setDropdowns] = useState({});
-
+  const [numberMess, setNumberMess] = useState(0);
   const isActive = (component) => activeComponent === component;
-
+  const reloadMessageCount = useSelector(
+    (state) => state.sidebar.reloadMessageCount
+  );
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   const toggleDropdown = (key) => {
@@ -32,6 +35,33 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
     dispatch(logoutAdmin());
     navigate("/admin/login");
   };
+
+  const fetchSumMess = async () => {
+    const res = await axiosInstance.get("/tin-nhan/tin-nhan-tong");
+    setNumberMess(res.data.data);
+  };
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    const handleMessage = () => {
+      console.log("đang chạy socket");
+      fetchSumMess();
+    };
+
+    if (activeComponent) {
+      fetchSumMess();
+    }
+
+    socket.on("nhan_tin_nhan", handleMessage);
+    return () => {
+      socket.off("nhan_tin_nhan", handleMessage);
+    };
+  }, [activeComponent]);
+
+  useEffect(() => {
+    fetchSumMess();
+  }, [reloadMessageCount]);
 
   // Danh sách items menu
   const menuItems = [
@@ -132,9 +162,9 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
             <nav className="flex flex-col  2xl:mt-10">
               <ul className="flex flex-col gap-2 px-2">
                 {menuItems.map((item) => (
-                  <li key={item.key}>
+                  <li key={item.key} className="relative">
                     <div
-                      className={`font-medium cursor-pointer p-3 rounded flex items-center justify-between transition-all duration-300 transform ${
+                      className={`relative font-medium cursor-pointer p-3 rounded flex items-center justify-between transition-all duration-300 transform ${
                         isActive(item.key) || dropdowns[item.key]
                           ? "bg-blue-900 text-white scale-105"
                           : "text-gray-300 hover:bg-blue-950 hover:text-white hover:scale-102"
@@ -149,6 +179,12 @@ export default function AdminSidebar({ setActiveComponent, activeComponent }) {
                         {item.icon}
                         {item.label}
                       </div>
+                      {item.key === "mess" && numberMess > 0 ? (
+                        <span className="absolute top-4 left-3 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                          {numberMess}
+                        </span>
+                      ) : null}
+
                       {item.children &&
                         (dropdowns[item.key] ? (
                           <IoChevronUp />

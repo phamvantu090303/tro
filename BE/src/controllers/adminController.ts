@@ -200,3 +200,19 @@ export const getAllAdmin = async (req: any, res: any) => {
     });
   }
 };
+
+export const checkAdmin = async (req: any, res: any) => {
+  try {
+    const { tokenAdmin } = req.cookies;
+
+    if (!tokenAdmin) {
+      // Chưa đăng nhập => trả về 401
+      return res.sendStatus(401);
+    }
+
+    // Đã đăng nhập => trả về true (không có message)
+    return res.status(200).json(true);
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+};

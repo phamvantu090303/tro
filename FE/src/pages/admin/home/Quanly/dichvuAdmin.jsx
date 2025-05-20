@@ -10,6 +10,7 @@ import {
 
 function DichvuAdmin() {
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const { modalType, idModal, isOpen } = useSelector(
     (state) => state.ModalForm
   );
@@ -76,28 +77,33 @@ function DichvuAdmin() {
   };
 
   const handleCreate = async () => {
-    if (!validate()) return; // Nếu lỗi thì không chạy tiếp
+    setIsLoading(true);
+    try {
+      if (!validate()) return; // Nếu lỗi thì không chạy tiếp
 
-    if (modalType === "create") {
-      await createData({
-        tien_dien: Number(data.tien_dien),
-        tien_nuoc: Number(data.tien_nuoc),
-        tien_wifi: Number(data.tien_wifi),
+      if (modalType === "create") {
+        await createData({
+          tien_dien: Number(data.tien_dien),
+          tien_nuoc: Number(data.tien_nuoc),
+          tien_wifi: Number(data.tien_wifi),
+        });
+      } else if (modalType === "edit") {
+        await UpdateData(idModal, {
+          tien_dien: Number(data.tien_dien),
+          tien_nuoc: Number(data.tien_nuoc),
+          tien_wifi: Number(data.tien_wifi),
+        });
+      }
+      setData({
+        tien_dien: "",
+        tien_nuoc: "",
+        tien_wifi: "",
       });
-    } else if (modalType === "edit") {
-      await UpdateData(idModal, {
-        tien_dien: Number(data.tien_dien),
-        tien_nuoc: Number(data.tien_nuoc),
-        tien_wifi: Number(data.tien_wifi),
-      });
+      setErrors({});
+      dispatch(CloseModalForm());
+    } finally {
+      setIsLoading(false);
     }
-    setData({
-      tien_dien: "",
-      tien_nuoc: "",
-      tien_wifi: "",
-    });
-    setErrors({});
-    dispatch(CloseModalForm());
   };
 
   const handleOpenModalEdit = async (room) => {
@@ -251,9 +257,14 @@ function DichvuAdmin() {
             </form>
             <button
               onClick={handleCreate}
-              className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
+              disabled={isLoading}
+              className="py-2 px-7 text-white bg-customBlue rounded-lg mt-4"
             >
-              {modalType === "edit" ? "Chỉnh sửa" : "Tạo"}
+              {isLoading
+                ? "Đang tải..."
+                : modalType === "edit"
+                ? "Chỉnh sửa"
+                : "Thêm"}
             </button>
           </div>
         </div>

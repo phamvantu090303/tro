@@ -216,7 +216,7 @@ function Profile() {
                     }`}
                   >
                     <span className="text-lg">{item.icon}</span>
-                    <span>{item.title}</span>
+                    <span className="w-full text-left">{item.title}</span>
                   </button>
                 ))}
               </nav>

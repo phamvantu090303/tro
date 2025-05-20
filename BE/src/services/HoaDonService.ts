@@ -85,6 +85,49 @@ export class HoaDonService {
     ]);
     return result[0];
   }
+
+  async findById(id: string) {
+    return await HoaDonThanhToanModel.aggregate([
+      {
+        // Match the document by ma_don_hang
+        $match: { ma_don_hang: id },
+      },
+      {
+        // Convert id_users to ObjectId for joining
+        $addFields: {
+          id_users: { $toObjectId: "$id_users" },
+        },
+      },
+      {
+        // Join with users collection
+        $lookup: {
+          from: "users",
+          localField: "id_users",
+          foreignField: "_id",
+          as: "id_users",
+        },
+      },
+      {
+        // Unwind the id_users array
+        $unwind: {
+          path: "$id_users",
+          preserveNullAndEmptyArrays: false, // Exclude if no user found
+        },
+      },
+      {
+        // Select desired fields, including id_users
+        $project: {
+          ho_va_ten: "$id_users.ho_va_ten",
+          id_users: "$id_users._id", // Include id_users from users collection
+          ma_phong: 1,
+          ma_don_hang: 1,
+          so_tien: 1,
+          ngay_chuyen_khoan: 1,
+          trang_thai: 1,
+        },
+      },
+    ]);
+  }
 }
 
 export default new HoaDonService();

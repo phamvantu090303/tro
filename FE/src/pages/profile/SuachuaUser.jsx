@@ -37,7 +37,7 @@ function SuachuaUser() {
   useEffect(() => {
     fetchData();
     const s = connectSocket();
-    console.log(s);
+    console.log("Socket connected:", s.connected); // Kiểm tra trạng thái kết nối
     setSocket(s);
     return () => {
       s.disconnect();

@@ -10,6 +10,7 @@ import {
 } from "../../../../Store/filterModalForm";
 
 function ThietBiAdmin() {
+  const [isLoading, setIsLoading] = useState(false);
   const [dataThietbi, setDataThietbi] = useState({
     ma_phong: "",
     ten_thiet_bi: "",
@@ -82,33 +83,39 @@ function ThietBiAdmin() {
     dispatch(CloseModalForm());
   };
 
-const validate = () => {
-  const newErrors = {};
-  if (!dataThietbi.ma_phong) newErrors.ma_phong = "Vui lòng chọn mã phòng.";
-  if (!dataThietbi.ten_thiet_bi) newErrors.ten_thiet_bi = "Vui lòng chọn thiết bị.";
+  const validate = () => {
+    const newErrors = {};
+    if (!dataThietbi.ma_phong) newErrors.ma_phong = "Vui lòng chọn mã phòng.";
+    if (!dataThietbi.ten_thiet_bi)
+      newErrors.ten_thiet_bi = "Vui lòng chọn thiết bị.";
 
-  if (
-    dataThietbi.so_luong_thiet_bi === "" ||
-    Number(dataThietbi.so_luong_thiet_bi) <= 0
-  ) {
-    newErrors.so_luong_thiet_bi = "Số lượng phải lớn hơn 0.";
-  }
+    if (
+      dataThietbi.so_luong_thiet_bi === "" ||
+      Number(dataThietbi.so_luong_thiet_bi) <= 0
+    ) {
+      newErrors.so_luong_thiet_bi = "Số lượng phải lớn hơn 0.";
+    }
 
-  if (dataThietbi.trang_thai === "")
-    newErrors.trang_thai = "Vui lòng chọn trạng thái.";
+    if (dataThietbi.trang_thai === "")
+      newErrors.trang_thai = "Vui lòng chọn trạng thái.";
 
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleCreate = async () => {
-    if (!validate()) return;
-    if (modalType === "create") {
-      await createData(dataThietbi);
-    } else if (modalType === "edit") {
-      await UpdateData(idModal, dataThietbi);
+    setIsLoading(true);
+    try {
+      if (!validate()) return;
+      if (modalType === "create") {
+        await createData(dataThietbi);
+      } else if (modalType === "edit") {
+        await UpdateData(idModal, dataThietbi);
+      }
+      resetData();
+    } finally {
+      setIsLoading(false);
     }
-    resetData();
   };
 
   const handleOpenModalEdit = (room) => {
@@ -212,9 +219,7 @@ const validate = () => {
                 <div className="w-full">
                   <select
                     className={`border py-3 px-5 rounded-md w-full ${
-                      errors.ten_thiet_bi
-                        ? "border-red-500"
-                        : "border-gray-500"
+                      errors.ten_thiet_bi ? "border-red-500" : "border-gray-500"
                     }`}
                     onChange={(e) =>
                       setDataThietbi((prev) => ({
@@ -307,9 +312,14 @@ const validate = () => {
 
             <button
               onClick={handleCreate}
-              className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
+              disabled={isLoading}
+              className="py-2 px-7 text-white bg-customBlue rounded-lg mt-4"
             >
-              {modalType === "create" ? "Thêm" : "Chỉnh sửa"}
+              {isLoading
+                ? "Đang tải..."
+                : modalType === "edit"
+                ? "Chỉnh sửa"
+                : "Thêm"}
             </button>
           </div>
         </div>
