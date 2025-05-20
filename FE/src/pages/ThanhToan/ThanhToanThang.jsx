@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import useApiManagerAdmin from "../../hook/useApiManagerAdmin";
 import { axiosInstance } from "../../../Axios";
+import { Navigate } from "react-router";
+import { useParams } from "react-router";
 
 function ThanhToanThang() {
-    const { data: hoaDonData, fetchData: fetchHoaDonData } = useApiManagerAdmin("/hoa-don-thang");
+    const params = useParams();
+    const { id } = params;
     const { data: dichVuData } = useApiManagerAdmin("/dich-vu");
     const [thanhToanThang, setThanhToanThang] = useState({
         ma_phong: "",
@@ -24,20 +27,29 @@ function ThanhToanThang() {
 
     // Lấy thông tin hóa đơn mới nhất
     useEffect(() => {
-        if (hoaDonData && hoaDonData.length > 0) {
-            const latestHoaDon = hoaDonData[hoaDonData.length - 1];
+        fetchDetailHoaDonThang();
+    }, [id]);
+
+    const fetchDetailHoaDonThang = async () => {
+        try {
+            const response = await axiosInstance.get(`/hoa-don-thang/get-detail/${id}`);
+            const hoaDonThang = response.data.data[0];
+            console.log("Hóa đơn tháng:", hoaDonThang);
             setThanhToanThang({
-                ma_phong: latestHoaDon.ma_phong || "",
-                id_users: latestHoaDon.id_users || "",
-                ma_hoa_don_thang: latestHoaDon.ma_hoa_don_thang || "HD-Unknown",
-                ho_va_ten: latestHoaDon.ho_va_ten || "Khách",
-                tien_phong: latestHoaDon.tien_phong || 0,
-                so_dien_tieu_thu: latestHoaDon.so_dien_tieu_thu || 0,
-                tong_tien: latestHoaDon.tong_tien || 0,
-                trang_thai: latestHoaDon.trang_thai || "chưa thanh toán",
+                ma_phong: hoaDonThang.ma_phong || "",
+                id_users: hoaDonThang.id_users || "",
+                ma_hoa_don_thang: hoaDonThang.ma_hoa_don_thang || "HD-Unknown",
+                ho_va_ten: hoaDonThang.ho_va_ten || "Khách",
+                tien_phong: hoaDonThang.tien_phong || 0,
+                so_dien_tieu_thu: hoaDonThang.so_dien_tieu_thu || 0,
+                tong_tien: hoaDonThang.tong_tien || 0,
+                trang_thai: hoaDonThang.trang_thai || "chưa thanh toán",
             });
+
+        } catch (error) {
+            console.error("Lỗi khi tìm kiếm thông tin chi tiết về hóa đơn THÁNG:", error);
         }
-    }, [hoaDonData]);
+    }
 
     // Lấy thông tin dịch vụ
     useEffect(() => {
@@ -61,7 +73,7 @@ function ThanhToanThang() {
         try {
             const { data } = await axiosInstance.post("/ngan-hang/transactionThang");
             setMessage(data.message);
-            await fetchHoaDonData();
+            await fetchDetailHoaDonThang();
         } catch (error) {
             setMessage("Lỗi khi kiểm tra giao dịch");
             console.error("Error checking transaction:", error.message);
@@ -80,6 +92,9 @@ function ThanhToanThang() {
         if (thanhToanThang.trang_thai === "đã thanh toán") {
             clearInterval(intervalId);
             setMessage("Giao dịch đã được xác nhận thành công!");
+            setTimeout(() => {
+                Navigate("/");
+            }, 5000);
         }
 
         return () => clearInterval(intervalId);
@@ -151,8 +166,8 @@ function ThanhToanThang() {
                     <p className="text-lg font-semibold">Trạng thái:</p>
                     <p
                         className={`text-lg ${thanhToanThang.trang_thai === "đã thanh toán"
-                                ? "text-green-600"
-                                : "text-red-600"
+                            ? "text-green-600"
+                            : "text-red-600"
                             }`}
                     >
                         {thanhToanThang.trang_thai}
