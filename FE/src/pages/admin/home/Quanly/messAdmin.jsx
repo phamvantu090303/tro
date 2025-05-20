@@ -3,7 +3,9 @@ import { axiosInstance } from "../../../../../Axios";
 import { motion } from "framer-motion";
 import { FaRegUserCircle } from "react-icons/fa";
 
-import { connectSocket } from "../../../../../Socket";
+import { getSocket } from "../../../../../Socket";
+import { useDispatch } from "react-redux";
+import { triggerReloadMessageCount } from "../../../../Store/filterReloadSidebar";
 
 const ChatAdmin = () => {
   const [userName, setUserName] = useState("");
@@ -13,75 +15,114 @@ const ChatAdmin = () => {
   const messageEndRef = useRef(null);
   const [socket, setSocket] = useState(null);
   const [keyword, setKeyword] = useState("");
+  const dispatch = useDispatch();
   const [DsHienThi, setDsHienThi] = useState(DanhsachUser);
+  const selectedUserRef = useRef(null);
+
   const fetchMessages = async (userId) => {
+    if (!userId) return;
     try {
       const res = await axiosInstance.get(`/tin-nhan/messAdmin/${userId}`);
+      await axiosInstance.get(`tin-nhan/seenmess/${userId}`);
       return res.data.data;
     } catch (error) {
       console.log("Lỗi khi fetch tin nhắn:", error);
     }
   };
+
+  const fetchUnreadCount = async () => {
+    try {
+      const resUnread = await axiosInstance.get("/tin-nhan/unread-count");
+      const unreadData = resUnread.data.data;
+
+      setDanhsachUser((prevUsers) =>
+        prevUsers.map((user) => {
+          const found = unreadData.find((u) => u.nguoi_gui === user._id);
+          return {
+            ...user,
+            unread: found?.unreadCount || 0,
+          };
+        })
+      );
+    } catch (error) {
+      console.log("Lỗi khi fetch số tin nhắn chưa đọc:", error);
+    }
+  };
+
   const handleSelectUser = async (user) => {
     setSelectedUser(user);
     setMessages([]);
     const messages = await fetchMessages(user._id);
     setMessages(messages);
+    dispatch(triggerReloadMessageCount());
+    fetchUnreadCount();
   };
 
   // Hàm quay lại danh sách người dùng trên mobile
   const handleBack = () => {
     setSelectedUser(null);
   };
+
   useEffect(() => {
-    const s = connectSocket();
+    selectedUserRef.current = selectedUser;
+  }, [selectedUser]);
+
+  useEffect(() => {
+    fetchMessages();
+    fetchAdmin();
+    fetchUsers();
+
+    const s = getSocket();
     setSocket(s);
 
-    return () => {
-      s.disconnect();
-    };
-  }, []); // Chỉ khi token thay đổi thì mới kết nối lại
+    s.on("nhan_tin_nhan", async (data) => {
+      const senderId = data.payload.nguoi_gui;
 
-  useEffect(() => {
-    if (!selectedUser) return;
-
-    // Lắng nghe sự kiện nhận tin nhắn khi selectedUser đã được chọn
-    const handleNewMessage = (data) => {
-      if (data.payload.nguoi_gui === selectedUser._id) {
+      if (selectedUserRef.current && selectedUserRef.current._id === senderId) {
         setMessages((prevMessages) => [...prevMessages, data.payload]);
+
+        try {
+          await axiosInstance.get(`/tin-nhan/seenmess/${senderId}`);
+          fetchUnreadCount();
+          dispatch(triggerReloadMessageCount());
+        } catch (error) {
+          console.log("Lỗi khi cập nhật tin nhắn đã đọc:", error);
+        }
+      } else {
+        fetchUnreadCount();
       }
-    };
+    });
 
-    socket?.on("nhan_tin_nhan", handleNewMessage);
-
-    // Cleanup lắng nghe sự kiện khi user thay đổi
     return () => {
-      socket?.off("nhan_tin_nhan", handleNewMessage);
+      s.off("nhan_tin_nhan");
     };
-  }, [selectedUser, socket]);
-
-  useEffect(() => {
-    fetchData();
   }, []);
 
   useEffect(() => {
     setDsHienThi(DanhsachUser);
   }, [DanhsachUser]);
 
-  const fetchData = async () => {
+  const fetchUsers = async () => {
     try {
-      const [resUsers, resAdmin] = await Promise.all([
-        axiosInstance.get("/auth/getAll"),
-        axiosInstance.get("/admin/getadmin"),
-      ]);
-      const users = resUsers.data.data;
-      setDanhsachUser(users);
-      setUserName(resAdmin.data.data);
-      if (users.length > 0 && window.innerWidth > 768) {
-        handleSelectUser(users[0]);
+      const resUsers = await axiosInstance.get("/auth/getAll");
+      setDanhsachUser(resUsers.data.data);
+
+      if (resUsers.data.data.length > 0 && window.innerWidth > 768) {
+        handleSelectUser(resUsers.data.data[0]);
       }
     } catch (error) {
-      console.log("Lỗi khi fetch dữ liệu:", error);
+      console.log("Lỗi khi fetch users:", error);
+    }
+  };
+
+  // Hàm fetch admin info
+  const fetchAdmin = async () => {
+    try {
+      const resAdmin = await axiosInstance.get("/admin/getadmin");
+      setUserName(resAdmin.data.data);
+    } catch (error) {
+      console.log("Lỗi khi fetch admin:", error);
+      return null;
     }
   };
 
@@ -131,7 +172,6 @@ const ChatAdmin = () => {
 
     setDsHienThi(filtered);
   };
-
   return (
     <div className="flex flex-col md:flex-row gap-4">
       {/* Sidebar */}
@@ -152,8 +192,8 @@ const ChatAdmin = () => {
               value={keyword}
               onChange={(e) => {
                 const value = e.target.value;
-                setKeyword(value); // cập nhật state
-                handleSearch(value); // gọi hàm tìm kiếm
+                setKeyword(value);
+                handleSearch(value);
               }}
               className="w-full p-2 pl-8 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
@@ -179,22 +219,22 @@ const ChatAdmin = () => {
             <motion.div
               key={index}
               onClick={() => handleSelectUser(chat)}
-              className={`flex items-center p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 ${
+              className={`relative flex items-center p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 ${
                 selectedUser?._id === chat._id ? "bg-blue-50" : ""
               }`}
               whileTap={{ scale: 0.98 }}
             >
               <FaRegUserCircle size={35} />
+              {chat.unread > 0 && (
+                <span className="absolute left-8 top-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {chat.unread}
+                </span>
+              )}
               <div className="ml-3">
-                <div className="flex justify-between">
+                <div className="flex justify-between relative">
                   <h3 className="text-sm font-semibold truncate">
                     {chat.username}
                   </h3>
-                  {chat.unread > 0 && (
-                    <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {chat.unread}
-                    </span>
-                  )}
                 </div>
                 <p className="text-xs text-gray-500 truncate">{chat.message}</p>
               </div>

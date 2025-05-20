@@ -15,6 +15,7 @@ import {
 import { validateRoomData } from "../../../../utils/validateRoom";
 
 function PhongTroAdmin() {
+  const [isLoading, setIsLoading] = useState(false);
   const [chucnang, setChucnang] = useState("Tất cả các phòng");
   const [page, setPage] = useState(1);
   const [images, setImages] = useState([]);
@@ -176,13 +177,41 @@ function PhongTroAdmin() {
     return true;
   });
 
+  const handleUpdateRoom = async (id) => {
+    let anhPhong = images;
+    if (images && images.length > 0) {
+      const urlsImg = await upload(images);
+      if (!urlsImg.length) {
+        toast.error("Không thể tải ảnh lên!");
+        return;
+      }
+      anhPhong = urlsImg.join(", ");
+    }
+    if (hienthiAnh.length === 0) {
+      toast.error("Vui lòng thêm ảnh phòng!");
+      return;
+    }
+    await UpdateData(id, {
+      ...phongTroMoi,
+      anh_phong: hienthiAnh.join(", ") || anhPhong,
+      gia_tien: Number(phongTroMoi.gia_tien),
+      trang_thai: Number(phongTroMoi.trang_thai),
+      so_luong_nguoi: Number(phongTroMoi.so_luong_nguoi),
+    });
+    resetData();
+  };
+
   const handleCreate = async () => {
-    if (!validateRoomData(phongTroMoi)) return;
-    if (modalType === "create") {
-      await handleCreateRoom();
-    } else if (modalType === "edit") {
-      await UpdateData(idModal, phongTroMoi);
-      resetData();
+    setIsLoading(true);
+    try {
+      if (!validateRoomData(phongTroMoi)) return;
+      if (modalType === "create") {
+        await handleCreateRoom();
+      } else if (modalType === "edit") {
+        await handleUpdateRoom(idModal);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -192,7 +221,6 @@ function PhongTroAdmin() {
     setHienthiAnh(room.anh_phong?.split(", ") || []);
     setPage(2);
   };
-  console.log(phongTroMoi);
 
   const handleSearch = (keyword) => {
     const tuKhoa = keyword.toLowerCase();
@@ -378,8 +406,13 @@ function PhongTroAdmin() {
           <button
             className="bg-blue-600 text-white px-6 py-2 rounded-lg"
             onClick={handleCreate}
+            disabled={isLoading}
           >
-            {modalType === "edit" ? "Lưu chỉnh sửa" : "Tạo phòng"}
+            {isLoading
+              ? "Đang tải..."
+              : modalType === "edit"
+              ? "Lưu chỉnh sửa"
+              : "Tạo phòng"}
           </button>
         </div>
       )}

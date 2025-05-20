@@ -68,7 +68,7 @@ const sendEmail = async (user: any, hoadon: any) => {
   });
 
   const hopdonglink = `${process.env.CLIENT_URL}/hopdong/${hoadon.ma_phong}`;
-  const linkThanhToan = `${process.env.CLIENT_URL}/thanh-toan`;
+  const linkThanhToan = `${process.env.CLIENT_URL}/thanh-toan/${hoadon.ma_don_hang}`;
   const mailOptions = {
     from: process.env.MAIL_USERNAME,
     to: user.email,
@@ -170,6 +170,21 @@ export const getAllHoaDon = async (req: Request, res: Response) => {
   }
 };
 
+export const getByIdHoaDon = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const hoadon = await hoaDonService.findById(id);
+    if (!hoadon)
+      return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
+    res.status(200).json({
+      status: "200",
+      data: hoadon,
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 export const deleteHoadon = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -181,6 +196,7 @@ export const deleteHoadon = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 export const DetaijHoaDon = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

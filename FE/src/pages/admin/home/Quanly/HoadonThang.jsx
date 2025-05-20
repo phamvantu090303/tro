@@ -11,6 +11,7 @@ import { axiosInstance } from "../../../../../Axios";
 import { validateHoaDonThang } from "../../../../utils/validateHoaDonThang";
 
 function HoadonThangAdmin() {
+  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
     ma_phong: "",
     id_users: "",
@@ -69,12 +70,17 @@ function HoadonThangAdmin() {
   };
 
   const handleCreate = async () => {
-    if (Object.keys(validateHoaDonThang(data)).length > 0) {
-      setErrors(validateHoaDonThang(data));
-      return;
-    }
-    if (modalType === "create") {
-      await createData(data);
+    setIsLoading(true);
+    try {
+      if (Object.keys(validateHoaDonThang(data)).length > 0) {
+        setErrors(validateHoaDonThang(data));
+        return;
+      }
+      if (modalType === "create") {
+        await createData(data);
+      }
+    } finally {
+      setIsLoading(false);
     }
     handleClose();
   };
@@ -142,7 +148,7 @@ function HoadonThangAdmin() {
   const soDienTieuThu = Number(
     data.chi_so_dien_thang_nay - data.chi_so_dien_thang_truoc
   ).toFixed(2);
-  
+
   // Tổng Tiền điện
   const TongtienDien = Number(
     (soDienTieuThu * (data.dich_vu?.tien_dien || 0)).toFixed(0)
@@ -150,7 +156,7 @@ function HoadonThangAdmin() {
   // Tính tổng tiền, đảm bảo không có số thập phân
   const Tongtien = Number(
     (
-      soDienTieuThu * ((data.dich_vu?.tien_dien || 0)) +
+      soDienTieuThu * (data.dich_vu?.tien_dien || 0) +
       (data.tien_phong || 0) +
       (data.dich_vu?.tien_nuoc || 0) +
       (data.dich_vu?.tien_wifi || 0)
@@ -423,9 +429,10 @@ function HoadonThangAdmin() {
             {modalType === "create" && (
               <button
                 onClick={handleCreate}
+                disabled={isLoading}
                 className="mt-10 py-2 px-10 bg-customBlue rounded-lg text-white"
               >
-                Tạo hóa đơn
+                {isLoading ? "Đang tải..." : "Tạo hóa đơn"}
               </button>
             )}
           </div>

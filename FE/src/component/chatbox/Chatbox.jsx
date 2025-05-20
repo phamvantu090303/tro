@@ -6,12 +6,13 @@ import { useSelector } from "react-redux";
 import { connectSocket } from "../../../Socket";
 import { motion } from "framer-motion";
 const Chatbox = () => {
-  const { user, token } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [socket, setSocket] = useState(null);
-
+  const [numberMess, setNumberMess] = useState(0);
   const messagesEndRef = useRef(null);
 
   // Lấy danh sách tin nhắn
@@ -23,23 +24,40 @@ const Chatbox = () => {
       console.log("Lỗi khi lấy tin nhắn:", error);
     }
   };
+  const fetchNotifMess = async () => {
+    try {
+      const res = await axiosInstance.get("/tin-nhan/dem-tin-nhan");
+      setNumberMess(res.data.tinnhanchuadoc);
+    } catch (error) {
+      console.log("Lỗi khi lấy thông báo tin nhắn:", error);
+    }
+  };
 
   useEffect(() => {
     fetchMessages();
-    const s = connectSocket(token);
+    fetchNotifMess();
+    const s = connectSocket();
     setSocket(s);
 
-    // Đăng ký sự kiện socket chỉ một lần
-    s.on("nhan_tin_nhan_admin", (data) => {
+    s.on("nhan_tin_nhan_admin", async (data) => {
       setMessages((prevMessages) => [...prevMessages, data.payload]);
+
+      if (isOpen) {
+        try {
+          await axiosInstance.get("/tin-nhan/doc-tin-nhan");
+          fetchNotifMess();
+        } catch (error) {
+          console.log("Lỗi khi cập nhật tin nhắn đã đọc:", error);
+        }
+      } else {
+        fetchNotifMess();
+      }
     });
 
-    // Cleanup khi socket bị ngắt kết nối
     return () => {
       s.off("nhan_tin_nhan_admin");
-      s.disconnect();
     };
-  }, [token]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -52,8 +70,6 @@ const Chatbox = () => {
     if (input.trim() === "") return;
 
     try {
-      // Gửi tin nhắn qua socket
-
       const message = {
         noi_dung: input,
       };
@@ -68,7 +84,23 @@ const Chatbox = () => {
       console.log("Lỗi khi gửi tin nhắn:", error);
     }
   };
+  const handleOpen = async () => {
+    try {
+      setIsOpen(true);
+      await axiosInstance.get("/tin-nhan/doc-tin-nhan");
+    } catch (error) {
+      console.log("Lỗi khi lấy danh sách tin nhắn:", error);
+    }
+  };
 
+  useEffect(() => {
+    if (!user) {
+      console.log("đã chạy");
+      setMessages([]);
+      setNumberMess(0);
+      setSocket(null);
+    }
+  }, [user]);
   return (
     <div className="fixed bottom-0 md:bottom-5 right-0 md:right-5 z-50 w-full sm:w-auto">
       {isOpen ? (
@@ -124,13 +156,18 @@ const Chatbox = () => {
         </motion.div>
       ) : (
         <motion.button
-          className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
-          onClick={() => setIsOpen(true)}
+          className="relative bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+          onClick={handleOpen}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.3 }}
         >
           <AiOutlineMessage size={24} />
+          {numberMess ? (
+            <span className="absolute top-2 right-2 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+              {numberMess}
+            </span>
+          ) : null}
         </motion.button>
       )}
     </div>

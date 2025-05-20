@@ -171,6 +171,7 @@ class SocketMessager {
           .to(receiverSocketId)
           .emit("nhan_tin_nhan", { payload: message });
       }
+
       // Gửi lại tin nhắn tới người gửi (client)
       socket.emit("nhan_tin_nhan", { payload: message });
     } catch (error) {
@@ -202,6 +203,7 @@ class SocketMessager {
         nguoi_gui,
         nguoi_nhan,
         noi_dung,
+        is_read: false,
       }).save();
       // Gửi lại tin nhắn tới người nhận (admin)
       const receiverSocketId = this.users[nguoi_nhan];

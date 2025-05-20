@@ -30,7 +30,7 @@ const routerUser = (
     <Route path="yeuthich" element={<Favourite />} />
     <Route path="profile" element={<Profile />} />
     <Route path="/ProductList" element={<ProductList />} />
-    <Route path="/thanh-toan" element={<ThanhToan />} />
+    <Route path="/thanh-toan/:id" element={<ThanhToan />} />
     <Route path="/thanh-toan-thang/:id" element={<ThanhToanThang />} />
   </Route>
 );

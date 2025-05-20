@@ -19,6 +19,7 @@ function DanhMucAdmin() {
   const { modalType, idModal, isOpen } = useSelector(
     (state) => state.ModalForm
   );
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const {
     data: danhMuc,
@@ -113,13 +114,18 @@ function DanhMucAdmin() {
   };
 
   const handleCreate = async () => {
-    if (!validateForm()) return;
-    if (modalType === "create") {
-      await handleCreateDanhMuc();
-    } else if (modalType === "edit") {
-      await UpdateData(idModal, dataDanhmuc);
+    setIsLoading(true);
+    try {
+      if (!validateForm()) return;
+      if (modalType === "create") {
+        await handleCreateDanhMuc();
+      } else if (modalType === "edit") {
+        await UpdateData(idModal, dataDanhmuc);
+      }
+      resetData();
+    } finally {
+      setIsLoading(false);
     }
-    resetData();
   };
 
   const handleSearchDanhMuc = (keyword) => {
@@ -257,9 +263,14 @@ function DanhMucAdmin() {
 
             <button
               onClick={handleCreate}
+              disabled={isLoading}
               className="py-2 px-7 text-white bg-customBlue rounded-lg mt-4"
             >
-              {modalType === "edit" ? "Chỉnh sửa" : "Thêm"}
+              {isLoading
+                ? "Đang tải..."
+                : modalType === "edit"
+                ? "Chỉnh sửa"
+                : "Thêm"}
             </button>
           </div>
         </div>
